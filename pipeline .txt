@@ -1,0 +1,47 @@
+pipeline {
+    agent  {
+        label "java-17-build-node"
+    }
+    environment {
+        GIT_SSH_CRED = "jenkins-to-gitlab-clone-using-ssh"
+        GIT_REPOSITORY_URL = "git@gitlab.varaha.xyz:back-end/login-service.git"
+        //branchname = "main"
+    }
+    stages {
+        stage('Clone the project or checkout the code or SCM') {
+            steps {
+                git branch: "${branchname}", credentialsId: "${GIT_SSH_CRED}", url: "${GIT_REPOSITORY_URL}"
+                // git branch: 'main', credentialsId: 'jenkins-to-gitlab-clone-using-ssh', url: 'git@gitlab.varaha.xyz:back-end/login-service.git'
+            }
+        }
+        stage('check maven version') {
+            steps{
+                sh 'mvn -version'
+                sh 'java --version'
+            }
+        }
+        stage('code quality & analysis') {
+            steps {
+                sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=back-end_login-service_AZUH_y6BRL6GMi622-9M -Dsonar.projectName=login-service -Dsonar.host.url=https://sonar.varaha.xyz -Dsonar.token=sqp_53c7ecd84c6e0f22353c9478d23d6ce13364edaa'
+            }
+        }
+        stage('Validate the project') {
+            steps {
+                echo "Building the project"
+                sh 'mvn clean validate'
+            }
+        }
+        stage('Test the project') {
+            steps {
+                echo "Testing the project"
+                sh 'mvn clean test'
+            }
+        }
+        stage('Generate artifact & store artifact') {
+            steps {
+                echo "Generating & storing artifact in artifactory Nexus"
+                sh 'mvn install deploy'
+            }
+        }
+    }
+}

@@ -1,0 +1,8 @@
+.recently-viewed-container {
+    display: flex;
+    overflow-x: auto; /* Enables horizontal scrolling */
+    gap: 16px; /* Adjust spacing between items */
+    padding: 10px;
+    white-space: nowrap; /* Prevents wrapping */
+  }
+  

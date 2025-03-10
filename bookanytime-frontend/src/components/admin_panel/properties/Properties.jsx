@@ -14,7 +14,7 @@ const Properties = () => {
 
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/categories")
+    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/categories`)
       .then((res) => setCategories(res.data))
       .catch((err) => console.error("Error fetching categories:", err));
   }, []);
@@ -23,10 +23,11 @@ const Properties = () => {
     if (!deleteData.category && !updateData.category) return;
 
     const category = deleteData.category || updateData.category;
-    fetch(`http://localhost:5000/api/properties?category=${encodeURIComponent(category)}`)
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/properties?category=${encodeURIComponent(category)}`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
+          console.log("delete data", data)
           setProperties(data);
         } else {
           setProperties([]);
@@ -56,7 +57,7 @@ const Properties = () => {
   const handleDeleteSubmit = () => {
     if (!deleteData.propertyId) return alert("Please select a property to delete");
 
-    fetch(`http://localhost:5000/api/properties/${deleteData.propertyId}`, { method: "DELETE" })
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/properties/${deleteData.propertyId}`, { method: "DELETE" })
       .then((res) => res.json())
       .then((data) => {
         alert(data.message);

@@ -31,7 +31,7 @@ const AdminPropertyForm = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/categories")
+    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/categories`)
       .then((res) => setCategories(res.data))
       .catch((err) => console.error("Error fetching categories:", err));
   }, []);
@@ -96,7 +96,7 @@ const AdminPropertyForm = () => {
     formDataToSend.append("bedrooms", String(Number(formData.bedrooms) || 0));
 
     try {
-      await axios.post("http://localhost:5000/api/properties", formDataToSend, {
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/properties`, formDataToSend, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

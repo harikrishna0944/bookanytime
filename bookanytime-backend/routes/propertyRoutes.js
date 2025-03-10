@@ -41,7 +41,7 @@ router.post("/", upload.array("images", 5), parseFormData, async (req, res) => {
     const { name, category, description, price, city, address, latitude, longitude, amenities, capacity, whatsappNumber } = req.body;
 
     // Generate image URLs from uploaded files
-    const imageUrls = req.files.map((file) => `http://localhost:5000/uploads/${file.filename}`);
+    const imageUrls = req.files.map((file) => `http://43.204.53.190:5000/uploads/${file.filename}`);
 
     const newProperty = new Property({
       name,
@@ -115,15 +115,21 @@ router.put("/:id", upload.array("images", 5), async (req, res) => {
 
 
 // @desc    to get the property details on dropdwon to delete the property
+// @desc    and to get all the propeties on click of any category in home page 
 router.get("/", async (req, res) => {
   try {
-    const { category } = req.query;
-    if (!category) {
-      return res.status(400).json({ message: "Category is required" });
+    const { name, category } = req.query;
+    let filter = {};
+
+    if (name) {
+      filter.name = { $regex: name, $options: "i" }; // Case-insensitive search by name
     }
 
-    // Fetch ID, name, and address
-    const properties = await Property.find({ category }, "_id name address");
+    if (category) {
+      filter.category = { $regex: category, $options: "i" }; // Case-insensitive search by category
+    }
+
+    const properties = await Property.find(filter, "_id name address images price");
 
     if (properties.length === 0) {
       return res.status(404).json({ message: "No properties found" });
@@ -135,6 +141,7 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 
 // @desc    to delete the property

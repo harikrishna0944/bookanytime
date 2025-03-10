@@ -17,21 +17,21 @@ const [removeImages, setRemoveImages] = useState([]); // Store images to be remo
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/categories")
+      .get(`${import.meta.env.VITE_API_BASE_URL}/api/categories`)
       .then((res) => setCategories(res.data))
       .catch((err) => console.error("Error fetching categories:", err));
   }, []);
 
   const fetchOffers = (category) => {
     axios
-      .get(`http://localhost:5000/api/offers/category/${category}`)
+      .get(`${import.meta.env.VITE_API_BASE_URL}/api/offers/category/${category}`)
       .then((res) => setOffers(res.data))
       .catch((err) => console.error("Error fetching offers:", err));
   };
 
   const fetchOfferDetails = (offerId) => {
     axios
-      .get(`http://localhost:5000/api/offers/${offerId}`)
+      .get(`${import.meta.env.VITE_API_BASE_URL}/api/offers/${offerId}`)
       .then((res) => {
         console.log("data",res.data)
         setStartDate(res.data.startDate.split("T")[0]); // Formatting date
@@ -66,7 +66,7 @@ const [removeImages, setRemoveImages] = useState([]); // Store images to be remo
     formData.append("images", image);
   });
     try {
-      await axios.put(`http://localhost:5000/api/offers/update/${selectedOffer}`, formData);
+      await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/offers/update/${selectedOffer}`, formData);
       alert("Offer updated successfully!");
       setSelectedCategory("")
       setSelectedOffer("")
@@ -137,7 +137,7 @@ const [removeImages, setRemoveImages] = useState([]); // Store images to be remo
       <p>Existing Images:</p>
       {existingImages.map((img, index) => (
         <div key={index} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <img src={`http://localhost:5000${img}`} alt="Offer" style={{ width: "100px", height: "100px" }} />
+          <img src={`${import.meta.env.VITE_API_BASE_URL}${img}`} alt="Offer" style={{ width: "100px", height: "100px" }} />
           <Button
             variant="danger"
             size="sm"

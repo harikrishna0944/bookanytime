@@ -1,6 +1,7 @@
 import React from 'react';
 import { CCard, CCardBody, CCardImage, CCardText } from '@coreui/react';
 import ItemsSlider from './ItemsSlider';
+import './RecentlyViewed.css'; // Import the CSS file
 
 const RecentlyViewed = () => {
   const topDealsItems = [
@@ -12,30 +13,32 @@ const RecentlyViewed = () => {
     { title: 'Hillside Hens', category: "FarmHouse", location: 'Miami', rating: 4.4, image: 'https://media.istockphoto.com/id/879361282/photo/typical-wooden-small-farm-house-in-victorian-style-in-williamstown.jpg?s=612x612&w=0&k=20&c=tMtLuiMyOtRaAucO5SiHJysHAuQtIKyKPtI0sy2izyw=' },
     { title: 'Vishali Banquet', category: "Banquet Hall", location: 'Banglore, Karnataka', rating: 4.8, image: 'https://i.pinimg.com/564x/c0/0d/c7/c00dc727f83a12e61d91e3d163042c65.jpg' },
   ];
-  return (
-    <ItemsSlider title="Recently Viewed">
-      {topDealsItems.map((hotel, index) => (
-        <span key={index}  style={{ height:"280px" }}>
-          <CCard style={{ width: '240px' ,height:"280px" }}>
-            <CCardImage orientation="top" src={hotel.image} style={{maxHeight:"150px"}}/>
-            <CCardBody>
-              <div className="p-4">
-                <h5 className="font-bold text-lg text-gray-800 mb-1">{hotel.title}</h5>
-                <h6 className="font-bold text-lg text-blue-600">{hotel.category}</h6>
 
-                <p className="text-gray-600 mb-2">{hotel.location}</p>
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center">
-                    <span className="text-yellow-500">★</span>
-                    <span className="ml-1 text-gray-700">{hotel.rating}</span>
+  return (
+    <div className="recently-viewed-section">
+      <ItemsSlider title="Recently Viewed">
+        {topDealsItems.map((hotel, index) => (
+          <span key={index} style={{ height: "300px" }}>
+            <CCard style={{ width: '260px', height: "300px" }}>
+              <CCardImage orientation="top" src={hotel.image} style={{ height: "180px", objectFit: "cover" }} />
+              <CCardBody>
+                <div className="p-4">
+                  <h5 className="font-bold text-lg text-gray-800 mb-1">{hotel.title}</h5>
+                  <h6 className="font-bold text-lg text-blue-600">{hotel.category}</h6>
+                  <p className="text-gray-600 mb-2">{hotel.location}</p>
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center">
+                      <span className="text-yellow-500">★</span>
+                      <span className="ml-1 text-gray-700">{hotel.rating}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CCardBody>
-          </CCard>
-        </span>
-      ))}
-    </ItemsSlider>
+              </CCardBody>
+            </CCard>
+          </span>
+        ))}
+      </ItemsSlider>
+    </div>
   );
 };
 

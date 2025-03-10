@@ -1,17 +1,40 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { AppBar, Toolbar, Button, Avatar, Box, IconButton, Drawer, List, ListItem } from "@mui/material";
+import { AppBar, Toolbar, Button, Avatar, Box, IconButton, Drawer, List, ListItem, Menu, MenuItem } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { getUserRole } from "../utils/auth"
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const userRole = getUserRole(); // Get user role
+  const navigate = useNavigate();
 
+console.log("user roleeeee",userRole)
+  // Toggle mobile menu
   const toggleDrawer = () => {
     setMobileOpen(!mobileOpen);
   };
 
+  // Handle Profile Dropdown
+  const handleProfileClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Clear token
+    localStorage.removeItem("user"); // Clear user data
+    navigate("/"); // Redirect to login page
+    window.location.reload(); // Force reload to clear state
+  };
   return (
     <AppBar
       position="fixed"
@@ -40,14 +63,38 @@ const Header = () => {
           <Button color="inherit" component={Link} to="/list-property" sx={{ color: "white !important" }}>
             List Your Property
           </Button>
-
           <Button color="inherit" component={Link} to="/wishlist" startIcon={<FavoriteIcon />} sx={{ color: "white !important" }}>
             Wishlist
           </Button>
 
+          {/* Profile Avatar with Dropdown */}
+          <IconButton onClick={handleProfileClick}>
+            <Avatar alt="Profile" src="/profile.jpg" sx={{ width: 40, height: 40 }} />
+          </IconButton>
 
+          {/* Dropdown Menu */}
+          <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+            <MenuItem component={Link} to="/login" onClick={handleClose}>
+              Login / Signup
+            </MenuItem>
 
-          <Avatar alt="Profile" src="/profile.jpg" sx={{ width: 40, height: 40 }} />
+<MenuItem
+  component={Link}
+  to="/admin"
+  onClick={handleClose}
+  style={{ display: getUserRole() === "admin" ? "block" : "none" }} // ✅ Hide if not admin
+>
+  Admin Panel
+</MenuItem>
+<MenuItem
+  // component={Link}
+  // to="/admin"
+  onClick={handleLogout}
+>
+Logout
+</MenuItem>
+
+          </Menu>
         </Box>
 
         {/* Mobile Menu Button */}
@@ -71,7 +118,8 @@ const Header = () => {
               <FavoriteIcon sx={{ mr: 1 }} /> Wishlist
             </ListItem>
 
-            <ListItem button onClick={toggleDrawer}>
+            {/* Profile Avatar in Mobile Menu */}
+            <ListItem button onClick={handleProfileClick}>
               <Avatar alt="Profile" src="/profile.jpg" sx={{ width: 40, height: 40 }} />
             </ListItem>
           </List>

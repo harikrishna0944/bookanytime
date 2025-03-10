@@ -4,6 +4,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import Button from "@mui/material/Button";
 import axios from "axios";
+import { FaHeart } from "react-icons/fa"; // Import a heart icon from react-icons
 import "./Searchbar.css";
 
 const SearchBar = () => {
@@ -14,9 +15,10 @@ const SearchBar = () => {
   const [searchText, setSearchText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [locationSearch, setLocationSearch] = useState("");
+  const [wishlist, setWishlist] = useState(new Set()); // Track wishlisted properties
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/categories")
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/categories`)
       .then((res) => res.json())
       .then((data) => {
         const categoryNames = data.map((category) => category.name);
@@ -66,7 +68,7 @@ const SearchBar = () => {
     }
     
     try {
-      const response = await axios.get("http://localhost:5000/api/properties/search-locations", {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search-locations`, {
         params: {
           query: locationSearch.trim(),
           propertyName: searchText.trim(),
@@ -78,85 +80,131 @@ const SearchBar = () => {
       console.error("Error fetching search results:", error);
     }    
   };
-  
-  
 
   const handleLocationChange = (event) => {
     setLocationSearch(event.target.value);
   };
 
+  // Toggle wishlist for a property
+  const toggleWishlist = (propertyId) => {
+    setWishlist((prevWishlist) => {
+      const newWishlist = new Set(prevWishlist);
+      if (newWishlist.has(propertyId)) {
+        newWishlist.delete(propertyId); // Remove from wishlist
+      } else {
+        newWishlist.add(propertyId); // Add to wishlist
+      }
+      return newWishlist;
+    });
+  };
+
   return (
     <div className="search-page">
-      <div className="search-bar-container">
-        <TextField
-          type="text"
-          className="search-input"
-          placeholder={isTyping ? "Search by property name" : ""}
-          value={searchText}
-          onChange={handleInputChange}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          InputProps={{
-            startAdornment: (
-              <div onClick={(e) => e.target.parentElement.nextSibling.focus()} style={{ display: "flex", alignItems: "center", cursor: "text" }}>
+      <div className="search-inputs-container">
+        {/* Left Search Bar */}
+        <div className="search-bar-container left">
+          <TextField
+            type="text"
+            className="search-input"
+            placeholder={isTyping ? "Search by property name" : ""}
+            value={searchText}
+            onChange={handleInputChange}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            InputProps={{
+              startAdornment: (
+                <div onClick={(e) => e.target.parentElement.nextSibling.focus()} style={{ display: "flex", alignItems: "center", cursor: "text" }}>
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                    {!isTyping && categories.length > 0 && (
+                      <span>Search for <strong>{categories[currentCategoryIndex]}</strong></span>
+                    )}
+                  </InputAdornment>
+                </div>
+              ),
+            }}
+          />
+        </div>
+
+        {/* Right Search Bar */}
+        <div className="search-bar-container right">
+          <TextField
+            type="text"
+            className="search-input"
+            placeholder="Search By Location"
+            value={locationSearch}
+            onChange={handleLocationChange}
+            InputProps={{
+              startAdornment: (
                 <InputAdornment position="start">
                   <SearchIcon />
-                  {!isTyping && categories.length > 0 && (
-                    <span>Search for <strong>{categories[currentCategoryIndex]}</strong></span>
-                  )}
                 </InputAdornment>
-              </div>
-            ),
-          }}
-        />
+              ),
+            }}
+          />
+        </div>
       </div>
 
-      <div className="search-bar-container">
-        <TextField
-          type="text"
-          className="search-input"
-          placeholder="Search By Location"
-          value={locationSearch}
-          onChange={handleLocationChange}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </div>
-
-      <div className="category-filters">
-        {["All", ...categories].map((category) => (
-          <Button
-            key={category}
-            variant={selectedCategories.includes(category) ? "contained" : "outlined"}
-            onClick={() => handleCategoryChange(category)}
-            style={{ margin: "5px" }}
-          >
-            {category}
-          </Button>
-        ))}
+      <div className="category-filters-container">
+        <div className="d-flex flex-nowrap gap-2 overflow-auto py-2">
+          {["All", ...categories].map((category) => (
+            <button
+              key={category}
+              className={`btn rounded-pill ${
+                selectedCategories.includes(category) ? "btn-primary" : "btn-outline-primary"
+              }`}
+              onClick={() => handleCategoryChange(category)}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="search-results">
         {properties.length > 0 ? (
-          <div className="property-list">
+          <div className="row">
             {properties.map((property) => (
-              <div key={property._id} className="property-card">
-                <img src={property.images[0]} alt={property.name} className="property-image" />
-                <div className="property-details">
-                  <h3>{property.name}</h3>
-                  <p>{property.category}</p>
-                  <p>{property.address}</p>
+              <div 
+                key={property._id} 
+                className="col-lg-3 col-md-4 col-sm-6 col-12 mb-3"
+                style={{ cursor: "pointer" }}
+              >
+                <div className="property-item shadow-sm p-2 position-relative">
+                  {/* Wishlist Icon */}
+                  <div
+                    className="position-absolute top-0 end-0 m-2"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent opening the property link
+                      toggleWishlist(property._id);
+                    }}
+                    style={{ cursor: "pointer", zIndex: 1 }}
+                  >
+                    <FaHeart
+                      size={20} // Decreased size
+                      color={wishlist.has(property._id) ? "red" : "white"} // White color for non-wishlisted, red for wishlisted
+                    />
+                  </div>
+
+                  {/* Property Image */}
+                  <img
+                    src={property.images && property.images.length > 0 ? property.images[0] : "https://via.placeholder.com/150"}
+                    alt={property.name}
+                    className="img-fluid"
+                    onClick={() => window.open(`/property/${property._id}`, "_blank")}
+                  />
+
+                  {/* Property Details */}
+                  <div className="property-details text-center p-2">
+                    <h6 className="fw-bold mb-1">{property.name}</h6>
+                    <p className="text-muted small mb-1">{property.address}</p>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <p>No properties found.</p>
+          <p className="text-center text-muted">No properties found.</p>
         )}
       </div>
     </div>

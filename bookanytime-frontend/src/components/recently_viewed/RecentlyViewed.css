@@ -1,8 +1,140 @@
-.recently-viewed-container {
-    display: flex;
-    overflow-x: auto; /* Enables horizontal scrolling */
-    gap: 16px; /* Adjust spacing between items */
-    padding: 10px;
-    white-space: nowrap; /* Prevents wrapping */
+.recently-viewed-section {
+  padding: 20px;
+  /* width: 200%; */
+  margin: 0 auto;
+  margin-left: 10px; /* Move the entire body to the left */
+
+}
+
+.recently-viewed-section h2 {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+/* Recently Viewed Slider */
+.scroll-container-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 150%; /* Increase the width of the slider */
+  margin: auto;
+}
+
+.scroll-container {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #007bff #f1f1f1;
+  width: 150%; /* Increase the width of the slider */
+  padding-bottom: 10px;
+  margin-left: -90px;
+  /* margin-right: 120px; */
+}
+
+.offer-wrapper {
+  flex-shrink: 0;
+  width: 260px; /* Slightly increase the width of each offer box */
+}
+
+.offer-card {
+  width: 100%;
+  height: 300px; /* Increase the height to accommodate larger images */
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.offer-image {
+  width: 100%;
+  height: 180px; /* Increase the height of the image */
+  object-fit: cover;
+}
+
+.offer-name {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.offer-category {
+  font-size: 16px;
+  color: #007bff;
+  margin-bottom: 8px;
+}
+
+.offer-location {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.offer-rating {
+  font-size: 14px;
+  color: #555;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .offer-wrapper {
+    width: 220px; /* Adjust width for smaller screens */
   }
-  
+
+  .offer-card {
+    height: 260px; /* Adjust height for smaller screens */
+  }
+
+  .offer-image {
+    height: 140px; /* Adjust image height for smaller screens */
+  }
+
+  .offer-name {
+    font-size: 16px;
+  }
+
+  .offer-category {
+    font-size: 14px;
+  }
+
+  .offer-location {
+    font-size: 12px;
+  }
+
+  .offer-rating {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .offer-wrapper {
+    width: 200px; /* Adjust width for mobile screens */
+  }
+
+  .offer-card {
+    height: 240px; /* Adjust height for mobile screens */
+  }
+
+  .offer-image {
+    height: 120px; /* Adjust image height for mobile screens */
+  }
+
+  .offer-name {
+    font-size: 14px;
+  }
+
+  .offer-category {
+    font-size: 12px;
+  }
+
+  .offer-location {
+    font-size: 10px;
+  }
+
+  .offer-rating {
+    font-size: 10px;
+  }
+}

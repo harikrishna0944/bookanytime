@@ -32,7 +32,7 @@ console.log("id", id)
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/categories")
+    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/categories`)
       .then((res) => setCategories(res.data))
       .catch((err) => console.error("Error fetching categories:", err));
   }, []);
@@ -42,7 +42,7 @@ console.log("id", id)
     const fetchProperty = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`http://localhost:5000/api/properties/${id}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/${id}`);
         setFormData(response.data);
         console.log("data from backend",response.data)
       } catch (error) {
@@ -110,7 +110,7 @@ console.log("id", id)
     });
 
     try {
-      await axios.put(`http://localhost:5000/api/properties/${id}`, formDataToSend, {
+      await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/properties/${id}`, formDataToSend, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

@@ -9,13 +9,13 @@ const DeleteOfferModal = ({ show, handleClose }) => {
   const [selectedOffer, setSelectedOffer] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/categories")
+    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/categories`)
       .then((res) => setCategories(res.data))
       .catch((err) => console.error("Error fetching categories:", err));
   }, []);
 
   const fetchOffers = (category) => {
-    axios.get(`http://localhost:5000/api/offers/category/${category}`)
+    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/offers/category/${category}`)
       .then((res) => setOffers(res.data))
       .catch((err) => console.error("Error fetching offers:", err));
   };
@@ -27,7 +27,7 @@ const DeleteOfferModal = ({ show, handleClose }) => {
     }
 
     try {
-      await axios.delete(`http://localhost:5000/api/offers/delete/${selectedOffer}`);
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/offers/delete/${selectedOffer}`);
       alert("Offer deleted successfully!");
       handleClose();
     } catch (error) {

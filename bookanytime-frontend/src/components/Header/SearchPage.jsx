@@ -13,7 +13,7 @@ const SearchPage = () => {
     }
 
     try {
-      const response = await axios.get(`http://localhost:5000/api/properties/search?query=${query}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search?query=${query}`);
       setProperties(response.data);
     } catch (error) {
       console.error("Error fetching search results:", error);

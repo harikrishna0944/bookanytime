@@ -13,7 +13,7 @@ const AddOfferModal = ({ show, handleClose }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/categories")
+    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/categories`)
       .then((res) => setCategories(res.data))
       .catch((err) => console.error("Error fetching categories:", err));
   }, []);
@@ -36,7 +36,7 @@ const AddOfferModal = ({ show, handleClose }) => {
     formData.append("endDate", endDate);
 
     try {
-      await axios.post("http://localhost:5000/api/offers/add", formData, {
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/offers/add`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
             alert("Offer added successfully!");

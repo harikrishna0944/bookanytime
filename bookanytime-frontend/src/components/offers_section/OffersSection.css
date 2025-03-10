@@ -1,0 +1,201 @@
+.offers-section {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  margin-left: 40px; /* Move the entire body to the left */
+}
+
+.offers-section h2 {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+/* Category Filters Container */
+.category-filters-container {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 100;
+  padding: 10px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  width:900px
+  
+}
+
+/* Scrollable Category Filters */
+.category-filters-container .d-flex {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #007bff #f1f1f1;
+}
+
+/* WebKit Scrollbar Styling */
+.category-filters-container .d-flex::-webkit-scrollbar {
+  height: 8px;
+}
+
+.category-filters-container .d-flex::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.category-filters-container .d-flex::-webkit-scrollbar-thumb {
+  background-color: #007bff;
+  border-radius: 10px;
+}
+
+/* Category Buttons */
+.category-filters-container .btn {
+  flex-shrink: 0;
+}
+
+/* Offers Slider */
+.scroll-container-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 150%; /* Increase the width of the slider */
+  margin: auto;
+}
+
+.scroll-container {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #007bff #f1f1f1;
+  width: 150%; /* Increase the width of the slider */
+  padding-bottom: 10px;
+  margin-left: -90px;
+}
+
+.offer-wrapper {
+  flex-shrink: 0;
+  width: 260px; /* Slightly increase the width of each offer box */
+}
+
+.offer-card {
+  width: 100%;
+  height: 300px; /* Increase the height to accommodate larger images */
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.offer-image {
+  width: 100%;
+  height: 180px; /* Increase the height of the image */
+  object-fit: cover;
+}
+
+.offer-name {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.offer-category {
+  font-size: 16px;
+  color: #007bff;
+  margin-bottom: 8px;
+}
+
+.offer-dates {
+  font-size: 14px;
+  color: #555;
+}
+
+/* Scroll Buttons */
+.scroll-btn {
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s;
+  position: absolute;
+  z-index: 2;
+  margin-left: -80px;
+}
+
+.scroll-btn:hover {
+  background-color: #0056b3;
+}
+
+.scroll-btn.left {
+  left: 10px;
+}
+
+.scroll-btn.right {
+  right: 10px;
+}
+
+/* #sample{
+  width: 200px;
+} */
+@media (max-width: 768px) {
+  .offer-wrapper {
+    width: 220px; /* Adjust width for smaller screens */
+  }
+
+  .offer-card {
+    height: 260px; /* Adjust height for smaller screens */
+  }
+
+  .offer-image {
+    height: 140px; /* Adjust image height for smaller screens */
+  }
+
+  .offer-name {
+    font-size: 16px;
+  }
+
+  .offer-category {
+    font-size: 14px;
+  }
+
+  .offer-dates {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .offer-wrapper {
+    width: 200px; /* Adjust width for mobile screens */
+  }
+
+  .offer-card {
+    height: 240px; /* Adjust height for mobile screens */
+  }
+
+  .offer-image {
+    height: 120px; /* Adjust image height for mobile screens */
+  }
+
+  .offer-name {
+    font-size: 14px;
+  }
+
+  .offer-category {
+    font-size: 12px;
+  }
+
+  .offer-dates {
+    font-size: 10px;
+  }
+
+  .scroll-btn {
+    display: none;
+  }
+}

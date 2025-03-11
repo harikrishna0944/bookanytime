@@ -41,7 +41,7 @@ router.post("/", upload.array("images", 5), parseFormData, async (req, res) => {
     const { name, category, description, price, city, address, latitude, longitude, amenities, capacity, whatsappNumber } = req.body;
 
     // Generate image URLs from uploaded files
-    const imageUrls = req.files.map((file) => `http://43.204.53.190:5000/uploads/${file.filename}`);
+    const imageUrls = req.files.map((file) => `https://api.bookanytime.in/uploads/${file.filename}`);
 
     const newProperty = new Property({
       name,

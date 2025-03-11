@@ -213,7 +213,8 @@ const CategoriesList = () => {
                 <div className="category-card">
                   {category.image ? (
                     <img
-                      src={`${import.meta.env.VITE_API_BASE_URL}${category.image}`}
+          
+		      src={`${import.meta.env.VITE_API_BASE_URL}${category.image}`}
                       alt={category.name}
                       className="img-fluid rounded"
                     />

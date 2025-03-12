@@ -36,12 +36,12 @@ const parseFormData = (req, res, next) => {
 
 // @route   POST /api/properties
 // @desc    Add a new property with image upload
-router.post("/", upload.array("images", 5), parseFormData, async (req, res) => {
+router.post("/", upload.array("images", 20), parseFormData, async (req, res) => {
   try {
     const { name, category, description, price, city, address, latitude, longitude, amenities, capacity, whatsappNumber } = req.body;
 
     // Generate image URLs from uploaded files
-    const imageUrls = req.files.map((file) => `https://api.bookanytime.in/uploads/${file.filename}`);
+    const imageUrls = req.files.map((file) => `https://api.bookanytime.in:5000/uploads/${file.filename}`);
 
     const newProperty = new Property({
       name,
@@ -68,7 +68,7 @@ router.post("/", upload.array("images", 5), parseFormData, async (req, res) => {
 
 
 // @desc   update the property
-router.put("/:id", upload.array("images", 5), async (req, res) => {
+router.put("/:id", upload.array("images", 20), async (req, res) => {
   try {
     const propertyId = req.params.id;
     console.log(propertyId)
@@ -92,7 +92,8 @@ router.put("/:id", upload.array("images", 5), async (req, res) => {
 
     // Handle image uploads (if new images are provided)
     if (req.files && req.files.length > 0) {
-      const imageUrls = req.files.map(file => `uploads/${file.originalname}`); // Replace with actual cloud storage logic
+     // const imageUrls = req.files.map(file => `https://api.bookanytime.in:5000/uploads/${file.originalname}`); // Replace with actual cloud storage logic
+      const imageUrls = req.files.map((file) => `https://api.bookanytime.in:5000/uploads/${file.filename}`);
       updatedData.images = imageUrls;
     }
 

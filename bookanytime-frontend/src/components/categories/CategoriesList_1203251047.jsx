@@ -1,51 +1,33 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Container, Row, Col, Spinner, Alert } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 
 const CategoriesList = () => {
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     axios
       .get(`${import.meta.env.VITE_API_BASE_URL}/api/categories`)
-      .then((response) => {
-        setCategories(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching categories:", error);
-        setError("Failed to fetch categories.");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      .then((response) => setCategories(response.data))
+      .catch((error) => console.error("Error fetching categories:", error));
   }, []);
-
-  const handleNavigation = useCallback(
-    (categoryName) => {
-      navigate(`/${categoryName}`);
-    },
-    [navigate]
-  );
 
   return (
     <Container fluid className="p-3 text-center">
       <style>
         {`
+          /* Default style */
           .categories-container {
             overflow-x: auto;
             scroll-behavior: smooth;
-            //padding: 2px;
-            //border-radius: 8px;
+            padding: 10px;
+            border-radius: 8px;
             transition: width 0.5s ease-in-out;
-            margin-left: 0px;
-            margin-right: 0px;
-            margin-top: 0px;
+            //margin-left: 20px;
+            //margin-right: 30px;
             white-space: nowrap;
-            margin-top: -40px;
           }
 
           .category-wrapper {
@@ -86,26 +68,23 @@ const CategoriesList = () => {
             white-space: nowrap;
           }
 
+          /* Media Queries */
           @media (max-width: 1024px) {
             .categories-container {
               width: 70%;
               max-width: 600px;
-              margin-top: -40px;
             }
           }
 
           @media (max-width: 768px) {
             .categories-container {
-              width: 80%;
+              width:80%;
               max-width: 500px;
-              //max-height: 400px;
-              margin-top: -40px;
-              padding: 2px;
             }
             .category-card {
               width: 100px;
               height: 100px;
-              padding: 5px;
+              padding: 2px;
             }
             .category-name {
               font-size: 12px;
@@ -126,25 +105,25 @@ const CategoriesList = () => {
               font-size: 10px;
             }
           }
-          .categories-container::-webkit-scrollbar {
-            display: none;
-          }
         `}
       </style>
 
+      {/* Scrollable container with dynamic width & smooth effect */}
       <div className="categories-container mx-auto">
-        {loading ? (
-          <Spinner animation="border" variant="primary" />
-        ) : error ? (
-          <Alert variant="danger">{error}</Alert>
-        ) : categories.length > 0 ? (
-          <Row className="g-3 flex-nowrap">
-            {categories.map((category) => (
+        <Row className="g-3 flex-nowrap">
+          {categories.length > 0 ? (
+            categories.map((category) => (
               <Col key={category._id} xs="auto">
-                <div className="category-wrapper" onClick={() => handleNavigation(category.name)}>
+                <div
+                  className="category-wrapper"
+                  onClick={() => navigate(`/${category.name}`)}
+                >
                   <div className="category-card">
                     {category.image ? (
-                      <img src={`${import.meta.env.VITE_API_BASE_URL}${category.image}`} alt={category.name} />
+                      <img
+                        src={`${import.meta.env.VITE_API_BASE_URL}${category.image}`}
+                        alt={category.name}
+                      />
                     ) : (
                       <div className="text-muted text-center">No Image</div>
                     )}
@@ -152,14 +131,15 @@ const CategoriesList = () => {
                   <h6 className="category-name">{category.name}</h6>
                 </div>
               </Col>
-            ))}
-          </Row>
-        ) : (
-          <p className="text-muted">No categories available</p>
-        )}
+            ))
+          ) : (
+            <p className="text-muted">No categories available</p>
+          )}
+        </Row>
       </div>
     </Container>
   );
 };
 
 export default CategoriesList;
+

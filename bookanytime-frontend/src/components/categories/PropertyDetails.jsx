@@ -36,7 +36,7 @@ const PropertyDetails = ( ) => {
       })
       .catch((error) => {
         console.error("Error fetching property details:", error);
-        setError("Failed to load property details.");
+        setError("No propertys Avalible.");
         setLoading(false);
       });
   }, [id]);

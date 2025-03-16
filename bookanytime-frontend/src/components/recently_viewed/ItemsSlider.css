@@ -1,6 +1,6 @@
 .items-slider-container {
   background-color: var(--sp-background-color);
-  box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
+  /* box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68); */
   padding: 20px;
   margin-bottom: 20px;
   margin-right: 120px;
@@ -99,12 +99,12 @@
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .item-container .card {
-    width: 220px; /* Adjust width for smaller screens */
-    height: 260px; /* Adjust height for smaller screens */
+    width: 200px; 
+    height: 260px; 
   }
 
   .item-container .card img {
-    height: 140px; /* Adjust image height for smaller screens */
+    height: 140px; 
   }
 
   .item-container .card-title {
@@ -126,7 +126,7 @@
 
 @media (max-width: 480px) {
   .item-container .card {
-    width: 200px; /* Adjust width for mobile screens */
+    width: 200px; 
     height: 240px; /* Adjust height for mobile screens */
   }
 

@@ -130,12 +130,12 @@ router.get("/", async (req, res) => {
       filter.category = { $regex: category, $options: "i" }; // Case-insensitive search by category
     }
 
-    const properties = await Property.find(filter, "_id name address images price");
+    const properties = await Property.find(filter);
 
     if (properties.length === 0) {
       return res.status(404).json({ message: "No properties found" });
     }
-
+    console.log("Backend Properties Data:", properties);
     res.json(properties);
   } catch (error) {
     console.error("Error fetching properties:", error);

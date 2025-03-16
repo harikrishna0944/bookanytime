@@ -5,7 +5,7 @@ import Offers from "./offers_section/OffersSection"
 function Body() {
   return (
     <div className="body-container" style={{paddingTop:"80px", marginTop:"20px", width:"1350px"}}>
-      <Categories />  {/* ✅ Categories should be inside here */}
+      <Categories />  
       <RecentlyViewed />
       <Offers />
     </div>

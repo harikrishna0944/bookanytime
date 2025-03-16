@@ -7,7 +7,7 @@ const UpdatePropertyPage = () => {
   const { id } = useParams(); // Get property ID from URL
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-console.log("id", id)
+
   const [formData, setFormData] = useState({
     name: "",
     category: "",
@@ -18,8 +18,10 @@ console.log("id", id)
     latitude: "",
     longitude: "",
     amenities: [],
-    adults: "",
-    bedrooms: "",
+    capacity: {
+      adults: "",
+      bedrooms: "",
+    },
     images: [],
     whatsappNumber: ""
   });
@@ -36,15 +38,18 @@ console.log("id", id)
       .then((res) => setCategories(res.data))
       .catch((err) => console.error("Error fetching categories:", err));
   }, []);
-  
+
   // Fetch property details when component mounts
   useEffect(() => {
     const fetchProperty = async () => {
       setLoading(true);
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/${id}`);
-        setFormData(response.data);
-        console.log("data from backend",response.data)
+        setFormData({
+          ...response.data,
+          capacity: response.data.capacity || { adults: "", bedrooms: "" }, // Ensure capacity is always an object
+        });
+        console.log("data from backend", response.data);
       } catch (error) {
         console.error("Error fetching property:", error);
         alert("Failed to load property data.");
@@ -59,7 +64,19 @@ console.log("id", id)
   // Handle Form Change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Check if the field is nested within capacity
+    if (name === "adults" || name === "bedrooms") {
+      setFormData((prev) => ({
+        ...prev,
+        capacity: {
+          ...prev.capacity,
+          [name]: value,
+        },
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   // Handle Image Selection
@@ -104,10 +121,14 @@ console.log("id", id)
 
     // Append other fields
     Object.keys(formData).forEach((key) => {
-      if (key !== "images") {
+      if (key !== "images" && key !== "capacity") {
         formDataToSend.append(key, formData[key]);
       }
     });
+
+    // Append nested capacity fields
+    formDataToSend.append("capacity[adults]", formData.capacity.adults);
+    formDataToSend.append("capacity[bedrooms]", formData.capacity.bedrooms);
 
     try {
       await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/properties/${id}`, formDataToSend, {
@@ -138,22 +159,14 @@ console.log("id", id)
             </Grid>
 
             {/* Category */}
-            {/* <Grid item xs={12} sm={6}>
-              <TextField select fullWidth label="Category" name="category" value={formData.category} onChange={handleChange} required>
-                <MenuItem value="Farmhouse">Farmhouse</MenuItem>
-                <MenuItem value="Banquet Hall">Banquet Hall</MenuItem>
-                <MenuItem value="Service Apartment">Service Apartment</MenuItem>
-              </TextField>
-            </Grid> */}
-
             <Grid item xs={12} sm={6}>
-            <TextField select fullWidth label="Category" name="category" value={formData.category} onChange={handleChange} required>
+              <TextField select fullWidth label="Category" name="category" value={formData.category} onChange={handleChange} required>
+                {categories.map((option) => (
+                  <MenuItem key={option._id} value={option.name}>{option.name}</MenuItem>
+                ))}
+              </TextField>
+            </Grid>
 
-              {categories.map((option) => (
-                <MenuItem key={option._id} value={option.name}>{option.name}</MenuItem>
-              ))}
-            </TextField>
-          </Grid>
             {/* Description */}
             <Grid item xs={12}>
               <TextField fullWidth label="Description" name="description" multiline rows={3} value={formData.description} onChange={handleChange} required />
@@ -207,13 +220,38 @@ console.log("id", id)
               </Grid>
             )}
 
+            {/* Bedrooms */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                type="number"
+                label="Bedrooms"
+                name="bedrooms"
+                value={formData.capacity.bedrooms}
+                onChange={handleChange}
+                required
+              />
+            </Grid>
+
+            {/* Adults */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                type="number"
+                label="Adults"
+                name="adults"
+                value={formData.capacity.adults}
+                onChange={handleChange}
+                required
+              />
+            </Grid>
+
             {/* Image Upload */}
             <Grid item xs={12}>
               <input type="file" multiple ref={fileInputRef} onChange={handleImageChange} />
-
             </Grid>
             <Grid item xs={12}>
-            {formData.images}
+              {formData.images}
             </Grid>
 
             {/* WhatsApp Number */}
@@ -227,8 +265,8 @@ console.log("id", id)
                 {loading ? <CircularProgress size={24} /> : "Update Property"}
               </Button>
               <Button variant="outlined" color="default" onClick={() => navigate("/admin/properties")}>
-              Go Back
-            </Button>
+                Go Back
+              </Button>
             </Grid>
           </Grid>
         </form>

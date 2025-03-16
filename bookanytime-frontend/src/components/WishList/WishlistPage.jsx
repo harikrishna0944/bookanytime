@@ -3,6 +3,7 @@ import axios from "axios";
 import { Image, Spinner, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import heartImage from "../../assets/heartImage.jpg"; // Default image for empty wishlists
+import "./WishlistPage.css"
 
 const WishlistPage = () => {
   const [wishlists, setWishlists] = useState([]);
@@ -57,7 +58,7 @@ const WishlistPage = () => {
 
   if (loading) {
     return (
-      <div className="text-center mt-5">
+      <div className="loading-container">
         <Spinner animation="border" variant="primary" />
         <p>Loading wishlists...</p>
       </div>
@@ -66,58 +67,37 @@ const WishlistPage = () => {
 
   if (error) {
     return (
-      <div className="text-center mt-5">
+      <div className="error-container">
         <Alert variant="danger">{error}</Alert>
       </div>
     );
   }
 
   return (
-    <div className="container mt-4">
-      <h2 className="text-center mb-4">My Wishlists</h2>
+    <div className="wishlist-container">
+      <h2 className="wishlist-heading">My Wishlists</h2>
 
       {wishlists.length > 0 ? (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-            gap: "20px",
-            padding: "10px",
-          }}
-        >
+        <div className="wishlist-grid">
           {wishlists.map((wishlist) => (
             <div
               key={wishlist._id}
-              style={{
-                textAlign: "center",
-                cursor: "pointer",
-                border: "1px solid #ddd",
-                borderRadius: "10px",
-                padding: "10px",
-                transition: "transform 0.2s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+              className="wishlist-card"
               onClick={() => navigate(`/wishlist/${wishlist._id}`)} // Navigate to wishlist details page
             >
               <Image
                 src={wishlist.lastPropertyImage || heartImage} // Show last property image or default heart image
                 alt={wishlist.name}
                 thumbnail
-                style={{
-                  width: "100%",
-                  height: "150px",
-                  objectFit: "cover",
-                  borderRadius: "10px",
-                }}
+                className="wishlist-image"
               />
-              <h5 className="mt-2">{wishlist.name}</h5>
-              <p className="text-muted">{wishlist.properties.length} Saved</p>
+              <h5 className="wishlist-name">{wishlist.name}</h5>
+              <p className="wishlist-count">{wishlist.properties.length} Saved</p>
             </div>
           ))}
         </div>
       ) : (
-        <p className="text-center">No wishlists found.</p>
+        <p className="no-wishlists">No wishlists found.</p>
       )}
     </div>
   );

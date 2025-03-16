@@ -1,13 +1,18 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Container, Row, Col, Spinner, Alert } from "react-bootstrap";
+import { Container, Spinner, Alert } from "react-bootstrap";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import "./CategoryList.css";
 
 const CategoriesList = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
   const navigate = useNavigate();
+  const containerRef = useRef(null);
 
   useEffect(() => {
     axios
@@ -31,131 +36,87 @@ const CategoriesList = () => {
     [navigate]
   );
 
+  const checkScroll = useCallback(() => {
+    if (containerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
+      console.log({ scrollLeft, scrollWidth, clientWidth }); // Debugging
+      setShowLeftArrow(scrollLeft > 10); // Add a small threshold
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10); // Add a small threshold
+    }
+  }, []);
+
+  const handleScrollLeft = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollBy({ left: -200, behavior: "smooth" });
+    }
+  };
+
+  const handleScrollRight = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollBy({ left: 200, behavior: "smooth" });
+    }
+  };
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("scroll", checkScroll);
+      window.addEventListener("resize", checkScroll); // Add resize listener
+      checkScroll(); // Initial check
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", checkScroll);
+        window.removeEventListener("resize", checkScroll); // Cleanup resize listener
+      }
+    };
+  }, [checkScroll]);
+
   return (
-    <Container fluid className="p-3 text-center">
-      <style>
-        {`
-          .categories-container {
-            overflow-x: auto;
-            scroll-behavior: smooth;
-            //padding: 2px;
-            //border-radius: 8px;
-            transition: width 0.5s ease-in-out;
-            margin-left: 0px;
-            margin-right: 0px;
-            margin-top: 0px;
-            white-space: nowrap;
-            margin-top: -40px;
-          }
-
-          .category-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            transition: transform 0.3s ease-in-out;
-          }
-
-          .category-wrapper:hover {
-            transform: scale(1.05);
-          }
-
-          .category-card {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgb(236, 229, 229);
-            border-radius: 8px;
-            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-            width: 120px;
-            height: 120px;
-            padding: 10px;
-          }
-
-          .category-card img {
-            max-width: 80%;
-            height: auto;
-            border-radius: 6px;
-          }
-
-          .category-name {
-            margin-top: 8px;
-            font-size: 14px;
-            font-weight: bold;
-            text-align: center;
-            white-space: nowrap;
-          }
-
-          @media (max-width: 1024px) {
-            .categories-container {
-              width: 70%;
-              max-width: 600px;
-              margin-top: -40px;
-            }
-          }
-
-          @media (max-width: 768px) {
-            .categories-container {
-              width: 80%;
-              max-width: 500px;
-              //max-height: 400px;
-              margin-top: -40px;
-              padding: 2px;
-            }
-            .category-card {
-              width: 100px;
-              height: 100px;
-              padding: 5px;
-            }
-            .category-name {
-              font-size: 12px;
-            }
-          }
-
-          @media (max-width: 480px) {
-            .categories-container {
-              width: 90%;
-              max-width: 350px;
-            }
-            .category-card {
-              width: 80px;
-              height: 80px;
-              padding: 4px;
-            }
-            .category-name {
-              font-size: 10px;
-            }
-          }
-          .categories-container::-webkit-scrollbar {
-            display: none;
-          }
-        `}
-      </style>
-
-      <div className="categories-container mx-auto">
-        {loading ? (
-          <Spinner animation="border" variant="primary" />
-        ) : error ? (
-          <Alert variant="danger">{error}</Alert>
-        ) : categories.length > 0 ? (
-          <Row className="g-3 flex-nowrap">
-            {categories.map((category) => (
-              <Col key={category._id} xs="auto">
-                <div className="category-wrapper" onClick={() => handleNavigation(category.name)}>
-                  <div className="category-card">
-                    {category.image ? (
-                      <img src={`${import.meta.env.VITE_API_BASE_URL}${category.image}`} alt={category.name} />
-                    ) : (
-                      <div className="text-muted text-center">No Image</div>
-                    )}
-                  </div>
-                  <h6 className="category-name">{category.name}</h6>
+    <Container fluid className="p-3 text-center position-relative">
+      <div className="position-relative">
+        {showLeftArrow && (
+          <button className="scroll-arrow left" onClick={handleScrollLeft}>
+            <ChevronLeft size={16} />
+          </button>
+        )}
+        <div
+          className="categories-container"
+          ref={containerRef}
+        >
+          {loading ? (
+            <Spinner animation="border" variant="primary" />
+          ) : error ? (
+            <Alert variant="danger">{error}</Alert>
+          ) : categories.length > 0 ? (
+            categories.map((category) => (
+              <div
+                key={category._id}
+                className="category-wrapper"
+                onClick={() => handleNavigation(category.name)}
+              >
+                <div className="category-card">
+                  {category.image ? (
+                    <img
+                      src={`${import.meta.env.VITE_API_BASE_URL}${category.image}`}
+                      alt={category.name}
+                      draggable="false"
+                    />
+                  ) : (
+                    <div className="text-muted text-center">No Image</div>
+                  )}
                 </div>
-              </Col>
-            ))}
-          </Row>
-        ) : (
-          <p className="text-muted">No categories available</p>
+                <h6 className="category-name">{category.name}</h6>
+              </div>
+            ))
+          ) : (
+            <p className="text-muted">No categories available</p>
+          )}
+        </div>
+        {showRightArrow && (
+          <button className="scroll-arrow right" onClick={handleScrollRight}>
+            <ChevronRight size={16} />
+          </button>
         )}
       </div>
     </Container>

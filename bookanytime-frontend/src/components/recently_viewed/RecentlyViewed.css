@@ -1,140 +1,117 @@
+/* Ensure section is always visible */
 .recently-viewed-section {
-  padding: 20px;
-  /* width: 200%; */
-  margin: 0 auto;
-  margin-left: 10px; /* Move the entire body to the left */
-
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    padding: 10px;
+    width: 100%;
+    position: relative;
+    left: 3%;
+    margin-top: -20px;
 }
 
-.recently-viewed-section h2 {
-  font-size: 24px;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 15px;
+/* Wrapper to ensure flex layout */
+.card-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
 }
 
-/* Recently Viewed Slider */
-.scroll-container-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  width: 150%; /* Increase the width of the slider */
-  margin: auto;
+/* Card styling */
+.recently-viewed-card {
+    width: 260px;
+    height: 300px;
+    border-radius: 10px;
+    overflow: hidden;
+    /* box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); */
+    transition: transform 0.3s ease-in-out;
 }
 
-.scroll-container {
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: #007bff #f1f1f1;
-  width: 150%; /* Increase the width of the slider */
-  padding-bottom: 10px;
-  margin-left: -90px;
-  /* margin-right: 120px; */
+.recently-viewed-card:hover {
+    transform: scale(1.05);
 }
 
-.offer-wrapper {
-  flex-shrink: 0;
-  width: 260px; /* Slightly increase the width of each offer box */
+/* Card image */
+.card-image {
+    height: 180px;
+    object-fit: cover;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 }
 
-.offer-card {
-  width: 100%;
-  height: 300px; /* Increase the height to accommodate larger images */
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  overflow: hidden;
+/* Content inside card */
+.card-content {
+    padding: 10px;
+    text-align: center;
 }
 
-.offer-image {
-  width: 100%;
-  height: 180px; /* Increase the height of the image */
-  object-fit: cover;
-}
-
-.offer-name {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 8px;
-}
-
-.offer-category {
-  font-size: 16px;
-  color: #007bff;
-  margin-bottom: 8px;
-}
-
-.offer-location {
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 8px;
-}
-
-.offer-rating {
-  font-size: 14px;
-  color: #555;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .offer-wrapper {
-    width: 220px; /* Adjust width for smaller screens */
-  }
-
-  .offer-card {
-    height: 260px; /* Adjust height for smaller screens */
-  }
-
-  .offer-image {
-    height: 140px; /* Adjust image height for smaller screens */
-  }
-
-  .offer-name {
+/* Title, Category, Location */
+.hotel-title {
+    font-weight: bold;
     font-size: 16px;
-  }
-
-  .offer-category {
-    font-size: 14px;
-  }
-
-  .offer-location {
-    font-size: 12px;
-  }
-
-  .offer-rating {
-    font-size: 12px;
-  }
+    color: #333;
+    margin-bottom: 5px;
 }
 
-@media (max-width: 480px) {
-  .offer-wrapper {
-    width: 200px; /* Adjust width for mobile screens */
-  }
-
-  .offer-card {
-    height: 240px; /* Adjust height for mobile screens */
-  }
-
-  .offer-image {
-    height: 120px; /* Adjust image height for mobile screens */
-  }
-
-  .offer-name {
+.hotel-category {
+    font-weight: bold;
     font-size: 14px;
-  }
+    color: #007bff;
+    margin-bottom: 5px;
+}
 
-  .offer-category {
-    font-size: 12px;
-  }
+.hotel-location {
+    font-size: 14px;
+    color: #666;
+}
 
-  .offer-location {
-    font-size: 10px;
-  }
+/* Rating */
+.hotel-rating {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    color: #ffa500;
+}
 
-  .offer-rating {
-    font-size: 10px;
-  }
+.star {
+    font-size: 18px;
+    color: #ffc107;
+    margin-right: 5px;
+}
+
+.rating-text {
+    font-size: 14px;
+    color: #444;
+}
+
+/* Responsive for mobile */
+@media (max-width: 768px) {
+    .recently-viewed-section {
+        display: flex !important;
+        overflow-x: auto;
+        white-space: nowrap;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        margin-left:460px;
+    }
+
+    .recently-viewed-section::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    .card-wrapper {
+        min-width: 260px;
+        margin-right: 10px;
+    }
+
+    .recently-viewed-card {
+        width: 220px;
+        height: 280px;
+    }
+
+    .card-image {
+        height: 160px;
+    }
 }

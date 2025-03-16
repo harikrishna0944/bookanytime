@@ -36,7 +36,7 @@ const parseFormData = (req, res, next) => {
 
 // @route   POST /api/properties
 // @desc    Add a new property with image upload
-router.post("/", upload.array("images", 5), parseFormData, async (req, res) => {
+router.post("/", upload.array("images", 15), parseFormData, async (req, res) => {
   try {
     const { name, category, description, price, city, address, latitude, longitude, amenities, capacity, whatsappNumber } = req.body;
 
@@ -68,13 +68,15 @@ router.post("/", upload.array("images", 5), parseFormData, async (req, res) => {
 
 
 // @desc   update the property
-router.put("/:id", upload.array("images", 5), async (req, res) => {
+router.put("/:id", upload.array("images", 10), async (req, res) => {
   try {
     const propertyId = req.params.id;
-    console.log(propertyId)
-    const { name, category, description, price, city, address, latitude, longitude, amenities, adults, bedrooms, whatsappNumber } = req.body;
-    
-    // Convert numeric fields
+    console.log("Property ID:", propertyId);
+
+    // Extract fields from the request body
+    const { name, category, description, price, city, address, latitude, longitude, amenities, capacity, whatsappNumber } = req.body;
+
+    // Convert numeric fields and handle nested capacity object
     const updatedData = {
       name,
       category,
@@ -84,15 +86,15 @@ router.put("/:id", upload.array("images", 5), async (req, res) => {
       address,
       latitude: parseFloat(latitude),
       longitude: parseFloat(longitude),
-      amenities: amenities ? amenities.split(",") : [],
-      adults: Number(adults),
-      bedrooms: Number(bedrooms),
+      amenities: Array.isArray(amenities) ? amenities : amenities.split(","), // Handle both array and string
+      adults: Number(capacity?.adults || 0), // Extract from nested capacity object
+      bedrooms: Number(capacity?.bedrooms || 0), // Extract from nested capacity object
       whatsappNumber,
     };
 
     // Handle image uploads (if new images are provided)
     if (req.files && req.files.length > 0) {
-      const imageUrls = req.files.map(file => `uploads/${file.originalname}`); // Replace with actual cloud storage logic
+      const imageUrls = req.files.map((file) => `uploads/${file.originalname}`); // Replace with actual cloud storage logic
       updatedData.images = imageUrls;
     }
 
@@ -108,7 +110,7 @@ router.put("/:id", upload.array("images", 5), async (req, res) => {
     console.error("Error updating property:", error);
     res.status(500).json({ error: "Server error. Failed to update property." });
   }
-});
+});                    
 
 
 
@@ -129,7 +131,7 @@ router.get("/", async (req, res) => {
       filter.category = { $regex: category, $options: "i" }; // Case-insensitive search by category
     }
 
-    const properties = await Property.find(filter, "_id name address images price");
+    const properties = await Property.find(filter);
 
     if (properties.length === 0) {
       return res.status(404).json({ message: "No properties found" });
@@ -214,25 +216,36 @@ router.get("/search-locations", async (req, res) => {
 
 
 
-// to fetch single property to display in update page
-router.get("/:id", async (req, res) => {
+// Fetch a single property by ID
+// router.get("/:id", async (req, res) => {
+//   try {
+//     const property = await Property.findById(req.params.id).select("name price address capacity amenities images");
+
+//     if (!property) {
+//       return res.status(404).json({ error: "Property not found" });
+//     }
+
+//     // Log the full property object
+//     console.log("Backend Property Data:", property);
+
+//     // Send the full property object
+//     res.json(property);
+//   } catch (error) {
+//     console.error("Error fetching property:", error);
+//     res.status(500).json({ error: "Server error" });
+//   }
+// });
+router.get("/", async (req, res) => {
   try {
-    const property = await Property.findById(req.params.id);
+    const properties = await Property.find({ category: req.query.category }).select(
+      "name price address capacity amenities images category description city latitude longitude whatsappNumber"
+    );
 
-    if (!property) {
-      return res.status(404).json({ error: "Property not found" });
-    }
-
-    res.json(property);
+    console.log("Backend Properties Data:", properties); // Log the full properties array
+    res.json(properties); // Send the full properties array
   } catch (error) {
-    console.error("Error fetching property:", error);
+    console.error("Error fetching properties:", error);
     res.status(500).json({ error: "Server error" });
   }
 });
-
-
-
-
-
-
 module.exports = router;

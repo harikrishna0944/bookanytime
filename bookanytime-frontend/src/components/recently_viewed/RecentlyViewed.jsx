@@ -18,18 +18,18 @@ const RecentlyViewed = () => {
     <div className="recently-viewed-section">
       <ItemsSlider title="Recently Viewed">
         {topDealsItems.map((hotel, index) => (
-          <span key={index} style={{ height: "300px" }}>
-            <CCard style={{ width: '260px', height: "300px" }}>
+          <span key={index} style={{ height: "270px"  }}>
+            <CCard style={{ width: '200px', height: "250px" }}>
               <CCardImage orientation="top" src={hotel.image} style={{ height: "180px", objectFit: "cover" }} />
               <CCardBody>
-                <div className="p-4">
+                <div >
                   <h5 className="font-bold text-lg text-gray-800 mb-1">{hotel.title}</h5>
                   <h6 className="font-bold text-lg text-blue-600">{hotel.category}</h6>
                   <p className="text-gray-600 mb-2">{hotel.location}</p>
                   <div className="flex justify-between items-center">
                     <div className="flex items-center">
-                      <span className="text-yellow-500">★</span>
-                      <span className="ml-1 text-gray-700">{hotel.rating}</span>
+                      {/* <span className="text-yellow-500">★</span> */}
+                      {/* <span className="ml-1 text-gray-700">{hotel.rating}</span> */}
                     </div>
                   </div>
                 </div>

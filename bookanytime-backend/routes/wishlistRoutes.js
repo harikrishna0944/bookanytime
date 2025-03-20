@@ -1,18 +1,54 @@
 const express = require("express");
 const router = express.Router();
 const Wishlist = require("../models/Wishlist");
+const mongoose = require("mongoose");
+// Get a single wishlist by wishlistId
+// Fetch a single wishlist by wishlistId
+router.get("/wishlistId/:wishlistId", async (req, res) => {
+  try {
+    const { wishlistId } = req.params;
+
+    // Validate wishlistId format
+    if (!mongoose.Types.ObjectId.isValid(wishlistId)) {
+      return res.status(400).json({ error: "Invalid wishlist ID" });
+    }
+
+    // Find the wishlist by its ID
+    const wishlist = await Wishlist.findById(wishlistId);
+
+    console.log("wishlist from backend", wishlist);
+
+    if (!wishlist) {
+      return res.status(404).json({ error: "Wishlist not found" });
+    }
+
+    // Ensure properties is an array (default to empty array if undefined)
+    if (!wishlist.properties || !Array.isArray(wishlist.properties)) {
+      wishlist.properties = [];
+    }
+
+    res.json(wishlist); // Return the wishlist object
+  } catch (error) {
+    console.error("Error fetching wishlist:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 // Get user wishlists
 router.get("/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
     const wishlists = await Wishlist.find({ userId });
+    // console.log("USERSS", wishlists)
     res.json(wishlists);
   } catch (error) {
     console.error("Error fetching wishlists:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
 
 // Create a new wishlist
 router.post("/create", async (req, res) => {
@@ -85,6 +121,26 @@ router.delete("/:userId/remove", async (req, res) => {
     } catch (error) {
       console.error("Error removing from wishlist:", error);
       res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
+  
+  router.delete("/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      console.log("Received ID:", id);
+  
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: "Invalid wishlist ID format" });
+      }
+  
+      const deletedWishlist = await Wishlist.findByIdAndDelete(id);
+      if (!deletedWishlist) {
+        return res.status(404).json({ error: "Wishlist not found" });
+      }
+  
+      res.status(200).json({ message: "Wishlist deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Error deleting wishlist" });
     }
   });
   

@@ -1,44 +1,233 @@
-import React from 'react';
-import { CCard, CCardBody, CCardImage, CCardText } from '@coreui/react';
-import ItemsSlider from './ItemsSlider';
-import './RecentlyViewed.css'; // Import the CSS file
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Container, Spinner, Alert } from "react-bootstrap";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { FaHeart, FaBed, FaUser } from "react-icons/fa";
+import "./RecentlyViewed.css";
+import WishlistModal from "../categories/WishlistModal";
 
 const RecentlyViewed = () => {
-  const topDealsItems = [
-    { title: 'Sunset Valley', category: "Farmhouse", location: 'Banglore, Karnataka', rating: 4.5, image: 'https://r1imghtlak.mmtcdn.com/a7337cd0748a11eb9b540242ac110005.jpg' },
-    { title: 'Paradise Banquet', category: "Banquet Hall", location: 'Hyderabad, Telangana', rating: 4.2, image: 'https://www.wdesignhub.com/wp-content/uploads/2021/04/Banquet-Hall-Designing-7.jpg' },
-    { title: 'Zmark', category: "Service Apartment", location: 'Vijayawada, Telangana', rating: 4.7, image: 'https://images.adsttc.com/media/images/66f6/0501/2684/7b25/6132/fe3e/newsletter/taiyo-service-apartment-ho-khue-architects_1.jpg?1727399203' },
-    { title: 'Gather Hub', category: "Event Space", location: 'Mysore, Karnataka', rating: 4.3, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0LjoqAEABMDkIwCg8rVo-SsIxzZB9-jt0_w&s' },
-    { title: 'Sunset Valley', category: "Stay cations", location: 'Hyderabad, Telangana', rating: 4.6, image: 'https://images.everydayhealth.com/images/infectious-diseases/coronavirus/how-to-staycation-during-a-pandemic-alt-722x406.jpg' },
-    { title: 'Hillside Hens', category: "FarmHouse", location: 'Miami', rating: 4.4, image: 'https://media.istockphoto.com/id/879361282/photo/typical-wooden-small-farm-house-in-victorian-style-in-williamstown.jpg?s=612x612&w=0&k=20&c=tMtLuiMyOtRaAucO5SiHJysHAuQtIKyKPtI0sy2izyw=' },
-    { title: 'Vishali Banquet', category: "Banquet Hall", location: 'Banglore, Karnataka', rating: 4.8, image: 'https://i.pinimg.com/564x/c0/0d/c7/c00dc727f83a12e61d91e3d163042c65.jpg' },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
+  const [isWishlisted, setIsWishlisted] = useState({});
+  const navigate = useNavigate();
+  const containerRef = useRef(null);
+  const [recentlyViewed, setRecentlyViewed] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedPropertyId, setSelectedPropertyId] = useState(null);
+  const [userId, setUserId] = useState(null);
+
+
+
+  useEffect(() => {
+    setLoading(true);
+    setError("");
+  
+    try {
+      // const now = Date.now();
+      let viewed = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+      // viewed = viewed.filter((prop) => now - prop.timestamp < 2 * 60 * 1000);
+      setRecentlyViewed(viewed);
+    } catch (err) {
+      setError("Failed to load recently viewed properties.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+  
+  // Get user ID from localStorage
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    setUserId(user ? user.id : null);
+  }, []);
+
+// Fetch wishlist status when recentlyViewed is updated
+useEffect(() => {
+  if (!userId || recentlyViewed.length === 0) return;
+
+  const fetchWishlists = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_BASE_URL}/api/wishlist/${userId}`
+      );
+      const wishlists = response.data;
+      const wishlistStatus = {};
+
+      recentlyViewed.forEach((property) => {
+        const propertyExists = wishlists.some((wishlist) =>
+          wishlist.properties.includes(property.id) // Ensure 'property.id' matches API response
+        );
+        wishlistStatus[property.id] = propertyExists;
+      });
+
+      setIsWishlisted(wishlistStatus);
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
+    }
+  };
+
+  fetchWishlists();
+}, [userId, recentlyViewed]); // Ensure `recentlyViewed` is populated before fetching wishlist
+
+
+  // Handle wishlist click
+  const handleWishlistClick = async (propertyId) => {
+    setSelectedPropertyId(propertyId);
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wishlist/${userId}`);
+      const wishlists = response.data;
+
+      const wishlistWithProperty = wishlists.find((wishlist) =>
+        wishlist.properties.includes(propertyId)
+      );
+
+      if (wishlistWithProperty) {
+        await removeFromWishlist(propertyId, wishlistWithProperty.name);
+      } else {
+        setShowModal(true);
+      }
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
+    }
+  };
+
+  // Remove property from wishlist
+  const removeFromWishlist = async (propertyId, wishlistName) => {
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/wishlist/${userId}/remove`, {
+        headers: { "Content-Type": "application/json" },
+        data: { propertyId, wishlistName },
+      });
+
+      setIsWishlisted((prev) => ({ ...prev, [propertyId]: false }));
+      alert(`Property has been removed from "${wishlistName}".`);
+    } catch (error) {
+      console.error("Error removing from wishlist:", error);
+      alert("Failed to remove the property. Please try again.");
+    }
+  };
+
+  // Update wishlist status
+  const handleWishlistUpdate = (propertyId) => {
+    setIsWishlisted((prev) => ({ ...prev, [propertyId]: true }));
+  };
+
+
+  const checkScroll = useCallback(() => {
+    if (containerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
+      setShowLeftArrow(scrollLeft > 10);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  }, []);
+
+  const handleScrollLeft = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollBy({ left: -200, behavior: "smooth" });
+    }
+  };
+
+  const handleScrollRight = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollBy({ left: 200, behavior: "smooth" });
+    }
+  };
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("scroll", checkScroll);
+      window.addEventListener("resize", checkScroll);
+      checkScroll();
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", checkScroll);
+        window.removeEventListener("resize", checkScroll);
+      }
+    };
+  }, [checkScroll]);
 
   return (
-    <div className="recently-viewed-section">
-      <ItemsSlider title="Recently Viewed">
-        {topDealsItems.map((hotel, index) => (
-          <span key={index} style={{ height: "270px"  }}>
-            <CCard style={{ width: '200px', height: "250px" }}>
-              <CCardImage orientation="top" src={hotel.image} style={{ height: "180px", objectFit: "cover" }} />
-              <CCardBody>
-                <div >
-                  <h5 className="font-bold text-lg text-gray-800 mb-1">{hotel.title}</h5>
-                  <h6 className="font-bold text-lg text-blue-600">{hotel.category}</h6>
-                  <p className="text-gray-600 mb-2">{hotel.location}</p>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center">
-                      {/* <span className="text-yellow-500">★</span> */}
-                      {/* <span className="ml-1 text-gray-700">{hotel.rating}</span> */}
+    <Container fluid className="recently-viewed-container">
+      <h2 className="recently-viewed-header">Recently Viewed</h2>
+      <div className="recently-viewed-wrapper">
+        {showLeftArrow && (
+          <button className="scroll-arrow left" onClick={handleScrollLeft}>
+            <ChevronLeft size={24} />
+          </button>
+        )}
+        <div className="recently-viewed-items" ref={containerRef}>
+          {loading ? (
+            <Spinner animation="border" variant="primary" />
+          ) : error ? (
+            <Alert variant="danger">{error}</Alert>
+          ) : recentlyViewed.length > 0 ? (
+            recentlyViewed.map((property) => (
+              <div
+                key={property.id}
+                className="recently-viewed-item"
+                onClick={() => window.open(`/property/${property.id}`, "_blank")}
+              >
+                <div className="recently-viewed-card">
+                  {/* Property Image */}
+                  <div className="property-image-container">
+                    <img
+                      // src={property.image && property.image.length > 0 ? property.image[0] : "https://via.placeholder.com/150"}
+                      src={property.image}
+                      alt={property.name}
+                      className="property-image"
+                      draggable="false"
+                    />
+                    {/* Wishlist Icon */}
+                    <div
+                      className="wishlist-icon"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleWishlistClick(property.id);
+                      }}
+                    >
+                      <FaHeart
+                        className={`${isWishlisted[property.id] ? "text-danger" : "text-white"}`}
+                        style={{
+                          fontSize: "1.25rem",
+                          cursor: "pointer",
+                          filter: isWishlisted[property.id] ? "none" : "drop-shadow(0 0 2px rgba(0, 0, 0, 0.5))",
+                        }}
+                      />
                     </div>
                   </div>
+
+                  {/* Property Details */}
+                  <div className="property-details">
+                    <h6 className="property-name">{property.name}</h6>
+                    <p className="property-address">{property.city}</p>
+                  </div>
                 </div>
-              </CCardBody>
-            </CCard>
-          </span>
-        ))}
-      </ItemsSlider>
-    </div>
+              </div>
+            ))
+          ) : (
+            <p className="no-categories-message">No Properties available</p>
+          )}
+        </div>
+        {showRightArrow && (
+          <button className="scroll-arrow right" onClick={handleScrollRight}>
+            <ChevronRight size={24} />
+          </button>
+        )}
+      </div>
+            {/* Wishlist Modal */}
+      <WishlistModal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        userId={userId}
+        propertyId={selectedPropertyId}
+        onWishlistUpdate={() => handleWishlistUpdate(selectedPropertyId)}
+      />
+    </Container>
   );
 };
 

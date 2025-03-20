@@ -10,13 +10,8 @@
     scroll-behavior: smooth;
     background: #ffffff; /* White background */
     border-radius: 12px; /* Rounded corners */
-    /* border-top: 1px solid grey; */
-    /* border-bottom: 1px solid grey; */
-
-    /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  */
     width: 90vw; /* Fixed width for mobile view */
     max-width: 100%; /* Ensure it doesn't exceed the screen width */
-    /* width: 98vw; */
     margin-top: -40px;
 }
 
@@ -110,25 +105,26 @@
     right: 4px;
 }
 
+/* Mobile-specific styles */
 @media (max-width: 768px) {
     .categories-container {
-        width: 98vw; /* Fixed width for mobile view */
-        padding: 12px;
-        gap: 6px;
-        margin-top: -60px;
+        width: 98vw; /* Full width for mobile view */
+        padding: 8px; /* Reduce padding */
+        gap: 4px; /* Reduce gap between items */
+        margin-top: -50px;
     }
 
     .category-wrapper {
-        width: 90px;
+        width: 90px; /* Adjust width for mobile */
     }
 
     .category-card {
-        width: 50px;
-        height: 50px;
+        width: 60px; /* Increase image size */
+        height: 60px; /* Increase image size */
     }
 
     .category-name {
-        font-size: 11px;
+        font-size: 11px; /* Adjust font size */
     }
 
     .scroll-arrow {
@@ -139,22 +135,22 @@
 
 @media (max-width: 480px) {
     .categories-container {
-        width: 90vw; /* Fixed width for mobile view */
-        padding: 10px;
-        gap: 4px;
+        width: 98vw; /* Full width for smaller mobile devices */
+        padding: 9px; /* Further reduce padding */
+        gap: 7px; /* Further reduce gap between items */
     }
 
     .category-wrapper {
-        width: 60px;
+        width: 80px; /* Adjust width for smaller screens */
     }
 
     .category-card {
-        width: 45px;
-        height: 45px;
+        width: 70px; /* Further increase image size */
+        height: 70px; /* Further increase image size */
     }
 
     .category-name {
-        font-size: 10px;
+        font-size: 10px; /* Adjust font size */
     }
 
     .scroll-arrow {

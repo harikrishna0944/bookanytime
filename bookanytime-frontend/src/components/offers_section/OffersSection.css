@@ -28,10 +28,14 @@
 /* Ensure the inner container also allows scrolling */
 .category-filters-container > div {
   display: flex;
-  gap: 10px;
+  gap: 1px;
   overflow-x: auto;
   scrollbar-width: none !important; /* Hide scrollbar for Firefox */
   -ms-overflow-style: none !important; /* Hide scrollbar for IE and Edge */
+  
+  /* box-shadow: 0 4px 8px rgba(71, 64, 161, 0.9); */
+  /* margin-left: -50px; */
+
 }
 
 /* Hide scrollbar for Chrome, Safari, and Opera */
@@ -85,26 +89,27 @@
 
 @media (max-width: 768px) {
   .offers-section {
-    padding: 20px;
+    padding: 30px;
     text-align: center;
-    margin: 500px;
+    margin: 530px;
     margin-bottom: -500px;
-    margin-top: -70px;
+    margin-top: -40px;
     position: relative;
-left: 0%;
-    max-width: 200%;
   }
+
   .offer-wrapper {
     min-width: 250px;
   }
+
   .category-filters-container {
     gap: 100px;
   }
-
 }
 
 @media (max-width: 480px) {
-  .offer-wrapper {
-    min-width: 120px;
+  .offers-section {
+    transform: translateX(-120px); /* Adjust this value for smaller screens */
+    width: 150vw;
+    /* max-width: 150%; */
   }
 }

@@ -72,7 +72,7 @@ const OffersSection = () => {
       </div>
 
       {/* Offers Slider */}
-      <div style={{marginTop:"-50px", position:"relative", left:"2%"}} className="below-slider">
+      <div style={{marginTop:"-50px", position:"relative", left:"1%", marginLeft:"-10px", marginRight:"-10px" }} className="below-slider">
       <ItemsSlider>
         {filteredOffers.length > 0 ? (
           filteredOffers.map((offer, index) => {

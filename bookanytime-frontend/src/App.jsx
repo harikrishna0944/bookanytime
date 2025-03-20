@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import Header from "./components/Header/Header";  // Main Header
 import Body from "./components/Body";  
 import Search from "./components/Header/SearchBar"; 
@@ -12,6 +12,15 @@ import CategoryPage from "./components/categories/CategoryPage";
 import PropertyDetails from "./components/categories/PropertyDetails";
 import AuthPage from "./components/AuthPage";
 import WishlistPage from "./components/WishList/WishlistPage";
+import WishlistDetailsPage from "./components/WishList/WishListDetailsPage";
+
+
+// Protect admin routes
+const AdminRoute = ({ children }) => {
+  const isAuthenticated = localStorage.getItem("token"); // Check if token exists
+  return isAuthenticated ? children : <Navigate to="/login" />;
+};
+
 function App() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin"); // Check if on Admin pages
@@ -28,14 +37,14 @@ function App() {
         <Route path="/login" element={<AuthPage isSignup={false} />} />
         <Route path="/signup" element={<AuthPage isSignup={true} />} />
         <Route path="/wishlist" element={<WishlistPage />} />
+        <Route path="/wishlist/:wishlistId" element={<WishlistDetailsPage />} />
 
-
-              {/* Admin Panel - Always visible with nested routes */}
-              <Route path="/admin" element={<AdminPanel />}>
-          <Route path="properties" element={<Properties />} />
-          <Route path="add-property" element={<AddProperty />} />
-          <Route path="update-property/:id" element={<UpdatePropertyPage />} />
-          <Route path="offers" element={<Offers />} />
+        {/* Admin Routes - Protected */}
+        <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>}>
+          <Route path="properties" element={<AdminRoute><Properties /></AdminRoute>} />
+          <Route path="add-property" element={<AdminRoute><AddProperty /></AdminRoute>} />
+          <Route path="update-property/:id" element={<AdminRoute><UpdatePropertyPage /></AdminRoute>} />
+          <Route path="offers" element={<AdminRoute><Offers /></AdminRoute>} />
         </Route>
       </Routes>
     </>

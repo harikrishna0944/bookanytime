@@ -37,6 +37,27 @@ const PropertyDetails = () => {
               lng: parseFloat(response.data.longitude),
             });
           }
+
+                    // Store recently viewed properties
+                    const recentlyViewed = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+
+                    // Remove duplicate entries
+                    const updatedList = recentlyViewed.filter((prop) => prop.id !== response.data._id);
+          
+                    // Add the current property to the beginning
+                    updatedList.unshift({
+                      id: response.data._id,
+                      name: response.data.name,
+                      image: response.data.images?.[0], // Store the first image
+                      city: response.data.city,
+                    });
+          
+                    // Limit the number of recently viewed properties (e.g., last 5)
+                    if (updatedList.length > 10) updatedList.pop();
+          
+                    localStorage.setItem("recentlyViewed", JSON.stringify(updatedList));
+          
+          
         } else {
           setError("Property not found.");
         }
@@ -49,6 +70,7 @@ const PropertyDetails = () => {
       });
   }, [id]);
 
+  
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     setUserId(user ? user.id : null);
@@ -71,11 +93,36 @@ const PropertyDetails = () => {
     fetchWishlists();
   }, [userId, id]);
 
+  // const openWhatsAppChat = () => {
+  //   const phoneNumber = "8501888760"; // Replace with your desired number
+  //   const url = `https://wa.me/${phoneNumber}`;
+  //   window.open(url, "_blank");
+  // };
+
   const openWhatsAppChat = () => {
-    const phoneNumber = "8501888760"; // Replace with your desired number
+    if (!property || !property.whatsappNumber) {
+        alert("WhatsApp number not available.");
+        return;
+    }
+
+    let phoneNumber = property.whatsappNumber.trim(); // Remove extra spaces
+    phoneNumber = phoneNumber.replace(/\D/g, ""); // Remove non-numeric characters
+
+    if (phoneNumber.length < 10) {
+        alert("Invalid WhatsApp number.");
+        return;
+    }
+
+    // Ensure the number has a country code; assume +91 (India) if missing
+    if (phoneNumber.length === 10) {
+        phoneNumber = "91" + phoneNumber; // Add default country code
+    }
+
     const url = `https://wa.me/${phoneNumber}`;
+    console.log("Opening WhatsApp chat:", url); // Debugging
     window.open(url, "_blank");
-  };
+};
+
 
   const handleWishlistClick = async () => {
     try {
@@ -156,7 +203,18 @@ const PropertyDetails = () => {
       <div className="d-flex flex-column flex-lg-row">
         <div className="p-3 bg-light rounded flex-fill me-lg-0">
           <h2 className="text-primary1 fs-4 fs-md-3">{property.name}</h2>
-          <h4 className="text-primary fs-5 fs-md-4"><i className="bi bi-geo-alt-fill"></i> Address</h4>
+          <button
+            onClick={() => {
+              window.open(
+                `https://www.google.com/maps/dir/?api=1&destination=${mapCenter.lat},${mapCenter.lng}`,
+                "_blank"
+              );
+            }}
+            className="text-primary fs-5 fs-md-4 bi bi-geo-alt-fill border-0 bg-transparent p-0"
+            style={{ cursor: "pointer" }}
+          >
+            Address
+          </button>
           <p className="mb-3">{property.city}, {property.address}</p>
 
           {/* WhatsApp, Wishlist, and Share Icons */}
@@ -263,19 +321,28 @@ const PropertyDetails = () => {
         </div>
       </div>
 
-      {/* Map Section */}
-      <div className="mt-4">
-        <h4 className="text-primary mb-3 fs-5 fs-md-4">Location</h4>
-        <LoadScript googleMapsApiKey="AIzaSyBPp_yxOvWS0d35GUH6aZAaTnTIlbRuCo0">
-          <GoogleMap
-            mapContainerStyle={{ width: "100%", height: "400px", borderRadius: "10px" }}
-            center={mapCenter}
-            zoom={15}
-          >
-            <Marker position={mapCenter} />
-          </GoogleMap>
-        </LoadScript>
-      </div>
+      
+
+      <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+      <GoogleMap
+        mapContainerStyle={{ width: "100%", height: "400px" }}
+        center={mapCenter}
+        zoom={15}
+      >
+        <Marker
+          position={mapCenter}
+          onClick={() => {
+            window.open(
+              `https://www.google.com/maps/dir/?api=1&destination=${mapCenter.lat},${mapCenter.lng}`,
+              "_blank"
+            );
+          }}
+        />
+      </GoogleMap>
+    </LoadScript>
+
+
+      
 
       {/* Scrollable Full Image Modal */}
       {showAllImages && (
@@ -400,5 +467,7 @@ const PropertyDetails = () => {
     </div>
   );
 };
+
+
 
 export default PropertyDetails;

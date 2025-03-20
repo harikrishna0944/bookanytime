@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Modal, Button, Form, Spinner, Alert, Image } from "react-bootstrap";
 import heartImage from "../../assets/heartImage.jpg"
@@ -7,15 +8,23 @@ const WishlistModal = ({ show, onClose, userId, propertyId, onWishlistUpdate }) 
   const [userWishlists, setUserWishlists] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [showCreateModal, setShowCreateModal] = useState(false); // Controls small modal
-  const [wishlistName, setWishlistName] = useState(""); // Wishlist name input
+  const [showCreateModal, setShowCreateModal] = useState(false); 
+  const [wishlistName, setWishlistName] = useState(""); 
+
+  const navigate = useNavigate();
+
 
   useEffect(() => {
-    if (show && userId) {
-      fetchWishlists();
+    if (show) {
+      if (!userId) {
+        onClose(); // Close modal
+        navigate("/login"); // Redirect to login
+      } else {
+        fetchWishlists();
+      }
     }
-  }, [show, userId]);
-
+  }, [show, userId, navigate]);
+  
   const fetchWishlists = async () => {
     setLoading(true);
     try {

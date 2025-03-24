@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const AuthPage = ({ isSignup }) => {
-  const [formData, setFormData] = useState({ fullName: "", email: "", password: "" });
+  const [formData, setFormData] = useState({ fullName: "", email: "", phone: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -48,7 +48,7 @@ const AuthPage = ({ isSignup }) => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
 
-        console.log("User stored:", data.user);
+        console.log("User data:", data.user);
         navigate("/"); // Redirect after login/signup
         window.location.reload(); // Refresh to apply changes
       } else {
@@ -97,16 +97,30 @@ const AuthPage = ({ isSignup }) => {
           )}
           <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 3 }}>
             {isSignup && (
-              <TextField
-                label="Full Name"
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
-                required
-                fullWidth
-                variant="outlined"
-                sx={{ "& .MuiOutlinedInput-root": { borderRadius: "8px", backgroundColor: "#f9f9f9" } }}
-              />
+              <>
+                <TextField
+                  label="Full Name"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  required
+                  fullWidth
+                  variant="outlined"
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: "8px", backgroundColor: "#f9f9f9" } }}
+                />
+                <TextField
+                  label="Phone Number"
+                  name="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                  fullWidth
+                  variant="outlined"
+                  placeholder="+91 9876543210"
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: "8px", backgroundColor: "#f9f9f9" } }}
+                />
+              </>
             )}
             <TextField
               label="Email"

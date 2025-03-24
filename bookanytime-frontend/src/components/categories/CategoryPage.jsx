@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaHeart, FaFilter, FaBed, FaUser, FaSort } from "react-icons/fa";
+import { FaHeart, FaFilter, FaBed, FaUser, FaSort,FaChevronLeft } from "react-icons/fa";
 import WishlistModal from "./WishlistModal";
 import { Button, Badge, Dropdown } from "react-bootstrap";
 import Filter from "./Filter"; // Import the Filter component
@@ -187,10 +187,11 @@ const CategoryPage = () => {
     <div className="container mt-lg-5 mt-md-4 mt-sm-3 mt-2 px-3">
       {/* Back Button */}
       <button
-        className="btn btn-outline-primary fixed-back-btn d-none d-sm-block"
+        className="btn btn-outline-primary position-fixed top-5 start-0 m-2 d-flex align-items-center"
         onClick={() => navigate(-1)}
       >
-        ← Back to Categories
+        <FaChevronLeft className="me-2" /> {/* Chevron icon */}
+        
       </button>
 
       {/* Page Title */}

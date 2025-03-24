@@ -16,7 +16,8 @@ const PropertyDetails = () => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [userId, setUserId] = useState(null);
-
+  const [user,setUser] = useState({})
+  
   // Default map center (can be dynamically set based on property location)
   const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
 
@@ -73,6 +74,7 @@ const PropertyDetails = () => {
   
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
+    setUser(user)
     setUserId(user ? user.id : null);
   }, []);
 
@@ -99,7 +101,14 @@ const PropertyDetails = () => {
   //   window.open(url, "_blank");
   // };
 
-  const openWhatsAppChat = () => {
+  const openWhatsAppChat = async () => {
+
+    if (!userId) {
+      alert("Please log in to contact the owner.");
+      window.location.href = "/login"; // Redirect to login page
+      return;
+  }
+
     if (!property || !property.whatsappNumber) {
         alert("WhatsApp number not available.");
         return;
@@ -118,9 +127,29 @@ const PropertyDetails = () => {
         phoneNumber = "91" + phoneNumber; // Add default country code
     }
 
+      // Construct data to save
+  const contactData = {
+    userId: user.id,
+    userName: user.fullName,
+    userEmail: user.email,
+    userPhoneNumber: user.phoneNumber,
+    propertyId: property._id,
+    propertyName: property.name,
+    propertyAddress: property.address,
+    contactDate: new Date().toISOString(),
+  };
+
+  try {
+    await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/trackdata/contacts`, contactData);
+    console.log("Contact data saved successfully.");
+  } catch (error) {
+    console.error("Error saving contact data:", error);
+  }
+
     const url = `https://wa.me/${phoneNumber}`;
     console.log("Opening WhatsApp chat:", url); // Debugging
     window.open(url, "_blank");
+
 };
 
 

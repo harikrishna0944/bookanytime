@@ -5,8 +5,11 @@ import { Modal, Button, Form } from "react-bootstrap";
 import "./AdminPanel.css"; // Add a separate CSS file for better responsiveness
 
 const AdminPanel = () => {
-  const [show, setShow] = useState(false);
+  const [showAdd, setShowAdd] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
   const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState([]); // Store fetched categories
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -19,12 +22,31 @@ const AdminPanel = () => {
     };
   }, []);
 
-  const handleShow = () => setShow(true);
-  const handleClose = () => {
-    setShow(false);
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/categories`);
+      setCategories(response.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  const handleShowAdd = () => setShowAdd(true);
+  const handleCloseAdd = () => {
+    setShowAdd(false);
     setCategory("");
     setImage(null);
     setPreview(null);
+  };
+
+  const handleShowDelete = () => setShowDelete(true);
+  const handleCloseDelete = () => {
+    setShowDelete(false);
+    setSelectedCategory("");
   };
 
   const handleImageChange = (e) => {
@@ -48,16 +70,36 @@ const AdminPanel = () => {
     }
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/categories`, formData, {
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/categories`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       alert("Category added successfully!");
-      console.log(response.data);
-      handleClose();
+      fetchCategories(); // Refresh category list
+      handleCloseAdd();
     } catch (error) {
       console.error("Error adding category:", error);
       alert(`Failed to add category. ${error.response?.data?.message || "Server error"}`);
+    }
+  };
+
+  const handleDeleteCategory = async () => {
+    if (!selectedCategory) {
+      alert("Please select a category to delete!");
+      return;
+    }
+
+    if (!window.confirm("Are you sure you want to delete this category?")) return;
+
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/categories/${selectedCategory}`);
+
+      alert("Category deleted successfully!");
+      fetchCategories(); // Refresh category list
+      handleCloseDelete();
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      alert(`Failed to delete category. ${error.response?.data?.message || "Server error"}`);
     }
   };
 
@@ -72,14 +114,16 @@ const AdminPanel = () => {
 
       {/* Sidebar */}
       <nav className={`admin-sidebar ${sidebarOpen ? "open" : ""}`}>
-        {/* <h2>Admin Panel</h2> */}
         <ul>
           <li><Link to="/admin/properties" onClick={() => setSidebarOpen(false)}>Properties</Link></li>
           <li><Link to="/admin/offers" onClick={() => setSidebarOpen(false)}>Offers</Link></li>
-          <li><Link to="tracked_data" onClick={() => setSidebarOpen(false)}>Tracked Data</Link></li>
+          <li><Link to="/admin/trackData" onClick={() => setSidebarOpen(false)}>Tracked Data</Link></li>
         </ul>
-        <Button variant="success" className="add-category-btn" onClick={handleShow}>
+        <Button variant="success" className="add-category-btn" onClick={handleShowAdd}>
           + Add Category
+        </Button>
+        <Button variant="danger" className="delete-category-btn mt-2" onClick={handleShowDelete}>
+          🗑️ Delete Category
         </Button>
       </nav>
 
@@ -89,7 +133,7 @@ const AdminPanel = () => {
       </div>
 
       {/* Add Category Modal */}
-      <Modal show={show} onHide={handleClose} centered>
+      <Modal show={showAdd} onHide={handleCloseAdd} centered>
         <Modal.Header closeButton>
           <Modal.Title>Add Category</Modal.Title>
         </Modal.Header>
@@ -116,8 +160,35 @@ const AdminPanel = () => {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>Cancel</Button>
+          <Button variant="secondary" onClick={handleCloseAdd}>Cancel</Button>
           <Button variant="primary" onClick={handleAddCategory}>Add</Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Delete Category Modal */}
+      <Modal show={showDelete} onHide={handleCloseDelete} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Category</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="selectCategory">
+              <Form.Label>Select Category to Delete</Form.Label>
+              <Form.Select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                <option value="">Select a category</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat._id}>{cat.name}</option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseDelete}>Cancel</Button>
+          <Button variant="danger" onClick={handleDeleteCategory}>Delete</Button>
         </Modal.Footer>
       </Modal>
     </div>

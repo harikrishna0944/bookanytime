@@ -14,7 +14,7 @@ const Header = () => {
   const userRole = getUserRole(); // Get user role
   const navigate = useNavigate();
 
-console.log("user roleeeee",userRole)
+console.log("user roleeeee",userRole.email)
   // Toggle mobile menu
   const toggleDrawer = () => {
     setMobileOpen(!mobileOpen);

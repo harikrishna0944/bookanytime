@@ -5,7 +5,9 @@ require("dotenv").config();
 
 exports.signup = async (req, res) => {
   try {
-    const { fullName, email, password } = req.body;
+    console.log("Signup Request Body:", req.body); // ✅ Log request body
+
+    const { fullName, email,phone, password } = req.body;
 
     // Check if user exists
     let user = await User.findOne({ email });
@@ -16,7 +18,7 @@ exports.signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create user
-    user = new User({ fullName, email, password: hashedPassword, role: "user" });
+    user = new User({ fullName, email,phone, password: hashedPassword, role: "user" });
     await user.save();
 
     res.status(201).json({ message: "Signup successful. Please login." });
@@ -54,6 +56,7 @@ exports.login = async (req, res) => {
         id: user._id,
         fullName: user.fullName,
         email: user.email,
+        phoneNumber: user.phone,
         isAdmin: user.isAdmin, // ✅ This should now be sent properly
       },
     });

@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
-import Button from "@mui/material/Button";
 import axios from "axios";
-import { FaHeart } from "react-icons/fa"; // Import a heart icon from react-icons
+import { FaHeart } from "react-icons/fa";
+import WishlistModal from "../categories/WishlistModal";
 import "./Searchbar.css";
 
 const SearchBar = () => {
@@ -15,7 +15,10 @@ const SearchBar = () => {
   const [searchText, setSearchText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [locationSearch, setLocationSearch] = useState("");
-  const [wishlist, setWishlist] = useState(new Set()); // Track wishlisted properties
+  const [isWishlisted, setIsWishlisted] = useState({});
+  const [userId, setUserId] = useState(null);
+  const [showWishlistModal, setShowWishlistModal] = useState(false);
+  const [selectedPropertyId, setSelectedPropertyId] = useState(null);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_BASE_URL}/api/categories`)
@@ -25,6 +28,10 @@ const SearchBar = () => {
         setCategories(categoryNames);
       })
       .catch((error) => console.error("Error fetching categories:", error));
+
+    // Get user ID from localStorage
+    const user = JSON.parse(localStorage.getItem("user"));
+    setUserId(user ? user.id : null);
   }, []);
 
   useEffect(() => {
@@ -37,8 +44,36 @@ const SearchBar = () => {
   }, [categories, isTyping]);
 
   useEffect(() => {
-    searchProperties(); // Trigger search whenever filters change
+    searchProperties();
   }, [searchText, locationSearch, selectedCategories]);
+
+  // Fetch wishlist status when properties are updated
+  useEffect(() => {
+    if (!userId || properties.length === 0) return;
+
+    const fetchWishlists = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/api/wishlist/${userId}`
+        );
+        const wishlists = response.data;
+        const wishlistStatus = {};
+
+        properties.forEach((property) => {
+          const propertyExists = wishlists.some((wishlist) =>
+            wishlist.properties.includes(property._id)
+          );
+          wishlistStatus[property._id] = propertyExists;
+        });
+
+        setIsWishlisted(wishlistStatus);
+      } catch (error) {
+        console.error("Error fetching wishlist:", error);
+      }
+    };
+
+    fetchWishlists();
+  }, [userId, properties]);
 
   const handleInputChange = (event) => {
     setSearchText(event.target.value);
@@ -85,17 +120,60 @@ const SearchBar = () => {
     setLocationSearch(event.target.value);
   };
 
-  // Toggle wishlist for a property
-  const toggleWishlist = (propertyId) => {
-    setWishlist((prevWishlist) => {
-      const newWishlist = new Set(prevWishlist);
-      if (newWishlist.has(propertyId)) {
-        newWishlist.delete(propertyId); // Remove from wishlist
+  // Handle wishlist click
+  const handleWishlistClick = async (propertyId) => {
+    if (!userId) {
+      alert("Please log in to manage your wishlist.");
+      return;
+    }
+
+    setSelectedPropertyId(propertyId);
+
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_BASE_URL}/api/wishlist/${userId}`
+      );
+      const wishlists = response.data;
+
+      // Check if the property is already in any wishlist
+      const wishlistWithProperty = wishlists.find((wishlist) =>
+        wishlist.properties.includes(propertyId)
+      );
+
+      if (wishlistWithProperty) {
+        // Remove from wishlist
+        await removeFromWishlist(propertyId, wishlistWithProperty.name);
       } else {
-        newWishlist.add(propertyId); // Add to wishlist
+        // Add to wishlist
+        setShowWishlistModal(true);
       }
-      return newWishlist;
-    });
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
+    }
+  };
+
+  // Remove property from wishlist
+  const removeFromWishlist = async (propertyId, wishlistName) => {
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_API_BASE_URL}/api/wishlist/${userId}/remove`,
+        {
+          headers: { "Content-Type": "application/json" },
+          data: { propertyId, wishlistName },
+        }
+      );
+
+      setIsWishlisted((prev) => ({ ...prev, [propertyId]: false }));
+      alert(`Property has been removed from "${wishlistName}".`);
+    } catch (error) {
+      console.error("Error removing from wishlist:", error);
+      alert("Failed to remove the property. Please try again.");
+    }
+  };
+
+  // Update wishlist status
+  const handleWishlistUpdate = (propertyId) => {
+    setIsWishlisted((prev) => ({ ...prev, [propertyId]: true }));
   };
 
   return (
@@ -176,13 +254,13 @@ const SearchBar = () => {
                     className="position-absolute top-0 end-0 m-2"
                     onClick={(e) => {
                       e.stopPropagation(); // Prevent opening the property link
-                      toggleWishlist(property._id);
+                      handleWishlistClick(property._id);
                     }}
                     style={{ cursor: "pointer", zIndex: 1 }}
                   >
                     <FaHeart
-                      size={20} // Decreased size
-                      color={wishlist.has(property._id) ? "red" : "white"} // White color for non-wishlisted, red for wishlisted
+                      size={20}
+                      color={isWishlisted[property._id] ? "red" : "white"}
                     />
                   </div>
 
@@ -207,6 +285,15 @@ const SearchBar = () => {
           <p className="text-center text-muted">No properties found.</p>
         )}
       </div>
+
+      {/* Wishlist Modal */}
+      <WishlistModal
+        show={showWishlistModal}
+        onClose={() => setShowWishlistModal(false)}
+        userId={userId}
+        propertyId={selectedPropertyId}
+        onWishlistUpdate={() => handleWishlistUpdate(selectedPropertyId)}
+      />
     </div>
   );
 };

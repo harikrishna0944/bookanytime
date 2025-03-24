@@ -8,6 +8,7 @@ import Properties from "./components/admin_panel/properties/Properties";
 import AddProperty from "./components/admin_panel/properties/AddProperties";
 import UpdatePropertyPage from "./components/admin_panel/properties/UpdatePropertyPage"; 
 import Offers from "./components/admin_panel/offers/OffersPage";
+import TrackedData from "./components/admin_panel/tracked_data/TrackedData"
 import CategoryPage from "./components/categories/CategoryPage";
 import PropertyDetails from "./components/categories/PropertyDetails";
 import AuthPage from "./components/AuthPage";
@@ -45,6 +46,8 @@ function App() {
           <Route path="add-property" element={<AdminRoute><AddProperty /></AdminRoute>} />
           <Route path="update-property/:id" element={<AdminRoute><UpdatePropertyPage /></AdminRoute>} />
           <Route path="offers" element={<AdminRoute><Offers /></AdminRoute>} />
+          <Route path="trackData" element={<AdminRoute><TrackedData /></AdminRoute>} />
+
         </Route>
       </Routes>
     </>

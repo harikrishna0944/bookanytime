@@ -1,129 +1,113 @@
 .search-page {
-  padding-top: 80px; /* Adjust this based on your header height */
+  padding-top: 40px; /* Adjust this based on your header height */
   background-color: #fff; /* Ensure the background is white */
   min-height: 100vh; /* Make sure the page covers the full viewport */
-  margin-left: 50px; /* Move the entire page slightly to the left */
+  margin: 0 auto;
+  max-width: 1400px;
+  /* padding: 20px; */
+  margin-top: 30px;
 }
 
-/* Container for the two search inputs */
+/* Container for the search inputs */
 .search-inputs-container {
   display: flex;
-  justify-content: space-between;
-  gap: 20px; /* Space between the two search inputs */
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
   width: 100%;
-  max-width: 1200px; /* Adjust based on your layout */
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px; /* Add padding for better spacing */
-}
-
-.search-input {
-  width: 80%;
-  border: none;
+  padding: 10px 20px;
 }
 
 .search-bar-container {
-  width: 48%; /* Each search input takes 48% of the container width */
+  flex: 1;
+  min-width: 280px;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  padding: 10px;
 }
 
-.search-bar-container.left {
-  justify-content: flex-start; /* Align left search bar to the left */
-}
-
-.search-bar-container.right {
-  justify-content: flex-end; /* Align right search bar to the right */
+.search-input {
+  width: 100%;
+  max-width: 500px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
 }
 
 .search-results {
   width: 100%;
-  max-width: 1200px; /* Adjust based on your layout */
-  margin: 0 auto;
-  padding: 10px;
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 15px;
 }
 
 .property-item {
   background: #fff;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   text-align: center;
+  padding: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .property-item:hover {
-  transform: scale(1.05);
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
+  transform: scale(1.03);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 .property-item img {
   width: 100%;
-  height: 140px;
+  height: 180px;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .property-details {
-  background: #f8f9fa;
-  border-radius: 6px;
-  padding: 8px;
-  margin-top: 5px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+  font-size: 14px;
 }
 
-.category-filters {
-  margin-left: 50px;
-}
-
-/* Category Filters Container */
+/* Category Filters */
 .category-filters-container {
   position: sticky;
   top: 0;
   background-color: white;
   z-index: 100;
-  padding: 10px 0;
+  padding: 10px;
   margin-bottom: 20px;
   border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
 }
 
-/* Scrollable Category Filters */
-.category-filters-container .d-flex {
-  overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #007bff #f1f1f1;
-}
-
-/* WebKit Scrollbar Styling */
-.category-filters-container .d-flex::-webkit-scrollbar {
-  height: 8px;
-}
-
-.category-filters-container .d-flex::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
-
-.category-filters-container .d-flex::-webkit-scrollbar-thumb {
-  background-color: #007bff;
-  border-radius: 10px;
-}
-
-/* Category Buttons */
 .category-filters-container .btn {
-  flex-shrink: 0;
   font-size: 14px;
-  padding: 8px 16px;
+  padding: 10px 16px;
   border-radius: 20px;
-  transition: background-color 0.3s, color 0.3s;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
 }
 
 .category-filters-container .btn-primary {
   background-color: #007bff;
   border-color: #007bff;
+  color: white;
 }
 
 .category-filters-container .btn-outline-primary {
   color: #007bff;
   border-color: #007bff;
+  background: transparent;
 }
 
 .category-filters-container .btn-outline-primary:hover {
@@ -132,45 +116,44 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .search-inputs-container {
-    flex-direction: column; /* Stack search inputs vertically on smaller screens */
-    gap: 10px;
+    flex-direction: column;
+    align-items: center;
   }
 
   .search-bar-container {
-    width: 100%; /* Full width for each search input on smaller screens */
+    width: 100%;
+    max-width: 600px;
+  }
+}
+
+@media (max-width: 768px) {
+  .category-filters-container {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 10px;
+    justify-content: flex-start;
+    scrollbar-width: thin;
   }
 
-  .category-filters {
-    height: 90px;
-    overflow-y: auto;
-    width: 80vw;
-    margin-left: 30px;
+  .category-filters-container::-webkit-scrollbar {
+    height: 5px;
   }
 
-  .category-filters::-webkit-scrollbar {
-    width: 5px;
-  }
-
-  .category-filters::-webkit-scrollbar-track {
-    background: #f1f1f1;
+  .category-filters-container::-webkit-scrollbar-thumb {
+    background-color: #007bff;
     border-radius: 10px;
-  }
-
-  .category-filters::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 10px;
-  }
-
-  .category-filters::-webkit-scrollbar-thumb:hover {
-    background: #555;
   }
 }
 
 @media (max-width: 480px) {
   .category-filters-container .btn {
-    font-size: 10px;
-    padding: 4px 8px;
+    font-size: 14px;
+    padding: 8px 14px;
+  }
+
+  .property-item img {
+    height: 190px;
   }
 }

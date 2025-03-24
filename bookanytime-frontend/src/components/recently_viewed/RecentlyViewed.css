@@ -176,13 +176,14 @@
     }
   
     .recently-viewed-name {
-      font-size: 14px; /* Adjusted font size for smaller screens */
+      font-size: 18px; /* Adjusted font size for smaller screens */
     }
   
     .scroll-arrow {
       width: 36px; /* Adjusted size for smaller screens */
       height: 36px; /* Adjusted size for smaller screens */
     }
+
   }
 .recently-viewed-items {
   display: flex;
@@ -233,6 +234,7 @@
   font-size: 14px;
   font-weight: bold;
   margin: 0;
+  
 }
 
 .property-address {

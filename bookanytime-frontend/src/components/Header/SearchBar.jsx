@@ -650,6 +650,9 @@ const SearchBar = () => {
           .dropdown-item.active {
             background-color: rgba(15, 245, 7, 0.5);
           }
+          .Dropdown.Menu{
+          backgroung-color:white;
+          }
         `}
       </style>
     </div>

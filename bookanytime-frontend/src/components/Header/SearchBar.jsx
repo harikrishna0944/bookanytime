@@ -343,7 +343,7 @@ const SearchBar = () => {
   };
 
   return (
-    <div className="search-page">
+    <div className="search-page container-fluid">
       <div className="search-inputs-container">
         <div className="search-bar-container left">
           <TextField

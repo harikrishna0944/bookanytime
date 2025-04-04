@@ -19,22 +19,30 @@ const upload = multer({ storage });
 // ✅ 1. Add Offer
 router.post("/add", upload.array("images", 100), async (req, res) => {
   try {
-    const { category, startDate, endDate } = req.body;
-    const image = req.files.map((file) => `/uploads/${file.filename}`);
+    const { category, properties, startDate, endDate } = req.body;
+    const propertyList = JSON.parse(properties); // Convert JSON string back to an array
 
-
-    if (!category || !image || !startDate || !endDate) {
-      return res.status(400).json({ message: "All fields are required" });
+    if (!category || propertyList.length === 0 || !req.files || !startDate || !endDate) {
+      return res.status(400).json({ message: "All fields are required." });
     }
 
-    const newOffer = new Offer({ category, image, startDate, endDate });
+    const imageUrls = req.files.map((file) => `/uploads/${file.filename}`);
+
+    const newOffer = new Offer({
+      category,
+      properties: propertyList,
+      image: imageUrls,
+      startDate,
+      endDate,
+    });
+
     await newOffer.save();
     res.status(201).json({ message: "Offer added successfully", offer: newOffer });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error });
+    console.error("Error adding offer:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
-
 // ✅ 2. Get All Offers
 router.get("/", async (req, res) => {
   try {
@@ -75,7 +83,7 @@ router.delete("/delete/:id", async (req, res) => {
 router.put("/update/:id", upload.array("images"), async (req, res) => {
   try {
     const { id } = req.params;
-    const { category, startDate, endDate, removeImages } = req.body;
+    const { category,property, startDate, endDate, removeImages } = req.body;
 
     console.log("Updating Offer ID:", id);
     console.log("Received Data:", req.body);
@@ -97,6 +105,7 @@ router.put("/update/:id", upload.array("images"), async (req, res) => {
 
     // Update other fields
     if (category) offer.category = category;
+    if (property) offer.property = property;
     if (startDate) offer.startDate = startDate;
     if (endDate) offer.endDate = endDate;
 

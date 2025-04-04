@@ -44,15 +44,20 @@ const AuthPage = ({ isSignup }) => {
       const data = response.data;
 
       if (data.token && data.user) {
-        // ✅ Store user data & token in localStorage
+        // ✅ Store user data & token in localStorage (only for login)
+        if (!isSignup) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-
         console.log("User data:", data.user);
-        navigate("/"); // Redirect after login/signup
+  
+          navigate("/"); // Redirect after login
         window.location.reload(); // Refresh to apply changes
       } else {
-        setError(data.message || "Login failed");
+          // ✅ After successful signup, redirect to login
+          navigate("/login");
+        }
+      } else {
+        setError(data.message || (isSignup ? "Signup failed" : "Login failed"));
       }
     } catch (err) {
       setError(err.response?.data?.message || "Request failed. Try again.");

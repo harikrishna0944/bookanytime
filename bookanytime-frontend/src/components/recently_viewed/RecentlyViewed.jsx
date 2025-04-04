@@ -19,17 +19,14 @@ const RecentlyViewed = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedPropertyId, setSelectedPropertyId] = useState(null);
   const [userId, setUserId] = useState(null);
-
-
+  const [propertyRatings, setPropertyRatings] = useState({});
 
   useEffect(() => {
     setLoading(true);
     setError("");
   
     try {
-      // const now = Date.now();
       let viewed = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
-      // viewed = viewed.filter((prop) => now - prop.timestamp < 2 * 60 * 1000);
       setRecentlyViewed(viewed);
     } catch (err) {
       setError("Failed to load recently viewed properties.");
@@ -44,36 +41,67 @@ const RecentlyViewed = () => {
     setUserId(user ? user.id : null);
   }, []);
 
-// Fetch wishlist status when recentlyViewed is updated
-useEffect(() => {
-  if (!userId || recentlyViewed.length === 0) return;
+  // Fetch ratings for recently viewed properties
+  useEffect(() => {
+    if (recentlyViewed.length === 0) return;
 
-  const fetchWishlists = async () => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/api/wishlist/${userId}`
-      );
-      const wishlists = response.data;
-      const wishlistStatus = {};
-
-      recentlyViewed.forEach((property) => {
-        const propertyExists = wishlists.some((wishlist) =>
-          wishlist.properties.includes(property.id) // Ensure 'property.id' matches API response
+    const fetchAllRatings = async () => {
+      try {
+        const ratingsData = {};
+        
+        await Promise.all(
+          recentlyViewed.map(async (property) => {
+            try {
+              const response = await axios.get(
+                `${import.meta.env.VITE_API_BASE_URL}/api/ratings/${property.id}`
+              );
+              if (response.data && response.data.length > 0) {
+                const sum = response.data.reduce((acc, curr) => acc + curr.rating, 0);
+                ratingsData[property.id] = sum / response.data.length;
+              }
+            } catch (error) {
+              console.error(`Error fetching ratings for property ${property.id}:`, error);
+            }
+          })
         );
-        wishlistStatus[property.id] = propertyExists;
-      });
+        
+        setPropertyRatings(ratingsData);
+      } catch (error) {
+        console.error("Error fetching ratings:", error);
+      }
+    };
 
-      setIsWishlisted(wishlistStatus);
-    } catch (error) {
-      console.error("Error fetching wishlist:", error);
-    }
-  };
+    fetchAllRatings();
+  }, [recentlyViewed]);
 
-  fetchWishlists();
-}, [userId, recentlyViewed]); // Ensure `recentlyViewed` is populated before fetching wishlist
+  // Fetch wishlist status when recentlyViewed is updated
+  useEffect(() => {
+    if (!userId || recentlyViewed.length === 0) return;
 
+    const fetchWishlists = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/api/wishlist/${userId}`
+        );
+        const wishlists = response.data;
+        const wishlistStatus = {};
 
-  // Handle wishlist click
+        recentlyViewed.forEach((property) => {
+          const propertyExists = wishlists.some((wishlist) =>
+            wishlist.properties.includes(property.id)
+          );
+          wishlistStatus[property.id] = propertyExists;
+        });
+
+        setIsWishlisted(wishlistStatus);
+      } catch (error) {
+        console.error("Error fetching wishlist:", error);
+      }
+    };
+
+    fetchWishlists();
+  }, [userId, recentlyViewed]);
+
   const handleWishlistClick = async (propertyId) => {
     setSelectedPropertyId(propertyId);
     try {
@@ -94,7 +122,6 @@ useEffect(() => {
     }
   };
 
-  // Remove property from wishlist
   const removeFromWishlist = async (propertyId, wishlistName) => {
     try {
       await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/wishlist/${userId}/remove`, {
@@ -110,11 +137,9 @@ useEffect(() => {
     }
   };
 
-  // Update wishlist status
   const handleWishlistUpdate = (propertyId) => {
     setIsWishlisted((prev) => ({ ...prev, [propertyId]: true }));
   };
-
 
   const checkScroll = useCallback(() => {
     if (containerRef.current) {
@@ -173,10 +198,11 @@ useEffect(() => {
                 onClick={() => window.open(`/property/${property.id}`, "_blank")}
               >
                 <div className="recently-viewed-card">
+                  
                   {/* Property Image */}
                   <div className="property-image-container">
+                    
                     <img
-                      // src={property.image && property.image.length > 0 ? property.image[0] : "https://via.placeholder.com/150"}
                       src={property.image}
                       alt={property.name}
                       className="property-image"
@@ -189,6 +215,7 @@ useEffect(() => {
                         e.stopPropagation();
                         handleWishlistClick(property.id);
                       }}
+                      
                     >
                       <FaHeart
                         className={`${isWishlisted[property.id] ? "text-danger" : "text-white"}`}
@@ -204,6 +231,25 @@ useEffect(() => {
                   {/* Property Details */}
                   <div className="property-details">
                     <h6 className="property-name">{property.name}</h6>
+                    
+                    {/* Rating Display */}
+                    {propertyRatings[property.id] && (
+                      <div className="d-flex justify-content-start align-items-center mb-1">
+                        <div className="text-warning me-1">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <i 
+                              key={i} 
+                              className={`bi ${i < Math.floor(propertyRatings[property.id]) ? 'bi-star-fill' : 'bi-star'} ${i === Math.floor(propertyRatings[property.id]) && propertyRatings[property.id] % 1 >= 0.5 ? 'bi-star-half' : ''}`}
+                              style={{ fontSize: "0.8rem" }}
+                            ></i>
+                          ))}
+                        </div>
+                        <span className="small text-muted">
+                          {propertyRatings[property.id].toFixed(1)}
+                        </span>
+                      </div>
+                    )}
+                    
                     <p className="property-address">{property.city}</p>
                   </div>
                 </div>
@@ -219,7 +265,8 @@ useEffect(() => {
           </button>
         )}
       </div>
-            {/* Wishlist Modal */}
+      
+      {/* Wishlist Modal */}
       <WishlistModal
         show={showModal}
         onClose={() => setShowModal(false)}
@@ -227,6 +274,18 @@ useEffect(() => {
         propertyId={selectedPropertyId}
         onWishlistUpdate={() => handleWishlistUpdate(selectedPropertyId)}
       />
+
+      {/* Add this to your RecentlyViewed.css or as a style tag */}
+      <style>
+        {`
+          .bi-star-fill, .bi-star-half {
+            color: #ffc107;
+          }
+          .bi-star {
+            color: #e4e5e9;
+          }
+        `}
+      </style>
     </Container>
   );
 };

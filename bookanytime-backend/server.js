@@ -33,7 +33,9 @@ app.use("/api/offers", require("./routes/offerRoutes"));
 app.use("/api/categories", require("./routes/categories"));
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/wishlist", require("./routes/wishlistRoutes"));
-app.use("/api/trackdata", require("./routes/trackDataRoute"))
+app.use("/api/trackdata", require("./routes/trackDataRoute"));
+app.use("/api/ratings", require("./routes/ratingsRoutes"));
+app.use("/api/list-property", require("./routes/ListPropertyRoutes"));
 // 🔒 Load SSL Certificate & Key from Let's Encrypt
 const options = {
   key: fs.readFileSync("/etc/letsencrypt/live/api.bookanytime.in/privkey.pem"),

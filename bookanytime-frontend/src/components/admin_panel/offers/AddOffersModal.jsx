@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Modal, Button, Form } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
 
 const AddOfferModal = ({ show, handleClose }) => {
   const [categories, setCategories] = useState([]);
@@ -9,28 +8,57 @@ const AddOfferModal = ({ show, handleClose }) => {
   const [image, setImage] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-
-  const navigate = useNavigate();
+  const [properties, setProperties] = useState([]);
+  const [selectedProperties, setSelectedProperties] = useState([]); // Store multiple properties
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/categories`)
+    axios
+      .get(`${import.meta.env.VITE_API_BASE_URL}/api/categories`)
       .then((res) => setCategories(res.data))
       .catch((err) => console.error("Error fetching categories:", err));
   }, []);
+
+  // Fetch properties when category changes
+  useEffect(() => {
+    if (selectedCategory) {
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/api/properties?category=${encodeURIComponent(selectedCategory)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setProperties(data);
+          } else {
+            setProperties([]);
+          }
+        })
+        .catch((error) => console.error("Error fetching properties:", error));
+    } else {
+      setProperties([]);
+    }
+  }, [selectedCategory]);
 
   const handleImageChange = (e) => {
     setImage([...e.target.files]);
   };
 
+  const handlePropertySelection = (e) => {
+    const selectedOptions = Array.from(e.target.selectedOptions);
+    const selectedProps = selectedOptions.map((option) => ({
+      _id: option.value,
+      name: option.text,
+    }));
+    setSelectedProperties(selectedProps);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedCategory || !image || !startDate || !endDate) {
+    if (!selectedCategory || selectedProperties.length === 0 || !image.length || !startDate || !endDate) {
       alert("Please fill all fields");
       return;
     }
 
     const formData = new FormData();
     formData.append("category", selectedCategory);
+    formData.append("properties", JSON.stringify(selectedProperties)); // Send as JSON string
     image.forEach((img) => formData.append("images", img));
     formData.append("startDate", startDate);
     formData.append("endDate", endDate);
@@ -39,7 +67,7 @@ const AddOfferModal = ({ show, handleClose }) => {
       await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/offers/add`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-            alert("Offer added successfully!");
+      alert("Offer added successfully!");
       handleClose();
     } catch (error) {
       console.error("Error adding offer:", error);
@@ -53,8 +81,6 @@ const AddOfferModal = ({ show, handleClose }) => {
         <Modal.Title>Add New Offer</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-
-
         <Form onSubmit={handleSubmit}>
           <Form.Group>
             <Form.Label>Category</Form.Label>
@@ -62,6 +88,15 @@ const AddOfferModal = ({ show, handleClose }) => {
               <option value="">Select Category</option>
               {categories.map((cat) => (
                 <option key={cat._id} value={cat.name}>{cat.name}</option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+
+          <Form.Group>
+            <Form.Label>Properties</Form.Label>
+            <Form.Control as="select" multiple onChange={handlePropertySelection}>
+              {properties.map((prop) => (
+                <option key={prop._id} value={prop._id}>{prop.name}</option>
               ))}
             </Form.Control>
           </Form.Group>
@@ -82,7 +117,6 @@ const AddOfferModal = ({ show, handleClose }) => {
           </Form.Group>
 
           <Button variant="primary" type="submit" className="mt-3">Add Offer</Button>
-          {/* Inside Add Offers Form Back Button */}
           <Button variant="secondary" className="mt-3 ms-2" onClick={handleClose}>
             Cancel
           </Button>

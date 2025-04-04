@@ -20,6 +20,13 @@ router.post("/", upload.single("image"), async (req, res) => {
     const { name } = req.body;
     if (!name) return res.status(400).json({ message: "Category name is required" });
 
+        // Check if category already exists (case-insensitive)
+        const existingCategory = await Category.findOne({ name: { $regex: new RegExp("^" + name + "$", "i") } });
+
+        if (existingCategory) {
+          return res.status(400).json({ message: "Category name already exists" });
+        }
+    
     const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
 
     const newCategory = new Category({ name, image: imageUrl });

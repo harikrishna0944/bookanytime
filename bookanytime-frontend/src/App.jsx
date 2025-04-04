@@ -14,8 +14,9 @@ import PropertyDetails from "./components/categories/PropertyDetails";
 import AuthPage from "./components/AuthPage";
 import WishlistPage from "./components/WishList/WishlistPage";
 import WishlistDetailsPage from "./components/WishList/WishListDetailsPage";
-
-
+import ListYourProperty from "./components/list_your_property/ListYourProperty"
+import ListPropertyLogs from "./components/admin_panel/list-your-property/ListPropertyLogs"
+import OffersDetailsPage from "./components/offers_section/OffersDetailsPage"
 // Protect admin routes
 const AdminRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("token"); // Check if token exists
@@ -39,6 +40,8 @@ function App() {
         <Route path="/signup" element={<AuthPage isSignup={true} />} />
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/wishlist/:wishlistId" element={<WishlistDetailsPage />} />
+        <Route path="/list-your-property" element={<ListYourProperty/>} />
+        <Route path="/offers/:offerId" element={<OffersDetailsPage />} /> 
 
         {/* Admin Routes - Protected */}
         <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>}>
@@ -47,6 +50,7 @@ function App() {
           <Route path="update-property/:id" element={<AdminRoute><UpdatePropertyPage /></AdminRoute>} />
           <Route path="offers" element={<AdminRoute><Offers /></AdminRoute>} />
           <Route path="trackData" element={<AdminRoute><TrackedData /></AdminRoute>} />
+          <Route path="list-property-logs" element={<AdminRoute><ListPropertyLogs /></AdminRoute>} />
 
         </Route>
       </Routes>

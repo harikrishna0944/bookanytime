@@ -19,7 +19,9 @@ const upload = multer({ storage });
 const parseFormData = (req, res, next) => {
 
   console.log("Raw req.body:", req.body); 
-  req.body.price = Number(req.body.price) || 0;
+  
+  req.body.minPrice = Number(req.body.minPrice) || 0;
+  req.body.maxPrice = Number(req.body.maxPrice) || 0;
   req.body.latitude = Number(req.body.latitude) || 0;
   req.body.longitude = Number(req.body.longitude) || 0;
   req.body.capacity = {
@@ -38,7 +40,7 @@ const parseFormData = (req, res, next) => {
 // @desc    Add a new property with image upload
 router.post("/", upload.array("images", 20), parseFormData, async (req, res) => {
   try {
-    const { name, category, description, price, city, address, latitude, longitude, amenities, capacity, whatsappNumber } = req.body;
+    const { name, category, description,house_rules, minPrice, maxPrice, city, address, latitude, longitude, amenities, capacity, popularity,whatsappNumber , instagram} = req.body;
 
     // Generate image URLs from uploaded files
     const imageUrls = req.files.map((file) => `https://api.bookanytime.in:5000/uploads/${file.filename}`);
@@ -47,15 +49,19 @@ router.post("/", upload.array("images", 20), parseFormData, async (req, res) => 
       name,
       category,
       description,
-      price,
+      house_rules,
+      minPrice: Number(minPrice),
+      maxPrice: Number(maxPrice),
       city,
       address,
       latitude,
       longitude,
       amenities,
       capacity,
+      popularity,
       images: imageUrls,
-      whatsappNumber
+      whatsappNumber,
+      instagram
     });
 
     const savedProperty = await newProperty.save();
@@ -72,14 +78,16 @@ router.put("/:id", upload.array("images", 20), async (req, res) => {
   try {
     const propertyId = req.params.id;
     console.log(propertyId)
-    const { name, category, description, price, city, address, latitude, longitude, amenities, adults, bedrooms, whatsappNumber } = req.body;
+    const { name, category, description,house_rules, minPrice, maxPrice, city, address, latitude, longitude, amenities, adults, bedrooms,popularity, whatsappNumber, instagram } = req.body;
     
     // Convert numeric fields
     const updatedData = {
       name,
       category,
       description,
-      price: Number(price),
+      house_rules,
+      minPrice: Number(minPrice),
+      maxPrice: Number(maxPrice),
       city,
       address,
       latitude: parseFloat(latitude),
@@ -87,7 +95,9 @@ router.put("/:id", upload.array("images", 20), async (req, res) => {
       amenities: amenities ? amenities.split(",") : [],
       adults: Number(adults),
       bedrooms: Number(bedrooms),
+      popularity :Number(popularity),
       whatsappNumber,
+      instagram
     };
 
     // Handle image uploads (if new images are provided)

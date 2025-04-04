@@ -1,0 +1,32 @@
+.offer-viewed-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 210px; /* Default size for larger screens */
+    height: 210px; /* Default size for larger screens */
+    padding: 5px;
+  }
+  
+  .offer-viewed-card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    pointer-events: none;
+  }
+  .offer-viewed-item {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    flex: 0 0 auto;
+    width: 220px; /* Default width for larger screens */
+    transition: transform 0.2s ease;
+    padding: 18px;
+  }
+  
+  .offer-viewed-item:active {
+    transform: scale(0.95);
+  }

@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Modal, Button, Form } from "react-bootstrap";
 import "./AdminPanel.css"; // Add a separate CSS file for better responsiveness
+import AddRatings from "./ratings/AddRatings"
+import DeleteRatings from "./ratings/DeleteRatings"
 
 const AdminPanel = () => {
   const [showAdd, setShowAdd] = useState(false);
@@ -13,6 +15,9 @@ const AdminPanel = () => {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isAddRatingsOpen, setIsAddRatingsOpen] = useState(false);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+
 
   useEffect(() => {
     const mainHeader = document.querySelector(".main-header");
@@ -79,7 +84,15 @@ const AdminPanel = () => {
       handleCloseAdd();
     } catch (error) {
       console.error("Error adding category:", error);
-      alert(`Failed to add category. ${error.response?.data?.message || "Server error"}`);
+      if (error.response && error.response.data && error.response.data.message) {
+        if (error.response.data.message.includes("already exists")) {
+          alert("Category name already exists. Please choose a different name.");
+        } else {
+          alert(`Failed to add category. ${error.response.data.message}`);
+        }
+      } else {
+        alert("Failed to add category. Server error.");
+      }
     }
   };
 
@@ -118,6 +131,7 @@ const AdminPanel = () => {
           <li><Link to="/admin/properties" onClick={() => setSidebarOpen(false)}>Properties</Link></li>
           <li><Link to="/admin/offers" onClick={() => setSidebarOpen(false)}>Offers</Link></li>
           <li><Link to="/admin/trackData" onClick={() => setSidebarOpen(false)}>Tracked Data</Link></li>
+          <li><Link to="/admin/list-property-logs" onClick={() => setSidebarOpen(false)}>List Your Property Logs</Link></li>
         </ul>
         <Button variant="success" className="add-category-btn" onClick={handleShowAdd}>
           + Add Category
@@ -125,12 +139,26 @@ const AdminPanel = () => {
         <Button variant="danger" className="delete-category-btn mt-2" onClick={handleShowDelete}>
           🗑️ Delete Category
         </Button>
+
+        <Button variant="success" className="add-rating-btn mt-2" onClick={() => setIsAddRatingsOpen(true)}>
+        +  Add Ratings
+        </Button>
+
+        <Button variant="danger" className="delete-rating-btn mt-2" onClick={() => setDeleteModalOpen(true)}>
+        🗑️ Delete Ratings
+        </Button>
       </nav>
 
       {/* Page Content */}
       <div className="admin-content">
         <Outlet />
       </div>
+
+      {/* AddRatings Modal */}
+      {isAddRatingsOpen && <AddRatings open={isAddRatingsOpen} onClose={() => setIsAddRatingsOpen(false)} />}
+
+      {/* deleteRatings Modal */}
+      {isDeleteModalOpen && <DeleteRatings open={isDeleteModalOpen} onClose={() => setDeleteModalOpen(false)} />}
 
       {/* Add Category Modal */}
       <Modal show={showAdd} onHide={handleCloseAdd} centered>

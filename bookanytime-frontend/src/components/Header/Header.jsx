@@ -14,7 +14,7 @@ const Header = () => {
   const userRole = getUserRole(); // Get user role
   const navigate = useNavigate();
 
-console.log("user roleeeee",userRole.email)
+  console.log("user roleeeee",userRole.email)
   // Toggle mobile menu
   const toggleDrawer = () => {
     setMobileOpen(!mobileOpen);
@@ -46,7 +46,9 @@ console.log("user roleeeee",userRole.email)
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         {/* Logo */}
-        <h3 className="text-white m-0">BookAnytime</h3>
+        <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <h3 className="text-white m-0">BookAnytime</h3>
+        </Link>
 
         {/* Desktop Menu */}
         <Box
@@ -60,7 +62,7 @@ console.log("user roleeeee",userRole.email)
           <Button color="inherit" component={Link} to="/search" sx={{ color: "white !important" }}>
             Search
           </Button>
-          <Button color="inherit" component={Link} to="/list-property" sx={{ color: "white !important" }}>
+          <Button color="inherit" component={Link} to="/list-your-property" sx={{ color: "white !important" }}>
             List Your Property
           </Button>
           <Button color="inherit" component={Link} to="/wishlist" startIcon={<FavoriteIcon />} sx={{ color: "white !important" }}>
@@ -78,22 +80,19 @@ console.log("user roleeeee",userRole.email)
               Login / Signup
             </MenuItem>
 
-<MenuItem
-  component={Link}
-  to="/admin"
-  onClick={handleClose}
-  style={{ display: getUserRole() === "admin" ? "block" : "none" }} // ✅ Hide if not admin
->
-  Admin Panel
-</MenuItem>
-<MenuItem
-  // component={Link}
-  // to="/admin"
-  onClick={handleLogout}
->
-Logout
-</MenuItem>
-
+            <MenuItem
+              component={Link}
+              to="/admin"
+              onClick={handleClose}
+              style={{ display: getUserRole() === "admin" ? "block" : "none" }} // ✅ Hide if not admin
+            >
+              Admin Panel
+            </MenuItem>
+            <MenuItem
+              onClick={handleLogout}
+            >
+              Logout
+            </MenuItem>
           </Menu>
         </Box>
 

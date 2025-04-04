@@ -12,7 +12,9 @@ const UpdatePropertyPage = () => {
     name: "",
     category: "",
     description: "",
-    price: "",
+    house_rules: "",
+    minPrice: "", // Use minPrice instead of price
+    maxPrice: "", // Use maxPrice instead of price
     city: "",
     address: "",
     latitude: "",
@@ -22,8 +24,10 @@ const UpdatePropertyPage = () => {
       adults: "",
       bedrooms: "",
     },
+    popularity:"",
     images: [],
-    whatsappNumber: ""
+    whatsappNumber: "",
+    instagram: ""
   });
 
   const [imageFiles, setImageFiles] = useState([]);
@@ -134,7 +138,7 @@ const UpdatePropertyPage = () => {
       await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/properties/${id}`, formDataToSend, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
+      console.log("data to update", formDataToSend)
       alert("Property updated successfully!");
       navigate("/"); // Redirect to admin properties page
     } catch (error) {
@@ -172,9 +176,17 @@ const UpdatePropertyPage = () => {
               <TextField fullWidth label="Description" name="description" multiline rows={3} value={formData.description} onChange={handleChange} required />
             </Grid>
 
-            {/* Price */}
+            {/* House Rules */}
+            <Grid item xs={12}>
+              <TextField fullWidth label="House Rules" name="house_rules" multiline rows={3} value={formData.house_rules} onChange={handleChange} required />
+            </Grid>
+
+            {/* Price Range (Min & Max Price) */}
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth type="number" label="Price" name="price" value={formData.price} onChange={handleChange} required />
+              <TextField fullWidth type="number" label="Min Price" name="minPrice" value={formData.minPrice} onChange={handleChange} required />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField fullWidth type="number" label="Max Price" name="maxPrice" value={formData.maxPrice} onChange={handleChange} required />
             </Grid>
 
             {/* City */}
@@ -246,6 +258,15 @@ const UpdatePropertyPage = () => {
               />
             </Grid>
 
+          {/* Popularity */}
+          <Grid item xs={12} sm={6}>
+            <TextField select fullWidth label="Popularity" name="popularity"  value={formData.popularity}  onChange={handleChange}>
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((option) => (
+          <MenuItem key={option} value={option}>{option}</MenuItem>
+            ))}
+            </TextField>
+          </Grid>
+          
             {/* Image Upload */}
             <Grid item xs={12}>
               <input type="file" multiple ref={fileInputRef} onChange={handleImageChange} />
@@ -257,6 +278,11 @@ const UpdatePropertyPage = () => {
             {/* WhatsApp Number */}
             <Grid item xs={12}>
               <TextField fullWidth label="WhatsApp Number" name="whatsappNumber" value={formData.whatsappNumber} onChange={handleChange} required />
+            </Grid>
+
+            {/* Instagram */}
+            <Grid item xs={12}>
+              <TextField fullWidth label="Instagram UserID" name="instagram" value={formData.instagram} onChange={handleChange} required />
             </Grid>
 
             {/* Submit Button */}

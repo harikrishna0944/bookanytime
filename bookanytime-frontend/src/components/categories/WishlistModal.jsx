@@ -94,7 +94,15 @@ const WishlistModal = ({ show, onClose, userId, propertyId, onWishlistUpdate }) 
       setWishlistName(""); // Reset input field
     } catch (error) {
       console.error("Error creating wishlist:", error);
-      setError("Failed to create wishlist. Please try again.");
+      if (error.response && error.response.data && error.response.data.error) {
+        if (error.response.data.error.includes("already exists")) {
+          setError("Wishlist name already exists. Please choose a different name.");
+        } else {
+          setError(error.response.data.error);
+        }
+      } else {
+        setError("Failed to create wishlist. Please try again.");
+      }
     } finally {
       setLoading(false);
     }

@@ -5,12 +5,14 @@ import { Modal, Button, Form } from "react-bootstrap";
 const UpdateOfferModal = ({ show, handleClose }) => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [properties, setProperties] = useState([]);
+  const [selectedProperty, setSelectedProperty] = useState("");
   const [offers, setOffers] = useState([]);
   const [selectedOffer, setSelectedOffer] = useState("");
   const [image, setImage] = useState(null);
   const [existingImages, setExistingImages] = useState([]); // Store previous images
-const [newImages, setNewImages] = useState([]); // Store new images
-const [removeImages, setRemoveImages] = useState([]); // Store images to be removed
+  const [newImages, setNewImages] = useState([]); // Store new images
+  const [removeImages, setRemoveImages] = useState([]); // Store images to be removed
 
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -22,6 +24,24 @@ const [removeImages, setRemoveImages] = useState([]); // Store images to be remo
       .catch((err) => console.error("Error fetching categories:", err));
   }, []);
 
+      // Fetch properties when category changes
+      useEffect(() => {
+        if (selectedCategory) {
+          fetch(`${import.meta.env.VITE_API_BASE_URL}/api/properties?category=${encodeURIComponent(selectedCategory)}`)
+            .then((res) => res.json())
+            .then((data) => {
+              if (Array.isArray(data)) {
+                setProperties(data);
+              } else {
+                setProperties([]);
+              }
+            })
+            .catch((error) => console.error("Error fetching properties:", error));
+        } else {
+          setProperties([]); // Reset properties if no category is selected
+        }
+      }, [selectedCategory]);
+  
   const fetchOffers = (category) => {
     axios
       .get(`${import.meta.env.VITE_API_BASE_URL}/api/offers/category/${category}`)
@@ -54,6 +74,7 @@ const [removeImages, setRemoveImages] = useState([]); // Store images to be remo
     }
 
     const formData = new FormData();
+    formData.append("property", selectedProperty);
     formData.append("startDate", startDate);
     formData.append("endDate", endDate);
     // Send selected images for removal
@@ -107,6 +128,12 @@ const [removeImages, setRemoveImages] = useState([]); // Store images to be remo
                 <option key={cat._id} value={cat.name}>
                   {cat.name}
                 </option>
+              ))}
+            </Form.Control>
+            <Form.Control as="select" value={selectedProperty} onChange={(e) => setSelectedProperty(e.target.value)}>
+              <option value="">Select Property</option>
+              {properties.map((cat) => (
+                <option key={cat._id} value={cat.name}>{cat.name}</option>
               ))}
             </Form.Control>
           </Form.Group>

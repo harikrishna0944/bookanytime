@@ -204,19 +204,20 @@ const WishlistDetailsPage = () => {
                             {/* Property Details */}
                             <div className="property-details text-center p-2">
                               <h6 className="fw-bold mb-1 fs-6">{property.name}</h6>
+                              <h6 className="fw-bold mb-1 fs-6">{property.category}</h6>
+
                               <p className="text-muted small mb-1">{property.address}</p>
-            
                               {/* Bedrooms and Adults */}
-                              <div className="d-flex justify-content-center gap-3">
+                              {/* <div className="d-flex justify-content-center gap-3">
                                 <div className="d-flex align-items-center">
-                                  <FaBed className="me-2" /> {/* Bedroom icon */}
+                                  <FaBed className="me-2" /> 
                                   <span>{property.capacity?.bedrooms || 0} Bedrooms</span>
                                 </div>
                                 <div className="d-flex align-items-center">
-                                  <FaUser className="me-2" /> {/* Adult icon */}
+                                  <FaUser className="me-2" /> 
                                   <span>{property.capacity?.adults || 0} Adults</span>
                                 </div>
-                              </div>
+                              </div> */}
                             </div>
                           </div>
                         </div>

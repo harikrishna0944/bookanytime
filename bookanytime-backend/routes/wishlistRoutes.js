@@ -101,7 +101,7 @@ router.delete("/:userId/remove", async (req, res) => {
       const { userId } = req.params;
       const { propertyId, wishlistName } = req.body;
   
-      console.log("Received DELETE request:", { userId, propertyId, wishlistName }); // ✅ Debugging Log
+      console.log("Received DELETE request:", { userId, propertyId, wishlistName }); 
   
       if (!userId || !propertyId || !wishlistName) {
         return res.status(400).json({ error: "Missing required fields" });

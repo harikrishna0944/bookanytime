@@ -18,8 +18,7 @@ function MapComponent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showMap, setShowMap] = useState(false);
-  const [googleLoaded, setGoogleLoaded] = useState(false);
-  const mapRef = useRef(null); // Reference to the Google Map instance
+  const mapRef = useRef(null);
 
   // Fetch properties when map is shown
   useEffect(() => {
@@ -43,10 +42,6 @@ function MapComponent() {
     }
   }, [showMap]);
 
-  const handleGoogleMapsApiLoaded = () => {
-    setGoogleLoaded(true);
-  };
-
   const mapCenter =
     properties.length > 0
       ? { lat: parseFloat(properties[0].latitude), lng: parseFloat(properties[0].longitude) }
@@ -58,8 +53,8 @@ function MapComponent() {
 
   const handleMapUnmount = () => {
     if (mapRef.current) {
-      google.maps.event.clearInstanceListeners(mapRef.current); // Clean up listeners
-      mapRef.current = null; // Reset map reference
+      google.maps.event.clearInstanceListeners(mapRef.current);
+      mapRef.current = null;
     }
   };
 
@@ -81,14 +76,12 @@ function MapComponent() {
                 lng: parseFloat(property.longitude),
               }}
               onClick={() => setSelectedProperty(property)}
-              title={property.name} // Display property name when hovering over the marker
+              title={property.name}
               label={{
-                text: property.name,
-                color: "royalblue",
-                fontSize: "16px",
+                text: property.name, // Property name displayed initially
+                color: "blue",
+                fontSize: "18px",
                 fontWeight: "bold",
-                position: "absolute",
-                pixelOffset: new google.maps.Point(0, -30),
               }}
             />
           ))}
@@ -101,16 +94,42 @@ function MapComponent() {
               }}
               onCloseClick={() => setSelectedProperty(null)}
             >
-              <div>
-                <h4>{selectedProperty.name}</h4>
-                <p>{selectedProperty.address}</p>
-                <a
-                  href={`https://www.google.com/maps/dir/?api=1&destination=${selectedProperty.latitude},${selectedProperty.longitude}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+              <div style={{ textAlign: "center", maxWidth: "250px" }}>
+                {/* Clickable Hotel Name */}
+                <h4
+                  style={{ cursor: "pointer", color: "#007BFF", marginBottom: "8px" }}
+                  onClick={() => window.open(`/property/${selectedProperty._id}`, "_blank")}
                 >
-                  Get Directions
-                </a>
+                  {selectedProperty.name}
+                </h4>
+
+                {/* Clickable Image with Increased Size */}
+                {selectedProperty.images && selectedProperty.images.length > 0 && (
+                  <img
+                    src={selectedProperty.images[0]}
+                    alt={selectedProperty.name}
+                    style={{
+                      width: "100%",
+                      maxHeight: "150px", // Increased image size
+                      objectFit: "cover",
+                      cursor: "pointer",
+                      borderRadius: "8px",
+                    }}
+                    onClick={() => window.open(`/property/${selectedProperty._id}`, "_blank")}
+                  />
+                )}
+
+                {/* Get Directions Link */}
+                <div style={{ marginTop: "10px" }}>
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${selectedProperty.latitude},${selectedProperty.longitude}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "#007BFF", textDecoration: "none", fontWeight: "bold" }}
+                  >
+                    Get Directions
+                  </a>
+                </div>
               </div>
             </InfoWindow>
           )}
@@ -146,20 +165,10 @@ function MapComponent() {
         {showMap ? "Hide Map" : "Show Map"}
       </button>
 
-      {/* Full-screen map when visible */}
       {showMap && (
         <div style={mapContainerStyle}>
-          <LoadScript
-            googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
-            onLoad={handleGoogleMapsApiLoaded}
-          >
-            {loading ? (
-              <p>Loading map...</p>
-            ) : error ? (
-              <p style={{ color: "red" }}>{error}</p>
-            ) : (
-              renderMap()
-            )}
+          <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+            {loading ? <p>Loading map...</p> : error ? <p style={{ color: "red" }}>{error}</p> : renderMap()}
           </LoadScript>
         </div>
       )}

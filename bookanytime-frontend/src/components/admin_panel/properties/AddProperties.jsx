@@ -9,7 +9,9 @@ const AdminPropertyForm = () => {
     name: "",
     category: "",
     description: "",
-    price: "",
+    house_rules: "",
+    minPrice: "",
+    maxPrice: "",
     city: "",
     address: "",
     latitude: "",
@@ -17,8 +19,10 @@ const AdminPropertyForm = () => {
     amenities: [],
     adults: "",
     bedrooms: "",
+    popularity: "", 
     images: [],
-    whatsappNumber: ""
+    whatsappNumber: "",
+    instagram: "",
   });
 
   const fileInputRef = useRef(null);
@@ -117,7 +121,9 @@ const AdminPropertyForm = () => {
       name: "",
       category: "",
       description: "",
-      price: "",
+      house_rules: "",
+      minPrice: "",
+      maxPrice: "",
       city: "",
       address: "",
       latitude: "",
@@ -125,8 +131,10 @@ const AdminPropertyForm = () => {
       amenities: [],
       adults: "",
       bedrooms: "",
+      popularity: "", 
       images: [],
-      whatsappNumber: ""
+      whatsappNumber: "",
+      instagram: "",
     });
     setImageFiles([]);
     setSelectedAmenity("");
@@ -163,10 +171,49 @@ const AdminPropertyForm = () => {
             <TextField fullWidth label="Description" name="description" multiline rows={3} value={formData.description} onChange={handleChange} required />
           </Grid>
 
-          {/* Price */}
-          <Grid item xs={12} sm={6}>
-            <TextField fullWidth type="number" label="Price" name="price" value={formData.price} onChange={handleChange} required />
+          {/* House Rules */}
+          <Grid item xs={12}>
+            <TextField fullWidth label="House Rules" name="house_rules" multiline rows={3} value={formData.house_rules} onChange={handleChange} required />
           </Grid>
+
+          {/* Price Range (Min and Max Price) */}
+          <Grid container spacing={2}>
+            {/* Min Price */}
+            <Grid item xs={12} sm={5}>
+              <TextField
+                fullWidth
+                type="number"
+                label="Min Price"
+                name="minPrice"
+                value={formData.minPrice}
+                onChange={handleChange}
+                placeholder="Min Price"
+                inputProps={{ min: 0 }}
+              />
+            </Grid>
+
+            {/* To text */}
+            <Grid item xs={12} sm={2} display="flex" alignItems="center" justifyContent="center">
+              <span>to</span>
+            </Grid>
+
+            {/* Max Price */}
+            <Grid item xs={12} sm={5}>
+              <TextField
+                fullWidth
+                type="number"
+                label="Max Price"
+                name="maxPrice"
+                value={formData.maxPrice}
+                onChange={handleChange}
+                placeholder="Max Price"
+                inputProps={{ min: 0 }}
+              />
+            </Grid>
+          </Grid>
+
+
+
 
           {/* City */}
           <Grid item xs={12} sm={6}>
@@ -219,6 +266,15 @@ const AdminPropertyForm = () => {
             <TextField fullWidth type="number" label="Bedrooms" name="bedrooms" value={formData.bedrooms} onChange={handleChange} required />
           </Grid>
 
+          {/* Popularity */}
+          <Grid item xs={12} sm={6}>
+            <TextField select fullWidth label="Popularity" name="popularity"  value={formData.popularity}  onChange={handleChange}>
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((option) => (
+          <MenuItem key={option} value={option}>{option}</MenuItem>
+            ))}
+            </TextField>
+          </Grid>
+
           {/* Image Upload */}
           <Grid item xs={12}>
             <input type="file" multiple ref={fileInputRef} onChange={handleImageChange} />
@@ -228,7 +284,10 @@ const AdminPropertyForm = () => {
           <Grid item xs={12}>
             <TextField fullWidth label="WhatsApp Number" name="whatsappNumber" value={formData.whatsappNumber} onChange={handleChange} required />
           </Grid>
-
+          {/* Instagram */}
+          <Grid item xs={12}>
+            <TextField fullWidth label="Instagram UserID" name="instagram" value={formData.instagram} onChange={handleChange} required />
+          </Grid>
           {/* Submit and Cancel Buttons */}
           <Grid item xs={12} style={{ textAlign: "center", display: "flex", justifyContent: "center", gap: "10px" }}>
             <Button type="submit" variant="contained" color="primary" disabled={loading}>

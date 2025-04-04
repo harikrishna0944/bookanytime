@@ -387,7 +387,7 @@ const SearchBar = () => {
         </div>
       </div>
 
-      <div className="category-filters-container">
+      <div className="category-filters-container d-flex">
         <div className="d-flex flex-nowrap gap-2 overflow-auto py-2">
           {["All", ...categories].map((category) => (
             <button
@@ -406,6 +406,65 @@ const SearchBar = () => {
               {category}
             </button>
           ))}
+        </div>
+        <div className="fixed-bottom d-flex justify-content-center gap-3 mb-3">
+        <Button
+          variant="primary"
+          onClick={() => setShowFilterModal(true)}
+        >
+          <FaFilter className="me-2" />
+          Filters
+          {appliedFiltersCount > 0 && (
+            <Badge bg="danger" className="ms-2">
+              {appliedFiltersCount}
+            </Badge>
+          )}
+        </Button>
+        
+        <Dropdown>
+          <Dropdown.Toggle variant="primary" id="dropdown-sort">
+            <FaSort className="me-2" />
+            {getSortToggleText()}
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item 
+              active={sortOptions.includes("priceLowToHigh")}
+              onClick={() => handleSort("priceLowToHigh")}
+            >
+              {sortOptions.includes("priceLowToHigh") && <span className="me-2">✓</span>}
+              Price Low to High
+            </Dropdown.Item>
+            <Dropdown.Item 
+              active={sortOptions.includes("priceHighToLow")}
+              onClick={() => handleSort("priceHighToLow")}
+            >
+              {sortOptions.includes("priceHighToLow") && <span className="me-2">✓</span>}
+              Price High to Low
+            </Dropdown.Item>
+            <Dropdown.Item 
+              active={sortOptions.includes("ratingHighToLow")}
+              onClick={() => handleSort("ratingHighToLow")}
+            >
+              {sortOptions.includes("ratingHighToLow") && <span className="me-2">✓</span>}
+              Highest Rated
+            </Dropdown.Item>
+            <Dropdown.Item 
+              active={sortOptions.includes("popularityHighToLow")}
+              onClick={() => handleSort("popularityHighToLow")}
+            >
+              {sortOptions.includes("popularityHighToLow") && <span className="me-2">✓</span>}
+              Most Popular
+            </Dropdown.Item>
+            {sortOptions.length > 0 && (
+              <Dropdown.Item 
+                onClick={clearAllSorting}
+                className="text-danger"
+              >
+                Clear All Sorting
+              </Dropdown.Item>
+            )}
+          </Dropdown.Menu>
+        </Dropdown>
         </div>
       </div>
 
@@ -488,7 +547,7 @@ const SearchBar = () => {
         )}
       </div>
 
-      <div className="fixed-bottom d-flex justify-content-center gap-3 mb-3">
+      {/* <div className="fixed-bottom d-flex justify-content-center gap-3 mb-3">
         <Button
           variant="primary"
           onClick={() => setShowFilterModal(true)}
@@ -546,7 +605,7 @@ const SearchBar = () => {
             )}
           </Dropdown.Menu>
         </Dropdown>
-      </div>
+      </div> */}
 
       <Filter
         showFilterModal={showFilterModal}

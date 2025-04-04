@@ -82,11 +82,11 @@
   background-color: white;
   z-index: 100;
   padding: 10px;
-  /* margin-bottom: 20px; */
+  margin-bottom: 20px;
   border-bottom: 1px solid #e0e0e0;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  /* flex-wrap: wrap; */
+  /* justify-content: center; */
   gap: 10px;
 }
 

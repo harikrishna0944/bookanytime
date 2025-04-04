@@ -387,7 +387,7 @@ const SearchBar = () => {
         </div>
       </div>
 
-      <div className="category-filters-container d-flex">
+      <div className="category-filters-container d-flex col-xl-10">
         <div className="d-flex flex-nowrap gap-2 overflow-auto py-2">
           {["All", ...categories].map((category) => (
             <button
@@ -407,7 +407,7 @@ const SearchBar = () => {
             </button>
           ))}
         </div>
-        <div className="gap-3">
+        <div className="d-flex gap-3 col-xl-3">
         <Button
           variant="primary"
           onClick={() => setShowFilterModal(true)}

@@ -407,7 +407,7 @@ const SearchBar = () => {
             </button>
           ))}
         </div>
-        <div className="gap-3 mb-3">
+        <div className="gap-3">
         <Button
           variant="primary"
           onClick={() => setShowFilterModal(true)}

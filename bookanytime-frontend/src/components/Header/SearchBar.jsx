@@ -584,8 +584,8 @@ const SearchBar = () => {
             left: 0;
             right: 0;
             padding: 10px;
-            background: white;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            // background: white;
+            // box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
             z-index: 1000;
           }
           .dropdown-item.active {

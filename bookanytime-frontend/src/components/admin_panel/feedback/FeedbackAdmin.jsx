@@ -18,6 +18,14 @@ const FeedbackAdmin = () => {
 
   return (
     <Container className="my-4">
+          <Typography
+      variant="h4"
+      className="mb-4 text-center"
+      style={{ fontWeight: 'bold', color: '#333' }}
+    >
+      Feedback for Properties and Website
+    </Typography>
+
       <Row className="g-3">
         {users.map(user => (
           <Col xs={12} md={6} lg={4} key={user._id}>

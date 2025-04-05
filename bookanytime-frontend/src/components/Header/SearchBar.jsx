@@ -453,7 +453,7 @@ const SearchBar = () => {
           )}
         </Button>
         
-        <Dropdown className="custom-dropdown">
+        <Dropdown className="custom-dropdown fs-13">
           <Dropdown.Toggle variant="primary" id="dropdown-sort">
             <FaSort className="me-2" />
             {getSortToggleText()}

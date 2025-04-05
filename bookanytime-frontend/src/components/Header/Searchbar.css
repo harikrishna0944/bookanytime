@@ -253,3 +253,14 @@
 .search-input {
   width: 100%;
 }
+.custom-dropdown .dropdown-item:hover {
+  background-color: #f0f8ff; /* Light blue */
+  color: #0d6efd; /* Bootstrap primary or any custom */
+}
+
+/* Custom dropdown item active */
+.custom-dropdown .dropdown-item.active,
+.custom-dropdown .dropdown-item:active {
+  background-color: #0d6efd; /* Bootstrap primary */
+  color: #fff;
+}

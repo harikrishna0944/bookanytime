@@ -42,7 +42,7 @@ const AuthPage = ({ isSignup }) => {
     try {
       const response = await axios.post(apiUrl, formData);
       const data = response.data;
-
+console.log("user data", data.user)
       if (data.token && data.user) {
         // ✅ Store user data & token in localStorage (only for login)
         if (!isSignup) {

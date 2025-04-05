@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Container, Spinner, Alert } from "react-bootstrap";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import "../recently_viewed/RecentlyViewed.css";
+import "/home/ubuntu/bookanytime/bookanytime-frontend/src/components/offers_section/newOffers.jsx";
 
 const RecentlyViewed = () => {
   const [loading, setLoading] = useState(true);

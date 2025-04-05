@@ -36,31 +36,6 @@ const SearchBar = () => {
   const [appliedFiltersCount, setAppliedFiltersCount] = useState(0);
   const [sortOptions, setSortOptions] = useState([]);
 
-  // Scrolling 
-  useEffect(() => {
-    const scrollEl = categoryScrollRef.current;
-    const checkArrows = () => {
-      if (!scrollEl) return;
-      setShowLeftArrow(scrollEl.scrollLeft > 0);
-      setShowRightArrow(
-        scrollEl.scrollLeft + scrollEl.offsetWidth < scrollEl.scrollWidth
-      );
-    };
-  
-    scrollEl?.addEventListener("scroll", checkArrows);
-    checkArrows(); // Initial check
-  
-    return () => scrollEl?.removeEventListener("scroll", checkArrows);
-  }, []);
-  
-  const handleScrollLeft = () => {
-    categoryScrollRef.current.scrollBy({ left: -150, behavior: "smooth" });
-  };
-  
-  const handleScrollRight = () => {
-    categoryScrollRef.current.scrollBy({ left: 150, behavior: "smooth" });
-  };
-  // 
   // Fetch categories and user data
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_BASE_URL}/api/categories`)
@@ -424,7 +399,7 @@ const SearchBar = () => {
 
       </div>
       <div className="category-filters-container d-flex">
-        {/* <div className="d-flex flex-nowrap gap-2  sticky-mobile col-xl-8 col-md-8 col-lg-8">
+        <div className="d-flex flex-nowrap gap-2  sticky-mobile col-xl-8 col-md-8 col-lg-8">
           {["All", ...categories].map((category) => (
             <button
             key={category}
@@ -442,45 +417,7 @@ const SearchBar = () => {
             {category}
           </button>
           ))}
-        </div> */}
-        <div className="category-scroll-wrapper position-relative">
-          {showLeftArrow && (
-          <button className="scroll-arrow left" onClick={handleScrollLeft}>
-            <ChevronLeft size={24} />
-          </button>
-          )}
-
-          <div
-            className="d-flex flex-nowrap gap-2 sticky-mobile category-scroll-container overflow-auto"
-            ref={categoryScrollRef}
-          >
-            {["All", ...categories].map((category) => (
-              <button
-                key={category}
-                className={`btn category-btn ${
-                  selectedCategories.includes(category)
-                    ? "btn-primary rounded-0"
-                    : "btn-outline-primary"
-                }`}
-                onClick={() => handleCategoryChange(category)}
-                style={{
-                  transition: "all 0.3s ease",
-                  minWidth: "80px",
-                  whiteSpace: "nowrap"
-                }}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-
-          {showRightArrow && (
-            <button className="scroll-arrow right" onClick={handleScrollRight}>
-              <ChevronRight size={24} />
-            </button>
-          )}
         </div>
-
         
         <div className="col-md-2 col-lg-2 col-xl-2 d-none d-md-block">
           <form className="d-flex" onSubmit={(e) => e.preventDefault()}>

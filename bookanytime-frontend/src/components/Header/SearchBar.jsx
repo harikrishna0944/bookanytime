@@ -399,7 +399,7 @@ const SearchBar = () => {
 
       </div>
       <div className="category-filters-container d-flex">
-        <div className="d-flex flex-nowrap gap-2 overflow-auto  col-xl-8">
+        <div className="d-flex flex-nowrap gap-2 overflow-auto  col-xl-8 col-md-8 col-lg-8">
           {["All", ...categories].map((category) => (
             <button
             key={category}
@@ -419,7 +419,7 @@ const SearchBar = () => {
           ))}
         </div>
         
-        <div className="col-md-2 d-none d-md-block">
+        <div className="col-md-2 col-lg-2 col-xl-2 d-none d-md-block">
           <form className="d-flex" onSubmit={(e) => e.preventDefault()}>
             <div className="input-group w-70">
               <input
@@ -443,7 +443,7 @@ const SearchBar = () => {
             </div>
           </form>
         </div>
-        <div className="d-flex gap-3 col-xl-3 filters-sort-container">
+        <div className="d-flex gap-3 col-xl-3 col-md-3 col-lg-3 filters-sort-container">
         <Button
           variant="primary"
           onClick={() => setShowFilterModal(true)}

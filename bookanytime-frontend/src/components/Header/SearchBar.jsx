@@ -394,7 +394,7 @@ const SearchBar = () => {
         </div>
       </div>
       <div className="category-filters-container d-flex">
-        <div className="d-flex flex-nowrap gap-2 overflow-auto  col-xl-10">
+        <div className="d-flex flex-nowrap gap-2 overflow-auto  col-xl-8">
           {["All", ...categories].map((category) => (
             <button
               key={category}
@@ -413,33 +413,30 @@ const SearchBar = () => {
             </button>
           ))}
         </div>
-        <div className="container">
-          <div className="row justify-content-center">
-            <div className="col-md-3">
-              <form className="d-flex" onSubmit={(e) => e.preventDefault()}>
-                <div className="input-group w-70">
-                  <input
-                    type="text"
-                    className="form-control form-control-lg"
-                    placeholder={
-                      isTyping
-                        ? "Search by property name"
-                        : categories.length > 0
-                        ? `Search for ${categories[currentCategoryIndex]}`
-                        : "Search"
-                    }
-                    value={searchText}
-                    onChange={handleInputChange}
-                    onFocus={handleFocus}
-                    onBlur={handleBlur}
-                  />
-                  <button className="btn btn-primary px-4" type="submit">
-                    <SearchIcon />
-                  </button>
-                </div>
-              </form>
+        
+        <div className="col-md-3">
+          <form className="d-flex" onSubmit={(e) => e.preventDefault()}>
+            <div className="input-group w-70">
+              <input
+                type="text"
+                className="form-control form-control-lg"
+                placeholder={
+                  isTyping
+                    ? "Search by property name"
+                    : categories.length > 0
+                    ? `Search for ${categories[currentCategoryIndex]}`
+                    : "Search"
+                }
+                value={searchText}
+                onChange={handleInputChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+              />
+              <button className="btn btn-primary px-4" type="submit">
+                <SearchIcon />
+              </button>
             </div>
-          </div>
+          </form>
         </div>
         <div className="d-flex gap-3 col-xl-3 filters-sort-container">
         <Button

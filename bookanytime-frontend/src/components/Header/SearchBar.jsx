@@ -36,6 +36,31 @@ const SearchBar = () => {
   const [appliedFiltersCount, setAppliedFiltersCount] = useState(0);
   const [sortOptions, setSortOptions] = useState([]);
 
+  // Scrolling 
+  useEffect(() => {
+    const scrollEl = categoryScrollRef.current;
+    const checkArrows = () => {
+      if (!scrollEl) return;
+      setShowLeftArrow(scrollEl.scrollLeft > 0);
+      setShowRightArrow(
+        scrollEl.scrollLeft + scrollEl.offsetWidth < scrollEl.scrollWidth
+      );
+    };
+  
+    scrollEl?.addEventListener("scroll", checkArrows);
+    checkArrows(); // Initial check
+  
+    return () => scrollEl?.removeEventListener("scroll", checkArrows);
+  }, []);
+  
+  const handleScrollLeft = () => {
+    categoryScrollRef.current.scrollBy({ left: -150, behavior: "smooth" });
+  };
+  
+  const handleScrollRight = () => {
+    categoryScrollRef.current.scrollBy({ left: 150, behavior: "smooth" });
+  };
+  // 
   // Fetch categories and user data
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_BASE_URL}/api/categories`)
@@ -420,9 +445,9 @@ const SearchBar = () => {
         </div> */}
         <div className="category-scroll-wrapper position-relative">
           {showLeftArrow && (
-            <button className="scroll-arrow left" onClick={handleScrollLeft}>
-              <ChevronLeft size={24} />
-            </button>
+          <button className="scroll-arrow left" onClick={handleScrollLeft}>
+            <ChevronLeft size={24} />
+          </button>
           )}
 
           <div

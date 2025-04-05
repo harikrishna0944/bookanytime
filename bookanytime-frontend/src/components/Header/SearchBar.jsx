@@ -402,7 +402,7 @@ const SearchBar = () => {
             className={`btn category-btn ${
               selectedCategories.includes(category) 
                 ? "btn-primary rounded-0"
-                : "btn-outline-primary rounded-pill"
+                : "btn-outline-primary"
             }`}
             onClick={() => handleCategoryChange(category)}
             style={{

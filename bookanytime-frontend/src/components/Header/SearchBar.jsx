@@ -407,7 +407,7 @@ const SearchBar = () => {
             </button>
           ))}
         </div>
-        <div className="d-flex gap-3 col-xl-3">
+        <div className="d-flex gap-3 col-xl-3 filters-sort-container">
         <Button
           variant="primary"
           onClick={() => setShowFilterModal(true)}

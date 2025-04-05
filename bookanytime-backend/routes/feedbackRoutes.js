@@ -24,7 +24,7 @@ router.post("/", async (req, res) => {
 
 
 // GET /api/users
-router.get('/', async (req, res) => {
+router.get('/feedback-logs', async (req, res) => {
   try {
     const users = await Feedback.find();
     console.log("feedbacks", users)

@@ -15,11 +15,10 @@ const FeedbackAdmin = () => {
   }, []);
 
   if (users.length === 0) return <p>No users found.</p>;
-
   return (
     <Container className="my-4">
           <Typography
-      variant="h4"
+      variant="h5"
       className="mb-4 text-center"
       style={{ fontWeight: 'bold', color: '#333' }}
     >

@@ -7,7 +7,7 @@ const FeedbackAdmin = () => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/users')
+    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/feedback`)
       .then(res => setUsers(res.data))
       .catch(err => console.error(err));
   }, []);

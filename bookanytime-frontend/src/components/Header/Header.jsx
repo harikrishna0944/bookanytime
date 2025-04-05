@@ -93,6 +93,15 @@ const Header = () => {
             >
               Logout
             </MenuItem>
+
+            <MenuItem
+              component={Link}
+              to="/feedback"
+              onClick={handleClose}
+              style={{ display: getUserRole() === "admin" ? "block" : "none" }} // ✅ Hide if not admin
+            >
+              Feedback
+            </MenuItem>
           </Menu>
         </Box>
 

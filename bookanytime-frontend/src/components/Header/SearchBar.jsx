@@ -346,31 +346,33 @@ const SearchBar = () => {
   return (
     <div className="search-page ">
       <div className="search-inputs-container">
-        <div className="container">
-          <div className="row justify-content-center">
-            <div className="col-md-6">
-              <form className="d-flex" onSubmit={(e) => e.preventDefault()}>
-                <div className="input-group w-100">
-                  <input
-                    type="text"
-                    className="form-control form-control-lg"
-                    placeholder={
-                      isTyping
-                        ? "Search by property name"
-                        : categories.length > 0
-                        ? `Search for ${categories[currentCategoryIndex]}`
-                        : "Search"
-                    }
-                    value={searchText}
-                    onChange={handleInputChange}
-                    onFocus={handleFocus}
-                    onBlur={handleBlur}
-                  />
-                  <button className="btn btn-primary px-4" type="submit">
-                    <SearchIcon />
-                  </button>
-                </div>
-              </form>
+        <div className="d-block d-md-none">
+          <div className="container">
+            <div className="row justify-content-center">
+              <div className="col-md-6">
+                <form className="d-flex" onSubmit={(e) => e.preventDefault()}>
+                  <div className="input-group w-100">
+                    <input
+                      type="text"
+                      className="form-control form-control-lg"
+                      placeholder={
+                        isTyping
+                          ? "Search by property name"
+                          : categories.length > 0
+                          ? `Search for ${categories[currentCategoryIndex]}`
+                          : "Search"
+                      }
+                      value={searchText}
+                      onChange={handleInputChange}
+                      onFocus={handleFocus}
+                      onBlur={handleBlur}
+                    />
+                    <button className="btn btn-primary px-4" type="submit">
+                      <SearchIcon />
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>

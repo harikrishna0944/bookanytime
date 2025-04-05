@@ -10,8 +10,8 @@
     scroll-behavior: smooth;
     background: #ffffff; /* White background */
     border-radius: 12px; /* Rounded corners */
-    width: 90vw; /* Fixed width for mobile view */
-    max-width: 100%; /* Ensure it doesn't exceed the screen width */
+    width: 90vw;
+    max-width: 100vw;
     margin-top: -40px;
 }
 

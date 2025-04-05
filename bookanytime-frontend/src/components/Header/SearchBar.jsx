@@ -350,7 +350,7 @@ const SearchBar = () => {
           <div className="row justify-content-center">
             <div className="col-md-4">
               <form className="d-flex" onSubmit={(e) => e.preventDefault()}>
-                <div className="input-group w-50">
+                <div className="input-group w-70">
                   <input
                     type="text"
                     className="form-control form-control-lg"

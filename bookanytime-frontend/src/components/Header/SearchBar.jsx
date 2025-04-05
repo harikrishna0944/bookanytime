@@ -398,20 +398,20 @@ const SearchBar = () => {
         <div className="d-flex flex-nowrap gap-2 overflow-auto  col-xl-8">
           {["All", ...categories].map((category) => (
             <button
-              key={category}
-              className={`btn ${
-                selectedCategories.includes(category) 
-                  ? "btn-primary rounded-0"
-                  : "btn-outline-primary rounded-pill"
-              }`}
-              onClick={() => handleCategoryChange(category)}
-              style={{
-                transition: "all 0.3s ease",
-                minWidth: "80px"
-              }}
-            >
-              {category}
-            </button>
+            key={category}
+            className={`btn category-btn ${
+              selectedCategories.includes(category) 
+                ? "btn-primary rounded-0"
+                : "btn-outline-primary rounded-pill"
+            }`}
+            onClick={() => handleCategoryChange(category)}
+            style={{
+              transition: "all 0.3s ease",
+              minWidth: "80px"
+            }}
+          >
+            {category}
+          </button>
           ))}
         </div>
         

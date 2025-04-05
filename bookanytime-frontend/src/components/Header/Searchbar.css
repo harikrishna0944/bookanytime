@@ -268,7 +268,7 @@
 .category-btn.btn-outline-primary:not(.btn-primary):hover {
   background-color: transparent !important;  /* No background */
   color: #0d6efd; /* Bootstrap primary text color */
-  border-color: #0d6efd;
+  /* border-color: #0d6efd; */
 }
 
 /* Optional: Add a subtle underline or weight change on hover */

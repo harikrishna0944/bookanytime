@@ -16,7 +16,7 @@ const FeedbackComponent = () => {
       await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/feedback`, {
         username: user.fullName,
         email: user.email,
-        phone: user.phone, // phone now included
+        phone: user.phoneNumber, // phone now included
         description: description.trim(),
       });
 

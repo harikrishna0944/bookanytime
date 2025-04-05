@@ -281,4 +281,10 @@
     padding-bottom: 10px;
   }
 }
+.category-filters-container .position-sticky {
+  top: 30px;
+  z-index: 1020;
+  background-color: white;
+}
+
 

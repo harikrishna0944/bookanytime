@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Card, CardContent, Typography, Divider  } from '@mui/material';
+import { Card, CardContent, Typography, Divider, Box   } from '@mui/material';
 import { Container, Row, Col } from 'react-bootstrap';
 import { Email, Phone, CalendarToday } from '@mui/icons-material';
 

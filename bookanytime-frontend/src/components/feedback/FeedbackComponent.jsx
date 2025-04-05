@@ -1,5 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
+import {
+  Box,
+  Container,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+} from "@mui/material";
 
 const FeedbackComponent = () => {
   const [description, setDescription] = useState("");
@@ -29,26 +37,73 @@ const FeedbackComponent = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6">
-        <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
-          Feedback for Property or Website
-        </h2>
-      <textarea
-          className="w-full h-40 p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
-        placeholder="Write your feedback here..."
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <button
-          className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition duration-300"
-        onClick={handleSubmit}
-      >
-        Submit
-      </button>
-      </div>
-    </div>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        width: "100vw",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundImage: "linear-gradient(to right, #1E3C72, #2A5298)",
+        padding: 2,
+      }}
+    >
+      <Container maxWidth="sm">
+        <Paper
+          elevation={10}
+          sx={{
+            padding: 4,
+            borderRadius: 3,
+            backgroundColor: "#fff",
+            width: "100%",
+            maxWidth: "500px",
+            boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.1)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Typography variant="h4" color="primary" gutterBottom>
+            Feedback for Property or Website
+          </Typography>
+
+          <TextField
+            label="Write your feedback here..."
+            multiline
+            rows={6}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            fullWidth
+            variant="outlined"
+            sx={{
+              mt: 3,
+              mb: 3,
+              "& .MuiOutlinedInput-root": {
+                borderRadius: "8px",
+                backgroundColor: "#f9f9f9",
+              },
+            }}
+          />
+
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{
+              borderRadius: "8px",
+              padding: "12px",
+              fontSize: "16px",
+              fontWeight: 600,
+              backgroundColor: "#0072ff",
+              "&:hover": { backgroundColor: "#005bb5" },
+            }}
+          >
+            Submit
+          </Button>
+        </Paper>
+      </Container>
+    </Box>
   );
 };
-
 export default FeedbackComponent;

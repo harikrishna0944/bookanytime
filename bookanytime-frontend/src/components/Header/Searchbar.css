@@ -274,6 +274,7 @@
 }
 @media (max-width: 768px) {
   .category-filters-container {
+    position: sticky;
     top: 50px; /* adjust if your header is shorter on mobile */
     flex-direction: column;
     align-items: flex-start;

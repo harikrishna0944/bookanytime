@@ -649,7 +649,7 @@ const SearchBar = () => {
             z-index: 1000;
           }
           .dropdown-item.active {
-            background-color: rgba(43, 91, 226, 0.5);
+            background-color: rgba(43, 226, 73, 0.9);
           }
           .Dropdown.Menu{
           backgroung-color:white;

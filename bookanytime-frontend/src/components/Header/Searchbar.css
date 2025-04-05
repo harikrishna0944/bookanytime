@@ -273,6 +273,5 @@
 
 /* Optional: Add a subtle underline or weight change on hover */
 .category-btn.btn-outline-primary:not(.btn-primary):hover {
-  text-decoration: underline;
   font-weight: 500;
 }

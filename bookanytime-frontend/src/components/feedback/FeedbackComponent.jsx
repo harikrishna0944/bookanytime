@@ -28,20 +28,24 @@ const FeedbackComponent = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-4 shadow-lg rounded-lg bg-white">
-      <h2 className="text-2xl font-bold mb-4">Feedback for Property or Website</h2>
-      <textarea
-        className="w-full h-40 p-2 border rounded mb-4"
-        placeholder="Write your feedback here..."
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <button
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        onClick={handleSubmit}
-      >
-        Submit
-      </button>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 p-4">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6">
+        <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
+          Feedback for Property or Website
+        </h2>
+        <textarea
+          className="w-full h-40 p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+          placeholder="Write your feedback here..."
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+        <button
+          className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition duration-300"
+          onClick={handleSubmit}
+        >
+          Submit
+        </button>
+      </div>
     </div>
   );
 };

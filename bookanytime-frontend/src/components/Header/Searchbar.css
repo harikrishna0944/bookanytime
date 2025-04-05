@@ -157,7 +157,7 @@
   .category-filters-container {
     display: flex;
     overflow-x: auto;
-    /* white-space: nowrap; */
+    white-space: nowrap;
     padding: 6px;
     gap: 6px;
     width: 100%;

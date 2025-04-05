@@ -13,7 +13,7 @@ const FeedbackComponent = () => {
     }
 
     try {
-      await axios.post("http://localhost:5000/api/feedback", {
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/feedback`, {
         username: user.username,
         email: user.email,
         description: description.trim(),

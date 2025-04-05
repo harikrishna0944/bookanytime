@@ -2,13 +2,10 @@
   padding-top: 40px; /* Adjust this based on your header height */
   background-color: #fff; /* Ensure the background is white */
   min-height: 100vh; /* Make sure the page covers the full viewport */
-  margin: 0;
+  margin: 0 auto;
   /* max-width: 1400px; */
   /* padding: 20px; */
   margin-top: 30px;
-  width: 100%; /* Make it full width */
-  max-width: 100%; /* Ensure it doesn't get restricted */
-  padding: 20px;
 }
 
 /* Container for the search inputs */

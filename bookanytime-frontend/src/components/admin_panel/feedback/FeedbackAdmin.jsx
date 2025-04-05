@@ -15,30 +15,54 @@ const FeedbackAdmin = () => {
   if (users.length === 0) return <p>No users found.</p>;
 
   return (
-    <Container className="my-4">
+    <Container className="my-5">
       <Row className="g-4">
         {users.map(user => (
           <Col xs={12} md={6} lg={4} key={user._id}>
-            <Card className="h-100 shadow-sm p-3">
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Username: {user.username}
-                </Typography>
-                <Typography variant="body2" gutterBottom>
-                  Email: {user.email}
-                </Typography>
-                <Typography variant="body2" gutterBottom>
-                  Phone: {user.phone}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word', maxHeight: '200px', overflowY: 'auto' }}
-                >
-                  <strong>Description:</strong> {user.description}
-                </Typography>
-                {/* <Typography variant="caption" className="text-muted d-block mt-2">
-                  Created At: {new Date(user.createdAt).toLocaleString()}
-                </Typography> */}
+            <Card
+              className="shadow-sm border-0 rounded-4 h-100"
+              style={{
+                backgroundColor: "#f8f9fa",
+                transition: '0.3s',
+                height: '100%',
+              }}
+            >
+              <CardContent className="d-flex flex-column h-100 justify-content-between">
+                {/* Header Section */}
+                <div className="mb-3">
+                  <Typography variant="h6" gutterBottom color="primary" fontWeight="bold">
+                    {user.username}
+                  </Typography>
+                  <Typography variant="caption" className="d-flex align-items-center text-muted">
+                    <CalendarToday fontSize="small" className="me-1" />
+                    {new Date(user.createdAt).toLocaleString()}
+                  </Typography>
+                </div>
+
+                <Divider className="my-2" />
+
+                {/* Contact Info */}
+                <div className="mb-2">
+                  <Typography variant="body2" className="d-flex align-items-center">
+                    <Email fontSize="small" className="me-1 text-secondary" /> {user.email}
+                  </Typography>
+                  <Typography variant="body2" className="d-flex align-items-center">
+                    <Phone fontSize="small" className="me-1 text-secondary" /> {user.phone}
+                  </Typography>
+                </div>
+
+                <Divider className="my-2" />
+
+                {/* Description */}
+                <div style={{ maxHeight: "160px", overflowY: "auto" }}>
+                  <Typography variant="subtitle2" className="text-dark mb-1">Feedback:</Typography>
+                  <Typography
+                    variant="body2"
+                    style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}
+                  >
+                    {user.description}
+                  </Typography>
+                </div>
               </CardContent>
             </Card>
           </Col>
@@ -47,5 +71,6 @@ const FeedbackAdmin = () => {
     </Container>
   );
 };
+
 
 export default FeedbackAdmin;

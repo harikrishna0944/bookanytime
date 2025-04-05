@@ -41,7 +41,7 @@ const FeedbackAdmin = () => {
                   </Typography>
                 </div>
 
-                <Divider className="my-2" />
+                {/* <Divider className="my-2" /> */}
 
                 {/* Contact Info */}
                 <div className="mb-2">
@@ -53,7 +53,7 @@ const FeedbackAdmin = () => {
                   </Typography>
                 </div>
 
-                <Divider className="my-2" />
+                {/* <Divider className="my-2" /> */}
 
                 {/* Description */}
                 <div style={{ maxHeight: "160px", overflowY: "auto" }}>

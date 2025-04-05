@@ -377,22 +377,28 @@ const SearchBar = () => {
           </div>
         </div>
 
-        <div className="search-bar-container right">
-          <TextField
-            type="text"
-            className="search-input"
-            placeholder="Search By Location"
-            value={locationSearch}
-            onChange={handleLocationChange}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
+        
+        <div className="container">
+          <div className="row justify-content-center">
+            <div className="col-md-6">
+              <form className="d-flex" onSubmit={(e) => e.preventDefault()}>
+                <div className="input-group w-100">
+                  <input
+                    type="text"
+                    className="form-control form-control-lg"
+                    placeholder="Search By Location"
+                    value={locationSearch}
+                    onChange={handleLocationChange}
+                  />
+                  <button className="btn btn-primary px-4" type="submit">
+                    <SearchIcon />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
+
       </div>
       <div className="category-filters-container d-flex">
         <div className="d-flex flex-nowrap gap-2 overflow-auto  col-xl-8">

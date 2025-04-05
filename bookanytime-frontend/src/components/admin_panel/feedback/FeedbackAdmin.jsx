@@ -21,7 +21,8 @@ const FeedbackAdmin = () => {
       <Row className="g-3">
         {users.map(user => (
           <Col xs={12} md={6} lg={4} key={user._id}>
-            <Card className="shadow-sm border-0 rounded-4" style={{ backgroundColor: "grey" }}>
+            <Card className="shadow-sm border-0 rounded-4" style={{ backgroundColor: "#fdfdfd" ,     boxShadow: "0 6px 18px rgba(0, 0, 0, 0.5)"
+}}>
               <CardContent style={{ padding: '16px' }}>
                 <Box mb={1}>
                   <Typography

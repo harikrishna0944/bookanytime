@@ -11,26 +11,17 @@ const RecentlyViewed = () => {
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   const [offers, setOffers] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState(["All Offers"]);
+  const [selectedCategories, setSelectedCategories] = useState(["All"]);
   const [categories, setCategories] = useState([]);
   
   const navigate = useNavigate();
   const containerRef = useRef(null);
 
   useEffect(() => {
-    // Replace with your actual categories from the screenshot
-    const staticCategories = [
-      { _id: "all", name: "All Offers" },
-      { _id: "bank", name: "Bank Offers" },
-      { _id: "flights", name: "Flights" },
-      { _id: "hotels", name: "Hotels" },
-      { _id: "holidays", name: "Holidays" },
-      { _id: "trains", name: "Trains" },
-      { _id: "cabs", name: "Cabs" },
-      { _id: "bus", name: "Bus" },
-      { _id: "forex", name: "Forex" }
-    ];
-    setCategories(staticCategories);
+    axios
+      .get(`${import.meta.env.VITE_API_BASE_URL}/api/categories`)
+      .then((response) => setCategories([{ _id: "all", name: "All" }, ...response.data]))
+      .catch((error) => console.error("Error fetching categories:", error));
   }, []);
 
   useEffect(() => {
@@ -46,18 +37,17 @@ const RecentlyViewed = () => {
       setOffers(response.data);
     } catch (error) {
       console.error("Error fetching offers:", error);
-      setError("Failed to load offers. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
+    }finally {
+        setLoading(false);
+      }
   };
 
   const handleCategoryChange = (category) => {
-    if (category === "All Offers") {
-      setSelectedCategories(["All Offers"]);
+    if (category === "All") {
+      setSelectedCategories(["All"]);
     } else {
       setSelectedCategories((prev) =>
-        prev.includes("All Offers")
+        prev.includes("All")
           ? [category]
           : prev.includes(category)
           ? prev.filter((c) => c !== category)
@@ -67,7 +57,7 @@ const RecentlyViewed = () => {
   };
 
   const filteredOffers = offers.filter(
-    (offer) => selectedCategories.includes("All Offers") || selectedCategories.includes(offer.category)
+    (offer) => selectedCategories.includes("All") || selectedCategories.includes(offer.category)
   );
 
   const checkScroll = useCallback(() => {
@@ -107,9 +97,7 @@ const RecentlyViewed = () => {
 
   return (
     <Container fluid className="recently-viewed-container">
-      <h2>Offers</h2>
-      
-      {/* Categories */}
+      <h2>Available Offers</h2>
       <div className="recently-viewed-wrapper">
         {showLeftArrow && (
           <button className="scroll-arrow left" onClick={handleScrollLeft}>
@@ -117,34 +105,23 @@ const RecentlyViewed = () => {
           </button>
         )}
         <div className="recently-viewed-items">
-          {categories.map((category) => (
-            <button
-              key={category._id}
-              className={`btn rounded-pill ${selectedCategories.includes(category.name) ? "btn-primary" : "btn-outline-primary"}`}
-              onClick={() => handleCategoryChange(category.name)}
-            >
-              {category.name}
-            </button>
-          ))}
-        </div>
-        {showRightArrow && (
+        {categories.map((category) => (
+          <button
+            key={category._id}
+            className={`btn rounded-pill ${selectedCategories.includes(category.name) ? "btn-primary" : "btn-outline-primary"}`}
+            onClick={() => handleCategoryChange(category.name)}
+          >
+            {category.name}
+          </button>
+        ))}
+      </div>
+      {showRightArrow && (
           <button className="scroll-arrow right" onClick={handleScrollRight}>
             <ChevronRight size={24} />
           </button>
         )}
       </div>
 
-      {/* View All Link */}
-      <div className="d-flex justify-content-end mb-3">
-        <button 
-          className="btn btn-link text-decoration-none p-0 text-primary fw-bold"
-          onClick={() => setSelectedCategories(["All Offers"])}
-        >
-          VIEW ALL →
-        </button>
-      </div>
-
-      {/* Offers */}
       <div className="recently-viewed-wrapper">
         {showLeftArrow && (
           <button className="scroll-arrow left" onClick={handleScrollLeft}>
@@ -160,7 +137,7 @@ const RecentlyViewed = () => {
             filteredOffers.map((offer, index) => (
               <div key={index} className="offer-viewed-item">
                 <div className="offer-viewed-card">
-                  <div className="property-image-container" onClick={() => navigate(`/offers/${offer._id}`)}>
+                  <div className="property-image-container" onClick={() => navigate(`/offers/${offer._id}`)} >
                     <img
                       src={`${import.meta.env.VITE_API_BASE_URL}${offer.image[0]}`}
                       alt={offer.name}
@@ -174,7 +151,6 @@ const RecentlyViewed = () => {
                     <p className="text-gray-500 mb-2">
                       Valid: {new Date(offer.startDate).toLocaleDateString("en-GB")} - {new Date(offer.endDate).toLocaleDateString("en-GB")}
                     </p>
-                    <button className="btn btn-sm btn-outline-primary">BOOK NOW</button>
                   </div>
                 </div>
               </div>

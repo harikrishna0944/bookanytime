@@ -412,7 +412,7 @@ const SearchBar = () => {
             <div className="input-group w-70">
               <input
                 type="text"
-                className="form-control form-control-lg"
+                className="form-control form-control-sm"
                 placeholder={
                   isTyping
                     ? "Search by property name"
@@ -425,7 +425,7 @@ const SearchBar = () => {
                 onFocus={handleFocus}
                 onBlur={handleBlur}
               />
-              <button className="btn btn-primary px-4" type="submit">
+              <button className="btn btn-primary px-3" type="submit">
                 <SearchIcon />
               </button>
             </div>

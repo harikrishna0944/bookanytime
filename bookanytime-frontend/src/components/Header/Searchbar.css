@@ -6,7 +6,8 @@
   /* max-width: 1400px; */
   /* padding: 20px; */
   margin-top: 30px;
-  width: 100%;
+  width: 100vw;
+  max-width: 100vw;
   box-sizing: border-box;
 }
 

@@ -9,7 +9,7 @@ import { Button, Badge, Dropdown } from "react-bootstrap";
 import Filter from "../categories/Filter";
 import "./Searchbar.css";
 import { FaUser, FaRupeeSign } from "react-icons/fa";
-import { Form, InputGroup, Button } from "react-bootstrap";
+import { Form, InputGroup, } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
 
 const SearchBar = () => {

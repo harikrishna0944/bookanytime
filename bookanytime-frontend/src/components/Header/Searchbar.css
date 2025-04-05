@@ -261,6 +261,6 @@
 /* Custom dropdown item active */
 .custom-dropdown .dropdown-item.active,
 .custom-dropdown .dropdown-item:active {
-  background-color: #0d6efd; /* Bootstrap primary */
-  color: #fff;
+  background-color: #ffffff; /* Bootstrap primary */
+  color: #074ef2;
 }

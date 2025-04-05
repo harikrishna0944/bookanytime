@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Container, Spinner, Alert } from "react-bootstrap";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import "/home/ubuntu/bookanytime/bookanytime-frontend/src/components/offers_section/newOffers.jsx";
+import "../recently_viewed/RecentlyViewed.css";
 
 const RecentlyViewed = () => {
   const [loading, setLoading] = useState(true);
@@ -11,7 +11,7 @@ const RecentlyViewed = () => {
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   const [offers, setOffers] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState(["All Offers"]);
+  const [selectedCategories, setSelectedCategories] = useState(["All"]);
   const [categories, setCategories] = useState([]);
   
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const RecentlyViewed = () => {
   useEffect(() => {
     axios
       .get(`${import.meta.env.VITE_API_BASE_URL}/api/categories`)
-      .then((response) => setCategories([{ _id: "all", name: "All Offers" }, ...response.data]))
+      .then((response) => setCategories([{ _id: "all", name: "All" }, ...response.data]))
       .catch((error) => console.error("Error fetching categories:", error));
   }, []);
 
@@ -37,17 +37,17 @@ const RecentlyViewed = () => {
       setOffers(response.data);
     } catch (error) {
       console.error("Error fetching offers:", error);
-    } finally {
-      setLoading(false);
-    }
+    }finally {
+        setLoading(false);
+      }
   };
 
   const handleCategoryChange = (category) => {
-    if (category === "All Offers") {
-      setSelectedCategories(["All Offers"]);
+    if (category === "All") {
+      setSelectedCategories(["All"]);
     } else {
       setSelectedCategories((prev) =>
-        prev.includes("All Offers")
+        prev.includes("All")
           ? [category]
           : prev.includes(category)
           ? prev.filter((c) => c !== category)
@@ -57,7 +57,7 @@ const RecentlyViewed = () => {
   };
 
   const filteredOffers = offers.filter(
-    (offer) => selectedCategories.includes("All Offers") || selectedCategories.includes(offer.category)
+    (offer) => selectedCategories.includes("All") || selectedCategories.includes(offer.category)
   );
 
   const checkScroll = useCallback(() => {
@@ -96,64 +96,73 @@ const RecentlyViewed = () => {
   }, [checkScroll]);
 
   return (
-    <Container fluid className="offers-container">
-      <div className="offers-header">
-        <h2>Offers</h2>
-        <div className="view-all-link">VIEW ALL →</div>
-      </div>
-
-      <div className="categories-wrapper">
+    <Container fluid className="recently-viewed-container">
+      <h2>Available Offers</h2>
+      <div className="recently-viewed-wrapper">
         {showLeftArrow && (
           <button className="scroll-arrow left" onClick={handleScrollLeft}>
             <ChevronLeft size={24} />
           </button>
         )}
-        <div className="categories-list" ref={containerRef}>
-          {categories.map((category) => (
-            <div
-              key={category._id}
-              className={`category-tab ${selectedCategories.includes(category.name) ? "active" : ""}`}
-              onClick={() => handleCategoryChange(category.name)}
-            >
-              {category.name}
-            </div>
-          ))}
-        </div>
-        {showRightArrow && (
+        <div className="recently-viewed-items">
+        {categories.map((category) => (
+          <button
+            key={category._id}
+            className={`btn rounded-pill ${selectedCategories.includes(category.name) ? "btn-primary" : "btn-outline-primary"}`}
+            onClick={() => handleCategoryChange(category.name)}
+          >
+            {category.name}
+          </button>
+        ))}
+      </div>
+      {showRightArrow && (
           <button className="scroll-arrow right" onClick={handleScrollRight}>
             <ChevronRight size={24} />
           </button>
         )}
       </div>
 
-      <div className="offers-grid">
-        {loading ? (
-          <Spinner animation="border" variant="primary" />
-        ) : error ? (
-          <Alert variant="danger">{error}</Alert>
-        ) : filteredOffers.length > 0 ? (
-          filteredOffers.map((offer, index) => (
-            <div key={index} className="offer-card">
-              <div className="offer-badge">{offer.category.toUpperCase()}</div>
-              <div className="offer-highlight">
-                {offer.highlightText || "T&C'S APPLY"}
+      <div className="recently-viewed-wrapper">
+        {showLeftArrow && (
+          <button className="scroll-arrow left" onClick={handleScrollLeft}>
+            <ChevronLeft size={24} />
+          </button>
+        )}
+        <div className="recently-viewed-items" ref={containerRef}>
+          {loading ? (
+            <Spinner animation="border" variant="primary" />
+          ) : error ? (
+            <Alert variant="danger">{error}</Alert>
+          ) : filteredOffers.length > 0 ? (
+            filteredOffers.map((offer, index) => (
+              <div key={index} className="offer-viewed-item">
+                <div className="offer-viewed-card">
+                  <div className="property-image-container" onClick={() => navigate(`/offers/${offer._id}`)} >
+                    <img
+                      src={`${import.meta.env.VITE_API_BASE_URL}${offer.image[0]}`}
+                      alt={offer.name}
+                      className="property-image"
+                      draggable="false"
+                    />
+                  </div>
+                  <div className="property-details">
+                    <h6 className="property-name">{offer.name}</h6>
+                    <h6 className="font-bold text-lg text-blue-600">{offer.category}</h6>
+                    <p className="text-gray-500 mb-2">
+                      Valid: {new Date(offer.startDate).toLocaleDateString("en-GB")} - {new Date(offer.endDate).toLocaleDateString("en-GB")}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="offer-title">
-                {offer.title || "Special Offer"}
-              </div>
-              <div className="offer-description">
-                {offer.description || "Explore this amazing deal"}
-              </div>
-              <button 
-                className="book-now-btn"
-                onClick={() => navigate(`/offers/${offer._id}`)}
-              >
-                BOOK NOW
-              </button>
-            </div>
-          ))
-        ) : (
-          <p className="no-offers-message">No Offers available</p>
+            ))
+          ) : (
+            <p className="no-categories-message">No Offers available</p>
+          )}
+        </div>
+        {showRightArrow && (
+          <button className="scroll-arrow right" onClick={handleScrollRight}>
+            <ChevronRight size={24} />
+          </button>
         )}
       </div>
     </Container>

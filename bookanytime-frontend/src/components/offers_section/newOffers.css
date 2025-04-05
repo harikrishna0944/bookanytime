@@ -1,153 +1,32 @@
-.offers-container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.offers-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.offers-header h2 {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-}
-
-.view-all-link {
-  color: #007bff;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.categories-wrapper {
-  position: relative;
-  margin-bottom: 30px;
-}
-
-.categories-list {
-  display: flex;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  gap: 10px;
-  padding: 10px 0;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.categories-list::-webkit-scrollbar {
-  display: none;
-}
-
-.category-tab {
-  padding: 8px 16px;
-  border-radius: 20px;
-  background-color: #f5f5f5;
-  color: #333;
-  cursor: pointer;
-  white-space: nowrap;
-  font-size: 14px;
-  transition: all 0.3s ease;
-}
-
-.category-tab.active {
-  background-color: #007bff;
-  color: white;
-}
-
-.scroll-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 1;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.scroll-arrow.left {
-  left: -18px;
-}
-
-.scroll-arrow.right {
-  right: -18px;
-}
-
-.offers-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-}
-
-.offer-card {
-  border-radius: 8px;
-  padding: 20px;
-  background-color: #f9f9f9;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  position: relative;
-}
-
-.offer-badge {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: #ff5722;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.offer-highlight {
-  color: #ff5722;
-  font-size: 12px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.offer-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  color: #333;
-}
-
-.offer-description {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 20px;
-}
-
-.book-now-btn {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  width: 100%;
-  transition: background-color 0.3s;
-}
-
-.book-now-btn:hover {
-  background-color: #0056b3;
-}
-
-.no-offers-message {
-  text-align: center;
-  grid-column: 1 / -1;
-  color: #666;
-  padding: 20px;
-}
+.offer-viewed-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 210px; /* Default size for larger screens */
+    height: 210px; /* Default size for larger screens */
+    padding: 5px;
+  }
+  
+  .offer-viewed-card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    pointer-events: none;
+  }
+  .offer-viewed-item {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    flex: 0 0 auto;
+    width: 220px; /* Default width for larger screens */
+    transition: transform 0.2s ease;
+    padding: 18px;
+  }
+  
+  .offer-viewed-item:active {
+    transform: scale(0.95);
+  }

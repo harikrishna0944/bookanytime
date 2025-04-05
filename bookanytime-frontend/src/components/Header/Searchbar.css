@@ -76,6 +76,7 @@
 }
 
 /* Category Filters */
+@media (max-width: 768px) {
 .category-filters-container {
   position: sticky;
   top: 0;
@@ -88,6 +89,7 @@
   /* flex-wrap: wrap; */
   /* justify-content: center; */
   gap: 10px;
+}
 }
 
 .category-filters-container .btn {

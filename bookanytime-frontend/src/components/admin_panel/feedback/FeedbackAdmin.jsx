@@ -17,54 +17,56 @@ const FeedbackAdmin = () => {
   if (users.length === 0) return <p>No users found.</p>;
 
   return (
-    <Container className="my-5">
-      <Row className="g-4">
+    <Container className="my-4">
+      <Row className="g-3">
         {users.map(user => (
           <Col xs={12} md={6} lg={4} key={user._id}>
-            <Card
-              className="shadow-sm border-0 rounded-4 h-100"
-              style={{
-                backgroundColor: "#f8f9fa",
-                transition: '0.3s',
-                height: '100%',
-              }}
-            >
-              <CardContent className="d-flex flex-column h-100 justify-content-between">
-                {/* Header Section */}
-                <div className="mb-3">
-                  <Typography variant="h6" gutterBottom color="primary" fontWeight="bold">
+            <Card className="shadow-sm border-0 rounded-4" style={{ backgroundColor: "#fdfdfd" }}>
+              <CardContent style={{ padding: '16px' }}>
+                <Box mb={1}>
+                  <Typography
+                    variant="subtitle1"
+                    color="primary"
+                    fontWeight={600}
+                    sx={{ lineHeight: 1.2 }}
+                  >
                     {user.username}
                   </Typography>
-                  <Typography variant="caption" className="d-flex align-items-center text-muted">
-                    <CalendarToday fontSize="small" className="me-1" />
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    className="d-flex align-items-center"
+                    sx={{ fontSize: '0.75rem' }}
+                  >
+                    <CalendarToday sx={{ fontSize: 14, mr: 0.5 }} />
                     {new Date(user.createdAt).toLocaleString()}
                   </Typography>
-                </div>
+                </Box>
 
-                {/* <Divider className="my-2" /> */}
+                <Divider sx={{ my: 1 }} />
 
-                {/* Contact Info */}
-                <div className="mb-2">
-                  <Typography variant="body2" className="d-flex align-items-center">
-                    <Email fontSize="small" className="me-1 text-secondary" /> {user.email}
+                <Box mb={1}>
+                  <Typography variant="body2" className="d-flex align-items-center" sx={{ fontSize: '0.85rem' }}>
+                    <Email sx={{ fontSize: 16, mr: 0.5 }} />
+                    {user.email}
                   </Typography>
-                  <Typography variant="body2" className="d-flex align-items-center">
-                    <Phone fontSize="small" className="me-1 text-secondary" /> {user.phone}
+                  <Typography variant="body2" className="d-flex align-items-center" sx={{ fontSize: '0.85rem' }}>
+                    <Phone sx={{ fontSize: 16, mr: 0.5 }} />
+                    {user.phone}
                   </Typography>
-                </div>
+                </Box>
 
-                {/* <Divider className="my-2" /> */}
+                <Divider sx={{ my: 1 }} />
 
-                {/* Description */}
-                <div style={{ maxHeight: "160px", overflowY: "auto" }}>
-                  <Typography variant="subtitle2" className="text-dark mb-1">Feedback:</Typography>
+                <Box sx={{ maxHeight: 120, overflowY: 'auto' }}>
                   <Typography
                     variant="body2"
-                    style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}
+                    color="text.secondary"
+                    sx={{ whiteSpace: 'pre-wrap', fontSize: '0.9rem' }}
                   >
-                    {user.description}
+                    <strong>Feedback:</strong> {user.description}
                   </Typography>
-                </div>
+                </Box>
               </CardContent>
             </Card>
           </Col>
@@ -73,6 +75,7 @@ const FeedbackAdmin = () => {
     </Container>
   );
 };
+
 
 
 export default FeedbackAdmin;

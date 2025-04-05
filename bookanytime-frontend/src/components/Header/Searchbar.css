@@ -281,3 +281,46 @@
     margin-bottom: 15px;
   }
 }
+.category-scroll-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.scroll-arrow {
+  background: #ffffff;
+  border: 1px solid #ccc;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 20px;
+  z-index: 2;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.scroll-arrow:hover {
+  background-color: #f0f0f0;
+}
+
+.scroll-arrow.left {
+  margin-right: 8px;
+}
+
+.scroll-arrow.right {
+  margin-left: 8px;
+}
+
+.category-filters-container {
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.category-filters-container::-webkit-scrollbar {
+  display: none;
+}

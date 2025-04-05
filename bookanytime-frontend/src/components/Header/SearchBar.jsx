@@ -36,6 +36,18 @@ const SearchBar = () => {
   const [appliedFiltersCount, setAppliedFiltersCount] = useState(0);
   const [sortOptions, setSortOptions] = useState([]);
 
+  // scrollbar
+  const categoryRef = useRef(null);
+  const scrollCategories = (direction) => {
+    if (categoryRef.current) {
+      const scrollAmount = 200;
+      categoryRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+  // 
   // Fetch categories and user data
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_BASE_URL}/api/categories`)
@@ -398,7 +410,7 @@ const SearchBar = () => {
         </div>
 
       </div>
-      <div className="category-filters-container d-flex">
+      {/* <div className="category-filters-container d-flex">
         <div className="d-flex flex-nowrap gap-2  sticky-mobile col-xl-8 col-md-8 col-lg-8">
           {["All", ...categories].map((category) => (
             <button
@@ -502,7 +514,40 @@ const SearchBar = () => {
           </Dropdown.Menu>
         </Dropdown>
         </div>
-      </div>
+      </div> */}
+      <div className="category-scroll-wrapper d-flex align-items-center">
+  <button className="scroll-arrow left" onClick={() => scrollCategories('left')}>
+    &#8249;
+  </button>
+
+  <div
+    className="category-filters-container d-flex flex-nowrap gap-2 sticky-mobile col-xl-8 col-md-8 col-lg-8"
+    ref={categoryRef}
+  >
+    {["All", ...categories].map((category) => (
+      <button
+        key={category}
+        className={`btn category-btn ${
+          selectedCategories.includes(category) 
+            ? "btn-primary rounded-0"
+            : "btn-outline-primary"
+        }`}
+        onClick={() => handleCategoryChange(category)}
+        style={{
+          transition: "all 0.3s ease",
+          minWidth: "80px"
+        }}
+      >
+        {category}
+      </button>
+    ))}
+  </div>
+
+  <button className="scroll-arrow right" onClick={() => scrollCategories('right')}>
+    &#8250;
+  </button>
+</div>
+
 
       <div className="search-results">
         {filteredProperties.length > 0 ? (

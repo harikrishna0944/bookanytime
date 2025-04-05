@@ -17,6 +17,7 @@ import WishlistDetailsPage from "./components/WishList/WishListDetailsPage";
 import ListYourProperty from "./components/list_your_property/ListYourProperty"
 import ListPropertyLogs from "./components/admin_panel/list-your-property/ListPropertyLogs"
 import OffersDetailsPage from "./components/offers_section/OffersDetailsPage"
+import FeedbackComponent from "./components/feedback/FeedbackComponent";
 // Protect admin routes
 const AdminRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("token"); // Check if token exists
@@ -42,6 +43,7 @@ function App() {
         <Route path="/wishlist/:wishlistId" element={<WishlistDetailsPage />} />
         <Route path="/list-your-property" element={<ListYourProperty/>} />
         <Route path="/offers/:offerId" element={<OffersDetailsPage />} /> 
+        <Route path="/feedback" element={<FeedbackComponent/>} />
 
         {/* Admin Routes - Protected */}
         <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>}>

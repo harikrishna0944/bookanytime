@@ -414,7 +414,7 @@ const SearchBar = () => {
           ))}
         </div>
         
-        <div className="col-md-3">
+        <div className="col-md-2">
           <form className="d-flex" onSubmit={(e) => e.preventDefault()}>
             <div className="input-group w-70">
               <input

@@ -474,6 +474,34 @@ const SearchBar = () => {
         </Dropdown>
         </div>
       </div>
+      <div className="container">
+          <div className="row justify-content-center">
+            <div className="col-md-3">
+              <form className="d-flex" onSubmit={(e) => e.preventDefault()}>
+                <div className="input-group w-70">
+                  <input
+                    type="text"
+                    className="form-control form-control-lg"
+                    placeholder={
+                      isTyping
+                        ? "Search by property name"
+                        : categories.length > 0
+                        ? `Search for ${categories[currentCategoryIndex]}`
+                        : "Search"
+                    }
+                    value={searchText}
+                    onChange={handleInputChange}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                  />
+                  <button className="btn btn-primary px-4" type="submit">
+                    <SearchIcon />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+      </div>
 
       <div className="search-results">
         {filteredProperties.length > 0 ? (

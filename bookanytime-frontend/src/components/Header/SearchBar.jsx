@@ -388,7 +388,7 @@ const SearchBar = () => {
       </div>
 
       <div className="category-filters-container d-flex">
-        <div className="d-flex flex-nowrap gap-2 overflow-auto py-2 col-xl-10">
+        <div className="d-flex flex-nowrap gap-2 overflow-auto  col-xl-10">
           {["All", ...categories].map((category) => (
             <button
               key={category}

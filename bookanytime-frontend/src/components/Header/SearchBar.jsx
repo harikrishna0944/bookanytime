@@ -346,7 +346,7 @@ const SearchBar = () => {
   return (
     <div className="search-page ">
       <div className="search-inputs-container">
-        {/* <div className="search-bar-container left">
+        <div className="search-bar-container left">
           <TextField
             type="text"
             className="search-input"
@@ -368,7 +368,7 @@ const SearchBar = () => {
               ),
             }}
           />
-        </div> */}
+        </div>
         <div className="search-bar-container right">
           <TextField
             type="text"

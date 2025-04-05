@@ -254,13 +254,13 @@
   width: 100%;
 }
 .custom-dropdown .dropdown-item:hover {
-  background-color: #f0f8ff; /* Light blue */
-  color: #0d6efd; /* Bootstrap primary or any custom */
+  background-color: #f0f8ff; 
+  color: #0d6efd; 
 }
 
 /* Custom dropdown item active */
 .custom-dropdown .dropdown-item.active,
 .custom-dropdown .dropdown-item:active {
-  background-color: #ffffff; /* Bootstrap primary */
+  background-color: #ffffff; 
   color: #074ef2;
 }

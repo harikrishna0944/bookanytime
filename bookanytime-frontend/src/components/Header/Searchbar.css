@@ -82,7 +82,7 @@
 
 .category-filters-container {
   position: sticky;
-  top: 65px;
+  top: 0px;
   background-color: white;
   z-index: 100;
   padding: 10px;

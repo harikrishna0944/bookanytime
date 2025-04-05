@@ -348,7 +348,7 @@ const SearchBar = () => {
       <div className="search-inputs-container container-fluid">
       <div className="container">
         <div className="row justify-content-center">
-          <div className="col-md-6">
+          <div className="col-md-3">
             <form className="d-flex" onSubmit={(e) => e.preventDefault()}>
               <div className="input-group w-100">
                 <input

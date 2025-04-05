@@ -5,11 +5,10 @@ import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
 import { FaHeart, FaFilter, FaSort, FaStar } from "react-icons/fa";
 import WishlistModal from "../categories/WishlistModal";
-import { Button, Badge, Dropdown } from "react-bootstrap";
+import { Button, Badge, Dropdown,Form,InputGroup } from "react-bootstrap";
 import Filter from "../categories/Filter";
 import "./Searchbar.css";
 import { FaUser, FaRupeeSign } from "react-icons/fa";
-import { Form, InputGroup, } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
 
 const SearchBar = () => {

@@ -14,7 +14,7 @@ const Header = () => {
   const userRole = getUserRole(); // Get user role
   const navigate = useNavigate();
 
-  console.log("user roleeeee",userRole.email)
+  console.log("user roleeeee", userRole.email)
   // Toggle mobile menu
   const toggleDrawer = () => {
     setMobileOpen(!mobileOpen);
@@ -98,10 +98,11 @@ const Header = () => {
               component={Link}
               to="/feedback"
               onClick={handleClose}
-              style={{ display: getUserRole() === "admin" ? "block" : "none" }} // ✅ Hide if not admin
+              style={{ display: localStorage.getItem("token") ? "block" : "none" }}
             >
               Feedback
             </MenuItem>
+
           </Menu>
         </Box>
 

@@ -26,7 +26,7 @@ router.post("/", async (req, res) => {
 // GET /api/users
 router.get('/feedback-logs', async (req, res) => {
   try {
-    const users = await Feedback.find();
+    const users = await Feedback.find().sort({ createdAt: -1 });
     console.log("feedbacks", users)
     res.json(users);
   } catch (error) {

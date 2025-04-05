@@ -393,7 +393,27 @@ const SearchBar = () => {
           />
         </div>
       </div>
-      <div className="container">
+      <div className="category-filters-container d-flex">
+        <div className="d-flex flex-nowrap gap-2 overflow-auto  col-xl-10">
+          {["All", ...categories].map((category) => (
+            <button
+              key={category}
+              className={`btn ${
+                selectedCategories.includes(category) 
+                  ? "btn-primary rounded-0"
+                  : "btn-outline-primary rounded-pill"
+              }`}
+              onClick={() => handleCategoryChange(category)}
+              style={{
+                transition: "all 0.3s ease",
+                minWidth: "80px"
+              }}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+        <div className="container">
           <div className="row justify-content-center">
             <div className="col-md-3">
               <form className="d-flex" onSubmit={(e) => e.preventDefault()}>
@@ -420,26 +440,6 @@ const SearchBar = () => {
               </form>
             </div>
           </div>
-      </div>
-      <div className="category-filters-container d-flex">
-        <div className="d-flex flex-nowrap gap-2 overflow-auto  col-xl-10">
-          {["All", ...categories].map((category) => (
-            <button
-              key={category}
-              className={`btn ${
-                selectedCategories.includes(category) 
-                  ? "btn-primary rounded-0"
-                  : "btn-outline-primary rounded-pill"
-              }`}
-              onClick={() => handleCategoryChange(category)}
-              style={{
-                transition: "all 0.3s ease",
-                minWidth: "80px"
-              }}
-            >
-              {category}
-            </button>
-          ))}
         </div>
         <div className="d-flex gap-3 col-xl-3 filters-sort-container">
         <Button

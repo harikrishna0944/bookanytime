@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Container, Spinner, Alert, Row, Col } from "react-bootstrap";
+import { Container, Spinner, Alert } from "react-bootstrap";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import "../recently_viewed/RecentlyViewed.css";
 
@@ -11,23 +11,27 @@ const RecentlyViewed = () => {
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   const [offers, setOffers] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("All Offers");
+  const [selectedCategories, setSelectedCategories] = useState(["All Offers"]);
+  const [categories, setCategories] = useState([]);
   
   const navigate = useNavigate();
   const containerRef = useRef(null);
-  const categoriesContainerRef = useRef(null);
 
-  const categories = [
-    "All Offers",
-    "Bank Offers",
-    "Flights",
-    "Hotels",
-    "Holidays",
-    "Trains",
-    "Cabs",
-    "Bus",
-    "Forex"
-  ];
+  useEffect(() => {
+    // Replace with your actual categories from the screenshot
+    const staticCategories = [
+      { _id: "all", name: "All Offers" },
+      { _id: "bank", name: "Bank Offers" },
+      { _id: "flights", name: "Flights" },
+      { _id: "hotels", name: "Hotels" },
+      { _id: "holidays", name: "Holidays" },
+      { _id: "trains", name: "Trains" },
+      { _id: "cabs", name: "Cabs" },
+      { _id: "bus", name: "Bus" },
+      { _id: "forex", name: "Forex" }
+    ];
+    setCategories(staticCategories);
+  }, []);
 
   useEffect(() => {
     fetchOffers();
@@ -48,9 +52,23 @@ const RecentlyViewed = () => {
     }
   };
 
-  const filteredOffers = selectedCategory === "All Offers" 
-    ? offers 
-    : offers.filter(offer => offer.category === selectedCategory);
+  const handleCategoryChange = (category) => {
+    if (category === "All Offers") {
+      setSelectedCategories(["All Offers"]);
+    } else {
+      setSelectedCategories((prev) =>
+        prev.includes("All Offers")
+          ? [category]
+          : prev.includes(category)
+          ? prev.filter((c) => c !== category)
+          : [...prev, category]
+      );
+    }
+  };
+
+  const filteredOffers = offers.filter(
+    (offer) => selectedCategories.includes("All Offers") || selectedCategories.includes(offer.category)
+  );
 
   const checkScroll = useCallback(() => {
     if (containerRef.current) {
@@ -88,88 +106,89 @@ const RecentlyViewed = () => {
   }, [checkScroll]);
 
   return (
-    <Container fluid className="py-4 px-3 px-md-5">
-      <h2 className="mb-4 fw-bold">Offers</h2>
+    <Container fluid className="recently-viewed-container">
+      <h2>Offers</h2>
       
       {/* Categories */}
-      <div className="position-relative mb-4">
-        <div 
-          ref={categoriesContainerRef}
-          className="d-flex overflow-auto hide-scrollbar"
-          style={{ scrollbarWidth: 'none' }}
-        >
-          <div className="d-flex gap-2">
-            {categories.map((category) => (
-              <button
-                key={category}
-                className={`btn rounded-pill px-3 py-2 text-nowrap ${
-                  selectedCategory === category 
-                    ? "btn-primary" 
-                    : "btn-outline-primary"
-                }`}
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
+      <div className="recently-viewed-wrapper">
+        {showLeftArrow && (
+          <button className="scroll-arrow left" onClick={handleScrollLeft}>
+            <ChevronLeft size={24} />
+          </button>
+        )}
+        <div className="recently-viewed-items">
+          {categories.map((category) => (
+            <button
+              key={category._id}
+              className={`btn rounded-pill ${selectedCategories.includes(category.name) ? "btn-primary" : "btn-outline-primary"}`}
+              onClick={() => handleCategoryChange(category.name)}
+            >
+              {category.name}
+            </button>
+          ))}
         </div>
+        {showRightArrow && (
+          <button className="scroll-arrow right" onClick={handleScrollRight}>
+            <ChevronRight size={24} />
+          </button>
+        )}
       </div>
 
       {/* View All Link */}
       <div className="d-flex justify-content-end mb-3">
         <button 
           className="btn btn-link text-decoration-none p-0 text-primary fw-bold"
-          onClick={() => setSelectedCategory("All Offers")}
+          onClick={() => setSelectedCategories(["All Offers"])}
         >
           VIEW ALL →
         </button>
       </div>
 
-      {/* Offers Grid */}
-      <Row className="g-3">
-        {loading ? (
-          <Col className="d-flex justify-content-center">
+      {/* Offers */}
+      <div className="recently-viewed-wrapper">
+        {showLeftArrow && (
+          <button className="scroll-arrow left" onClick={handleScrollLeft}>
+            <ChevronLeft size={24} />
+          </button>
+        )}
+        <div className="recently-viewed-items" ref={containerRef}>
+          {loading ? (
             <Spinner animation="border" variant="primary" />
-          </Col>
-        ) : error ? (
-          <Col>
+          ) : error ? (
             <Alert variant="danger">{error}</Alert>
-          </Col>
-        ) : filteredOffers.length > 0 ? (
-          filteredOffers.map((offer, index) => (
-            <Col key={index} xs={12} sm={6} md={4} lg={3}>
-              <div 
-                className="card h-100 border-0 shadow-sm overflow-hidden"
-                onClick={() => navigate(`/offers/${offer._id}`)}
-                style={{ cursor: 'pointer' }}
-              >
-                <div className="position-relative" style={{ paddingTop: '75%' }}>
-                  <img
-                    src={`${import.meta.env.VITE_API_BASE_URL}${offer.image[0]}`}
-                    alt={offer.name}
-                    className="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
-                  />
-                </div>
-                <div className="card-body">
-                  <h6 className="card-title fw-bold mb-1">{offer.name}</h6>
-                  <p className="text-muted small mb-2">
-                    <small>Valid: {new Date(offer.startDate).toLocaleDateString("en-GB")} - {new Date(offer.endDate).toLocaleDateString("en-GB")}</small>
-                  </p>
-                  <div className="d-flex justify-content-between align-items-center">
-                    <span className="badge bg-primary">{offer.category}</span>
+          ) : filteredOffers.length > 0 ? (
+            filteredOffers.map((offer, index) => (
+              <div key={index} className="offer-viewed-item">
+                <div className="offer-viewed-card">
+                  <div className="property-image-container" onClick={() => navigate(`/offers/${offer._id}`)}>
+                    <img
+                      src={`${import.meta.env.VITE_API_BASE_URL}${offer.image[0]}`}
+                      alt={offer.name}
+                      className="property-image"
+                      draggable="false"
+                    />
+                  </div>
+                  <div className="property-details">
+                    <h6 className="property-name">{offer.name}</h6>
+                    <h6 className="font-bold text-lg text-blue-600">{offer.category}</h6>
+                    <p className="text-gray-500 mb-2">
+                      Valid: {new Date(offer.startDate).toLocaleDateString("en-GB")} - {new Date(offer.endDate).toLocaleDateString("en-GB")}
+                    </p>
                     <button className="btn btn-sm btn-outline-primary">BOOK NOW</button>
                   </div>
                 </div>
               </div>
-            </Col>
-          ))
-        ) : (
-          <Col>
-            <p className="text-center text-muted">No offers available in this category</p>
-          </Col>
+            ))
+          ) : (
+            <p className="no-categories-message">No Offers available</p>
+          )}
+        </div>
+        {showRightArrow && (
+          <button className="scroll-arrow right" onClick={handleScrollRight}>
+            <ChevronRight size={24} />
+          </button>
         )}
-      </Row>
+      </div>
     </Container>
   );
 };

@@ -272,3 +272,10 @@
 .category-btn.btn-outline-primary:not(.btn-primary):hover {
   font-weight: 500;
 }
+@media (max-width: 768px) {
+  .category-filters-container {
+    top: 50px; /* adjust if your header is shorter on mobile */
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

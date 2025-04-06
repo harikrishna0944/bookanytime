@@ -96,11 +96,7 @@ const Header = () => {
             >
               Admin Panel
             </MenuItem>
-            <MenuItem
-              onClick={handleLogout}
-            >
-              Logout
-            </MenuItem>
+
 
             <MenuItem
               component={Link}
@@ -119,6 +115,14 @@ const Header = () => {
             >
               Help Center
             </MenuItem>
+            {isLoggedIn && (
+
+<MenuItem
+  onClick={handleLogout}
+>
+  Logout
+</MenuItem>
+)}
 
           </Menu>
         </Box>

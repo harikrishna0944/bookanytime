@@ -7,7 +7,7 @@ import Footer from "../Footer"; // Adjust the path as needed
 
 function Body() {
   return (
-    <div className="body-container" style={{ paddingTop: "80px", marginTop: "20px", width: "1350px" }}>
+    <div className="body-container" style={{ paddingTop: "80px", marginTop: "20px", width: "100%" }}>
       <Categories />
       <RecentlyViewed />
       <Offers />

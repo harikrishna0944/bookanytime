@@ -39,11 +39,6 @@ function Footer() {
         </div>
       </div>
     </footer>
-
-
-
-
-
   );
 }
 

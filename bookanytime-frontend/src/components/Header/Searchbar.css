@@ -269,15 +269,6 @@
 .category-btn.btn-outline-primary:not(.btn-primary):hover {
   font-weight: 500;
 }
-@media (max-width: 767.98px) {
-  .sticky-mobile {
-    position: sticky !important;
-    top: 0;
-    z-index: 999;
-    background-color: white;
-    margin-bottom: 15px;
-  }
-}
 @media (min-width: 768px) {
   .sticky-mobile-custom {
     position: static !important;

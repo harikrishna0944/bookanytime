@@ -82,10 +82,12 @@ const Header = () => {
             <MenuItem component={Link} to="/signup" onClick={handleClose}>
                Signup
             </MenuItem>
-            <MenuItem component={Link} to="/login" onClick={handleClose}>
-              Login 
-            </MenuItem>
-
+           {/* Show Login ONLY if NOT logged in */}
+  {!isLoggedIn && (
+    <MenuItem component={Link} to="/login" onClick={handleClose}>
+      Login
+    </MenuItem>
+  )}
             <MenuItem
               component={Link}
               to="/admin"

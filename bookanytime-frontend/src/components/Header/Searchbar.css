@@ -275,12 +275,12 @@
   }
 }
 @media (max-width: 767.98px) {
-  .sticky-mobile {
+  .category-buttons-wrapper {
     position: sticky;
-    top: 20px;
+    top: 0;
     z-index: 1030;
-    background-color: white;
-    padding: 8px 12px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* optional for visual */
+    background: white;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
   }
 }

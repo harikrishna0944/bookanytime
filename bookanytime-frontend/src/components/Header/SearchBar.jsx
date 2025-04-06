@@ -411,12 +411,12 @@ const SearchBar = () => {
 
       </div>
       <div className="category-filters-container d-flex">
-      <div className="d-flex flex-nowrap gap-2 sticky-mobile col-xl-8 col-md-8 col-lg-8">
-          {["All", ...categories].map((category) => (
-            <button
+      <div className="d-flex flex-nowrap gap-2 category-buttons-wrapper col-xl-8 col-md-8 col-lg-8">
+        {["All", ...categories].map((category) => (
+          <button
             key={category}
             className={`btn category-btn ${
-              selectedCategories.includes(category) 
+              selectedCategories.includes(category)
                 ? "btn-primary rounded-0"
                 : "btn-outline-primary"
             }`}
@@ -428,8 +428,9 @@ const SearchBar = () => {
           >
             {category}
           </button>
-          ))}
-        </div>
+        ))}
+      </div>
+
         
         <div className="col-md-2 col-lg-2 col-xl-2 d-none d-md-block">
           <form className="d-flex" onSubmit={(e) => e.preventDefault()}>

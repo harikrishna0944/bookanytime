@@ -40,7 +40,7 @@ function App() {
         <Route path="/property/:id" element={<PropertyDetails />} />
         <Route path="/search" element={<Search />} />
         <Route path="/login" element={<AuthPage key="login" isSignup={false} />} />
-<Route path="/signup" element={<AuthPage key="signup" isSignup={true} />} />
+        <Route path="/signup" element={<AuthPage key="signup" isSignup={true} />} />
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/wishlist/:wishlistId" element={<WishlistDetailsPage />} />
         <Route path="/list-your-property" element={<ListYourProperty/>} />

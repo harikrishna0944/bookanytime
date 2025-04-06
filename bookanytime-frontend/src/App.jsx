@@ -22,9 +22,18 @@ import FeedbackAdmin from "./components/admin_panel/feedback/FeedbackAdmin";
 import HelpCenter from "./components/help_center/HelpCenter"
 // Protect admin routes
 const AdminRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem("token"); // Check if token exists
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const isAdmin = user?.isAdmin === true;
+
+  if (!token || !isAdmin) {
+    return <Navigate to="/login" />;
+  }
+
+  return children;
 };
+
 
 function App() {
   const location = useLocation();

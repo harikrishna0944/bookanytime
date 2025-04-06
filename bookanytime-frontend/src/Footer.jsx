@@ -5,40 +5,41 @@ import { FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
 
 function Footer() {
   return (
-    <footer style={{ backgroundColor: '#212529', color: '#fff', padding: '40px 0', width: '100%', margin: '0' }}>
-      <div style={{ maxWidth: '100%', margin: '0 auto' }}>
-        <div className="row text-center text-md-start px-3 px-md-5">
-          <div className="col-md-4 mb-4 mb-md-0">
-            <h5 className="text-white mb-3">BookAnytime</h5>
-            <p className="text-white-50">Find your perfect stay anywhere in the world</p>
-          </div>
-          <div className="col-md-3 mb-4 mb-md-0">
-            <h5 className="text-white mb-3">Quick Links</h5>
-            <ul className="list-unstyled">
-              <li><a href="/" className="text-white text-decoration-none">Home</a></li>
-              <li><a href="/search" className="text-white text-decoration-none">Search</a></li>
-              <li><a href="/list-property" className="text-white text-decoration-none">List Property</a></li>
-            </ul>
-          </div>
-          <div className="col-md-5">
-            <h5 className="text-white mb-3">Contact Us</h5>
-            <p className="text-white-50"><i className="bi bi-envelope me-2"></i> info@bookanytime.com</p>
-            <p className="text-white-50"><i className="bi bi-telephone me-2"></i> +1 (123) 456-7890</p>
-            <div className="d-flex justify-content-center justify-content-md-start">
-              <a href="#" className="text-white me-3"><FaFacebook /></a>
-              <a href="#" className="text-white me-3"><FaTwitter /></a>
-              <a href="#" className="text-white"><FaInstagram /></a>
-            </div>
-          </div>
-        </div>
+    <footer style="width: 100%; background-color: #212529; color: #fff; padding: 40px 20px; box-sizing: border-box;">
+  <div style="display: flex; justify-content: space-between; flex-wrap: wrap; max-width: 1200px; margin: 0 auto;">
+    
+    <div style="flex: 1 1 200px; margin-bottom: 20px;">
+      <h3 style="margin-bottom: 10px;">BookAnytime</h3>
+      <p>Find your perfect stay anywhere in the world</p>
+    </div>
 
-        <div className="row mt-4 m-0">
-          <div className="col text-center text-white-50">
-            <small>&copy; {new Date().getFullYear()} BookAnytime. All rights reserved.</small>
-          </div>
-        </div>
+    <div style="flex: 1 1 200px; margin-bottom: 20px;">
+      <h4 style="margin-bottom: 10px;">Quick Links</h4>
+      <ul style="list-style: none; padding: 0;">
+        <li><a href="/" style="color: #fff; text-decoration: none;">Home</a></li>
+        <li><a href="/search" style="color: #fff; text-decoration: none;">Search</a></li>
+        <li><a href="/list-property" style="color: #fff; text-decoration: none;">List Property</a></li>
+      </ul>
+    </div>
+
+    <div style="flex: 1 1 200px; margin-bottom: 20px;">
+      <h4 style="margin-bottom: 10px;">Contact Us</h4>
+      <p>Email: <a href="mailto:info@bookanytime.com" style="color: #fff;">info@bookanytime.com</a></p>
+      <p>Phone: +1 (123) 456-7890</p>
+      <div style="margin-top: 10px;">
+        <a href="#" style="margin-right: 10px; color: #fff;">Facebook</a>
+        <a href="#" style="margin-right: 10px; color: #fff;">Twitter</a>
+        <a href="#" style="color: #fff;">Instagram</a>
       </div>
-    </footer>
+    </div>
+
+  </div>
+
+  <div style="text-align: center; padding-top: 20px; border-top: 1px solid #444; margin-top: 20px;">
+    <p style="margin: 0;">© 2025 BookAnytime. All rights reserved.</p>
+  </div>
+</footer>
+
   );
 }
 

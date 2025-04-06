@@ -35,6 +35,9 @@ const Header = () => {
     navigate("/"); // Redirect to login page
     window.location.reload(); // Force reload to clear state
   };
+
+  const isLoggedIn = !!localStorage.getItem("token");
+
   return (
     <AppBar
       position="fixed"
@@ -76,8 +79,11 @@ const Header = () => {
 
           {/* Dropdown Menu */}
           <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+            <MenuItem component={Link} to="/signup" onClick={handleClose}>
+               Signup
+            </MenuItem>
             <MenuItem component={Link} to="/login" onClick={handleClose}>
-              Login / Signup
+              Login 
             </MenuItem>
 
             <MenuItem

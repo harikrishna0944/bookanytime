@@ -28,20 +28,12 @@ const WishlistModal = ({ show, onClose, userId, propertyId, onWishlistUpdate }) 
   const fetchWishlists = async () => {
     setLoading(true);
     try {
-      // Fetch both user-specific wishlists and global "Favourites"
-      const [userRes, globalRes] = await Promise.all([
-        axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wishlist/${userId}`),
-        axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wishlist/global`), // <--- You’ll need this endpoint (see backend below)
-      ]);
-  
-      let userWishlists = Array.isArray(userRes.data) ? userRes.data : [];
-      let globalWishlist = globalRes.data?.name ? [globalRes.data] : [];
-  
-      const combinedWishlists = [...globalWishlist, ...userWishlists];
-  
-      // Fetch last property image for each
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wishlist/${userId}`);
+      const wishlists = Array.isArray(response.data) ? response.data : [];
+      
+      // Fetch last property details for each wishlist
       const updatedWishlists = await Promise.all(
-        combinedWishlists.map(async (wishlist) => {
+        wishlists.map(async (wishlist) => {
           if (wishlist.properties.length > 0) {
             const lastPropertyId = wishlist.properties[wishlist.properties.length - 1];
             try {
@@ -55,7 +47,7 @@ const WishlistModal = ({ show, onClose, userId, propertyId, onWishlistUpdate }) 
           return { ...wishlist, lastPropertyImage: null };
         })
       );
-  
+
       setUserWishlists(updatedWishlists);
     } catch (error) {
       console.error("Error fetching wishlists:", error);
@@ -65,7 +57,7 @@ const WishlistModal = ({ show, onClose, userId, propertyId, onWishlistUpdate }) 
       setLoading(false);
     }
   };
-  
+
   const handleSaveToWishlist = async (selectedWishlist) => {
     try {
       setLoading(true);

@@ -19,6 +19,7 @@ import ListPropertyLogs from "./components/admin_panel/list-your-property/ListPr
 import OffersDetailsPage from "./components/offers_section/OffersDetailsPage"
 import FeedbackComponent from "./components/feedback/FeedbackComponent";
 import FeedbackAdmin from "./components/admin_panel/feedback/FeedbackAdmin";
+import HelpCenter from "./components/help_center/HelpCenter"
 // Protect admin routes
 const AdminRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("token"); // Check if token exists
@@ -45,6 +46,7 @@ function App() {
         <Route path="/list-your-property" element={<ListYourProperty/>} />
         <Route path="/offers/:offerId" element={<OffersDetailsPage />} /> 
         <Route path="/feedback" element={<FeedbackComponent/>} />
+        <Route path="/help-center" element={<HelpCenter/>} />
 
         {/* Admin Routes - Protected */}
         <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>}>

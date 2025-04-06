@@ -44,8 +44,8 @@
 .search-results {
   width: 100%;
   /* max-width: 1200px; */
-  /* margin: 20px auto; */
-  /* padding: 15px; */
+  margin: 20px auto;
+  padding: 15px;
 }
 
 .property-item {

@@ -103,6 +103,15 @@ const Header = () => {
               Feedback
             </MenuItem>
 
+            <MenuItem
+              component={Link}
+              to="/help-center"
+              onClick={handleClose}
+              style={{ display: localStorage.getItem("token") ? "block" : "none" }}
+            >
+              Help Center
+            </MenuItem>
+
           </Menu>
         </Box>
 

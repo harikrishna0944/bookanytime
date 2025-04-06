@@ -278,3 +278,8 @@
     margin-bottom: 15px;
   }
 }
+@media (min-width: 768px) {
+  .sticky-mobile-custom {
+    position: static !important;
+  }
+}

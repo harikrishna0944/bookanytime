@@ -276,10 +276,10 @@
 }
 @media (max-width: 767.98px) {
   .category-buttons-wrapper {
-    position: sticky;
+    position: sticky !important;
     top: 0;
     z-index: 1030;
-    background: white;
+    background: rgb(0, 0, 0);
     padding: 10px;
     border-bottom: 1px solid #eee;
   }

@@ -27,6 +27,7 @@ const SearchBar = () => {
   const [selectedPropertyId, setSelectedPropertyId] = useState(null);
   const [propertyRatings, setPropertyRatings] = useState({});
   const [showFilterModal, setShowFilterModal] = useState(false);
+  
   const [filters, setFilters] = useState({
     priceRange: undefined,
     bedrooms: undefined,
@@ -198,12 +199,21 @@ const SearchBar = () => {
 
   // Search properties based on current criteria
   const searchProperties = async () => {
+    // If no search criteria and "All" is selected, fetch all properties
     if (!searchText.trim() && !locationSearch.trim() && selectedCategories.includes("All")) {
-      setProperties([]);
-      setFilteredProperties([]);
-      return;
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties`);
+        setProperties(response.data);
+        return;
+      } catch (error) {
+        console.error("Error fetching all properties:", error);
+        setProperties([]);
+        setFilteredProperties([]);
+        return;
+      }
     }
     
+    // Otherwise, perform the filtered search
     try {
       const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search-locations`, {
         params: {
@@ -215,6 +225,8 @@ const SearchBar = () => {
       setProperties(response.data);
     } catch (error) {
       console.error("Error fetching search results:", error);
+      setProperties([]);
+      setFilteredProperties([]);
     }    
   };
 

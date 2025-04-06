@@ -103,7 +103,9 @@ const WishlistPage = () => {
           {wishlists.map((wishlist) => (
             <div key={wishlist._id} className="wishlist-card">
               {/* Delete Button (X) on hover */}
-              <div className="delete-button" onClick={() => handleDeleteClick(wishlist)}>✖</div>
+              {wishlist.name !== "Favourites" && (
+  <div className="delete-button" onClick={() => handleDeleteClick(wishlist)}>✖</div>
+)}
 
               <Image
                 src={wishlist.lastPropertyImage || heartImage}

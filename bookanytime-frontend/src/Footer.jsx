@@ -5,7 +5,7 @@ import { FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
 
 function Footer() {
   return (
-    <footer style={{ backgroundColor: '#212529', color: '#fff', padding: '40px 0', width: '100%', margin: '0' }}>
+    <footer style={{ backgroundColor: '#212529', color: '#fff', padding: '40px 0', width: '120%', margin: '0' }}>
       <div style={{ maxWidth: '100%', margin: '0 auto' }}>
         <div className="row text-center text-md-start px-3 px-md-5">
           <div className="col-md-4 mb-4 mb-md-0">

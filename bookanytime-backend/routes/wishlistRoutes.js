@@ -48,6 +48,16 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
+// GET /api/wishlist/global
+router.get("/global", async (req, res) => {
+  try {
+    const globalWishlist = await Wishlist.findOne({ name: "Favourites", userId: { $exists: false } });
+    if (!globalWishlist) return res.status(404).json({ error: "Global wishlist not found" });
+    res.json(globalWishlist);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch global wishlist" });
+  }
+});
 
 
 // Create a new wishlist

@@ -454,7 +454,7 @@ const SearchBar = () => {
 
       <div className="d-flex position-relative align-items-center" >
       <div className="d-flex flex-nowrap gap-2 sticky-mobile col-xl-8 col-md-8 col-lg-8 category-filters-container position-relative"
-          style={{ marginTop: '-110px',background: 'linear-gradient(to left, rgba(184, 176, 176, 0.3) 0%, transparent 5%)',borderTopRightRadius: '5px', borderBottomRightRadius: '5px'}}>
+          style={{ marginTop: '-110px',background: 'linear-gradient(to left, rgba(184, 176, 176, 0.3) 0%, transparent 5%)',borderTopRightRadius: '10px', borderBottomRightRadius: '10px'}}>
           {showLeftArrow && (
             <button 
               className="scroll-arrow left" 

@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Container, Spinner, Alert } from "react-bootstrap";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import "../recently_viewed/RecentlyViewed.css";
-
+// import "../recently_viewed/RecentlyViewed.css";
+import "./newOffers.css"
 const RecentlyViewed = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -97,58 +97,57 @@ const RecentlyViewed = () => {
 
   return (
     <Container fluid className="recently-viewed-container">
-      <h2>Available Offers</h2>
-      <div className="recently-viewed-wrapper">
-        {showLeftArrow && (
-          <button className="scroll-arrow left" onClick={handleScrollLeft}>
-            <ChevronLeft size={24} />
+      <div className="offers-header d-flex align-items-center justify-content-between mb-3 flex-wrap">
+        <h2 className="me-3 mb-2">Offers</h2>
+  
+        <div className="category-scroll-wrapper mb-2 flex-grow-1 overflow-auto">
+          <div className="d-flex flex-nowrap gap-2">
+            {categories.map((category) => (
+              <button
+                key={category._id}
+                className={`btn rounded-pill ${selectedCategories.includes(category.name) ? "btn-primary" : "btn-outline-primary"}`}
+                onClick={() => handleCategoryChange(category.name)}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+        </div>
+  
+        <div className="arrow-controls d-flex align-items-center ms-3 mb-2">
+          <span className="view-all-text me-2">View All</span>
+          <button className="scroll-arrow btn btn-light me-1" onClick={handleScrollLeft}>
+            <ChevronLeft size={20} />
           </button>
-        )}
-        <div className="recently-viewed-items">
-        {categories.map((category) => (
-          <button
-            key={category._id}
-            className={`btn rounded-pill ${selectedCategories.includes(category.name) ? "btn-primary" : "btn-outline-primary"}`}
-            onClick={() => handleCategoryChange(category.name)}
-          >
-            {category.name}
+          <button className="scroll-arrow btn btn-light" onClick={handleScrollRight}>
+            <ChevronRight size={20} />
           </button>
-        ))}
+        </div>
       </div>
-      {showRightArrow && (
-          <button className="scroll-arrow right" onClick={handleScrollRight}>
-            <ChevronRight size={24} />
-          </button>
-        )}
-      </div>
-
-      <div className="recently-viewed-wrapper">
-        {showLeftArrow && (
-          <button className="scroll-arrow left" onClick={handleScrollLeft}>
-            <ChevronLeft size={24} />
-          </button>
-        )}
-        <div className="recently-viewed-items" ref={containerRef}>
+  
+      <div className="offers-scroll-wrapper position-relative">
+        <div className="offers-grid d-flex flex-wrap" ref={containerRef} style={{ overflowX: "auto", scrollBehavior: "smooth" }}>
           {loading ? (
             <Spinner animation="border" variant="primary" />
           ) : error ? (
             <Alert variant="danger">{error}</Alert>
           ) : filteredOffers.length > 0 ? (
             filteredOffers.map((offer, index) => (
-              <div key={index} className="offer-viewed-item">
+              <div key={index} className="offer-card-wrapper" style={{ flex: "0 0 25%", maxWidth: "25%", padding: "10px" }}>
                 <div className="offer-viewed-card">
-                  <div className="property-image-container" onClick={() => navigate(`/offers/${offer._id}`)} >
+                  <div className="property-image-container" onClick={() => navigate(`/offers/${offer._id}`)}>
                     <img
                       src={`${import.meta.env.VITE_API_BASE_URL}${offer.image[0]}`}
                       alt={offer.name}
                       className="property-image"
                       draggable="false"
+                      style={{ width: "100%", height: "150px", objectFit: "cover", borderRadius: "8px" }}
                     />
                   </div>
-                  <div className="property-details">
+                  <div className="property-details mt-2">
                     <h6 className="property-name">{offer.name}</h6>
-                    <h6 className="font-bold text-lg text-blue-600">{offer.category}</h6>
-                    <p className="text-gray-500 mb-2">
+                    <h6 className="font-bold text-blue-600">{offer.category}</h6>
+                    <p className="text-muted mb-0">
                       Valid: {new Date(offer.startDate).toLocaleDateString("en-GB")} - {new Date(offer.endDate).toLocaleDateString("en-GB")}
                     </p>
                   </div>
@@ -159,14 +158,10 @@ const RecentlyViewed = () => {
             <p className="no-categories-message">No Offers available</p>
           )}
         </div>
-        {showRightArrow && (
-          <button className="scroll-arrow right" onClick={handleScrollRight}>
-            <ChevronRight size={24} />
-          </button>
-        )}
       </div>
     </Container>
   );
+  
 };
 
 export default RecentlyViewed;

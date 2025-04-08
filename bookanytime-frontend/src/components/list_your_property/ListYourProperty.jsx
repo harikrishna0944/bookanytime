@@ -1,7 +1,15 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Container, Form, Button, Alert } from "react-bootstrap";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import {
+  Box,
+  Container,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Alert,
+} from "@mui/material";
 
 const ListProperty = () => {
   const [formData, setFormData] = useState({
@@ -14,12 +22,10 @@ const ListProperty = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  // Handle input change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -27,8 +33,8 @@ const ListProperty = () => {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/api/list-property`,  // ✅ Fixed URL
-        formData  // ✅ Pass formData correctly
+        `${import.meta.env.VITE_API_BASE_URL}/api/list-property`,
+        formData
       );
       setMessage(response.data.message);
       setFormData({ name: "", phone: "", email: "", category: "" });
@@ -38,53 +44,143 @@ const ListProperty = () => {
   };
 
   return (
-    <Container className="mt-5" style={{ maxWidth: "600px" }}>
-      <h2 className="text-center mb-4">List Your Property</h2>
-
-      {/* WhatsApp Button */}
-      <div className="text-center mb-4">
-        <a
-          href="https://wa.me/918088183625"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn btn-success d-flex align-items-center justify-content-center"
-          style={{ width: "200px", margin: "0 auto" }}
+    <Box
+      sx={{
+        minHeight: "100vh",
+        width: "100vw",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundImage: "linear-gradient(to right, #1E3C72, #2A5298)",
+        padding: 2,
+      }}
+    >
+      <Container maxWidth="sm">
+        <Paper
+          elevation={10}
+          sx={{
+            padding: 4,
+            borderRadius: 3,
+            backgroundColor: "#fff",
+            width: "100%",
+            maxWidth: "500px",
+            boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.1)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
         >
-          <WhatsAppIcon style={{ marginRight: "8px" }} />
-          Contact via WhatsApp
-        </a>
-      </div>
+          <Typography variant="h4" color="primary" gutterBottom>
+            List Your Property
+          </Typography>
 
-      {/* Success/Error Message */}
-      {message && <Alert variant="success">{message}</Alert>}
-      {error && <Alert variant="danger">{error}</Alert>}
+          {/* WhatsApp Button */}
+          <Box sx={{ textAlign: "center", mb: 3 }}>
+            <a
+              href="https://wa.me/918088183625"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                textDecoration: "none",
+              }}
+            >
+              <Button
+                variant="contained"
+                color="success"
+                startIcon={<WhatsAppIcon />}
+                sx={{
+                  width: "200px",
+                  textTransform: "none",
+                  fontWeight: 600,
+                }}
+              >
+                Contact via WhatsApp
+              </Button>
+            </a>
+          </Box>
 
-      {/* Property Listing Form */}
-      <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3">
-          <Form.Label>Name</Form.Label>
-          <Form.Control type="text" name="name" value={formData.name} onChange={handleChange} required />
-        </Form.Group>
+          {/* Success/Error Message */}
+          {message && (
+            <Alert severity="success" sx={{ width: "100%", mb: 2 }}>
+              {message}
+            </Alert>
+          )}
+          {error && (
+            <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
+              {error}
+            </Alert>
+          )}
 
-        <Form.Group className="mb-3">
-          <Form.Label>Phone Number</Form.Label>
-          <Form.Control type="tel" name="phone" value={formData.phone} onChange={handleChange} required />
-        </Form.Group>
+          {/* Form */}
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 3 }}
+          >
+            <TextField
+              label="Name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              fullWidth
+              variant="outlined"
+              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "8px", backgroundColor: "#f9f9f9" } }}
+            />
+            <TextField
+              label="Phone Number"
+              name="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+              fullWidth
+              variant="outlined"
+              placeholder="+91 9876543210"
+              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "8px", backgroundColor: "#f9f9f9" } }}
+            />
+            <TextField
+              label="Email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              fullWidth
+              variant="outlined"
+              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "8px", backgroundColor: "#f9f9f9" } }}
+            />
+            <TextField
+              label="Category"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              required
+              fullWidth
+              variant="outlined"
+              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "8px", backgroundColor: "#f9f9f9" } }}
+            />
 
-        <Form.Group className="mb-3">
-          <Form.Label>Email</Form.Label>
-          <Form.Control type="email" name="email" value={formData.email} onChange={handleChange} required />
-        </Form.Group>
-
-        <Form.Group className="mb-3">
-          <Form.Label>Category</Form.Label>
-          <Form.Label>Name</Form.Label>
-          <Form.Control type="text" name="category" value={formData.category} onChange={handleChange} required />
-        </Form.Group>
-
-        <Button variant="primary" type="submit" className="w-100">Submit</Button>
-      </Form>
-    </Container>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{
+                borderRadius: "8px",
+                padding: "12px",
+                fontSize: "16px",
+                fontWeight: 600,
+                backgroundColor: "#0072ff",
+                "&:hover": { backgroundColor: "#005bb5" },
+              }}
+            >
+              Submit
+            </Button>
+          </Box>
+        </Paper>
+      </Container>
+    </Box>
   );
 };
 

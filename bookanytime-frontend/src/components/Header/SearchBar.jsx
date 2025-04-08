@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
 import { FaHeart, FaFilter, FaSort, FaStar } from "react-icons/fa";
 import WishlistModal from "../categories/WishlistModal";
-import { Button, Badge, Dropdown,Form,InputGroup } from "react-bootstrap";
+import { Button, Badge, Dropdown, Form, InputGroup } from "react-bootstrap";
 import Filter from "../categories/Filter";
 import "./Searchbar.css";
 import { FaUser, FaRupeeSign } from "react-icons/fa";
 import { FaSearch } from "react-icons/fa";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const SearchBar = () => {
   // State variables
@@ -27,7 +28,6 @@ const SearchBar = () => {
   const [selectedPropertyId, setSelectedPropertyId] = useState(null);
   const [propertyRatings, setPropertyRatings] = useState({});
   const [showFilterModal, setShowFilterModal] = useState(false);
-  
   const [filters, setFilters] = useState({
     priceRange: undefined,
     bedrooms: undefined,
@@ -36,6 +36,9 @@ const SearchBar = () => {
   });
   const [appliedFiltersCount, setAppliedFiltersCount] = useState(0);
   const [sortOptions, setSortOptions] = useState([]);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
+  const containerRef = useRef(null);
 
   // Fetch categories and user data
   useEffect(() => {
@@ -131,6 +134,45 @@ const SearchBar = () => {
   useEffect(() => {
     filterAndSortProperties();
   }, [filters, sortOptions, properties]);
+
+  // Check scroll position for arrows
+  const checkScroll = useCallback(() => {
+    if (containerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
+      setShowLeftArrow(scrollLeft > 10);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  }, []);
+
+  // Handle scroll left
+  const handleScrollLeft = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollBy({ left: -200, behavior: "smooth" });
+    }
+  };
+
+  // Handle scroll right
+  const handleScrollRight = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollBy({ left: 200, behavior: "smooth" });
+    }
+  };
+
+  // Set up scroll event listeners
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("scroll", checkScroll);
+      window.addEventListener("resize", checkScroll);
+      checkScroll(); // Initial check
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", checkScroll);
+        window.removeEventListener("resize", checkScroll);
+      }
+    };
+  }, [checkScroll]);
 
   // Filter and sort properties based on current criteria
   const filterAndSortProperties = () => {
@@ -356,7 +398,7 @@ const SearchBar = () => {
   };
 
   return (
-    <div className="search-page ">
+    <div className="search-page">
       <div className="search-inputs-container">
         <div className="d-block d-md-none">
           <div className="container">
@@ -408,32 +450,94 @@ const SearchBar = () => {
             </div>
           </div>
         </div>
-
       </div>
-      <div className="category-filters-container d-flex">
-        <div className="d-flex flex-nowrap gap-2  sticky-mobile col-xl-8 col-md-8 col-lg-8">
-          {["All", ...categories].map((category) => (
-            <button
-            key={category}
-            className={`btn category-btn ${
-              selectedCategories.includes(category) 
-                ? "btn-primary rounded-0"
-                : "btn-outline-primary"
-            }`}
-            onClick={() => handleCategoryChange(category)}
+
+      <div className="d-flex position-relative align-items-center" >
+      <div className="d-flex flex-nowrap gap-2 sticky-mobile col-xl-8 col-md-8 col-lg-8 category-filters-container position-relative"
+          style={{ marginTop: '-110px',background: 'linear-gradient(to left, rgba(184, 176, 176, 0.3) 0%, transparent 5%)',borderTopRightRadius: '5px', borderBottomRightRadius: '5px'}}>
+          {showLeftArrow && (
+            <button 
+              className="scroll-arrow left" 
+              onClick={handleScrollLeft}
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 1,
+                background: 'white',
+                border: '1px solid #dee2e6',
+                borderRadius: '50%',
+                width: '28px',
+                height: '28px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}
+            >
+              <ChevronLeft size={16} />
+            </button>
+          )}
+          
+          <div 
+            ref={containerRef}
+            className="d-flex flex-nowrap gap-2 overflow-auto scroll-hidden"
             style={{
-              transition: "all 0.3s ease",
-              minWidth: "80px"
+              scrollBehavior: 'smooth',
+              padding: '0 8px',
+              width: '100%'
             }}
           >
-            {category}
-          </button>
-          ))}
+            {["All", ...categories].map((category) => (
+              <button
+                key={category}
+                className={`btn category-btn ${
+                  selectedCategories.includes(category) 
+                    ? "btn-primary rounded-0"
+                    : "btn-outline-primary"
+                }`}
+                onClick={() => handleCategoryChange(category)}
+                style={{
+                  transition: "all 0.3s ease",
+                  minWidth: "auto",
+                  flexShrink: 0
+                }}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+          
+          {showRightArrow && (
+            <button 
+              className="scroll-arrow right" 
+              onClick={handleScrollRight}
+              style={{
+                position: 'absolute',
+                right: 0,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 1,
+                background: 'white',
+                border: '1px solid #dee2e6',
+                borderRadius: '50%',
+                width: '28px',
+                height: '28px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}
+            >
+              <ChevronRight size={16} />
+            </button>
+          )}
         </div>
         
-        <div className="col-md-2 col-lg-2 col-xl-2 d-none d-md-block">
+        <div className="col-md-5 col-lg-5 col-xl-4 d-none d-md-block">
           <form className="d-flex" onSubmit={(e) => e.preventDefault()}>
-            <div className="input-group w-70">
+            <div className="input-group w-auto">
               <input
                 type="text"
                 className="form-control form-control-sm"
@@ -454,65 +558,6 @@ const SearchBar = () => {
               </button>
             </div>
           </form>
-        </div>
-        <div className="d-flex gap-3 col-xl-3 col-md-3 col-lg-3 filters-sort-container">
-        <Button
-          variant="primary"
-          onClick={() => setShowFilterModal(true)}
-        >
-          <FaFilter className="me-2" />
-          Filters
-          {appliedFiltersCount > 0 && (
-            <Badge bg="danger" className="ms-2">
-              {appliedFiltersCount}
-            </Badge>
-          )}
-        </Button>
-        
-        <Dropdown className="custom-dropdown fs-13">
-          <Dropdown.Toggle variant="primary" id="dropdown-sort" className="p-1.5 p-lg-2">
-            <FaSort className="me-2" />
-            {getSortToggleText()}
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            <Dropdown.Item 
-              active={sortOptions.includes("priceLowToHigh")}
-              onClick={() => handleSort("priceLowToHigh")}
-            >
-              {sortOptions.includes("priceLowToHigh") && <span className="me-2">✓</span>}
-              Price Low to High
-            </Dropdown.Item>
-            <Dropdown.Item 
-              active={sortOptions.includes("priceHighToLow")}
-              onClick={() => handleSort("priceHighToLow")}
-            >
-              {sortOptions.includes("priceHighToLow") && <span className="me-2">✓</span>}
-              Price High to Low
-            </Dropdown.Item>
-            <Dropdown.Item 
-              active={sortOptions.includes("ratingHighToLow")}
-              onClick={() => handleSort("ratingHighToLow")}
-            >
-              {sortOptions.includes("ratingHighToLow") && <span className="me-2">✓</span>}
-              Highest Rated
-            </Dropdown.Item>
-            <Dropdown.Item 
-              active={sortOptions.includes("popularityHighToLow")}
-              onClick={() => handleSort("popularityHighToLow")}
-            >
-              {sortOptions.includes("popularityHighToLow") && <span className="me-2">✓</span>}
-              Most Popular
-            </Dropdown.Item>
-            {sortOptions.length > 0 && (
-              <Dropdown.Item 
-                onClick={clearAllSorting}
-                className="text-danger"
-              >
-                Clear All Sorting
-              </Dropdown.Item>
-            )}
-          </Dropdown.Menu>
-        </Dropdown>
         </div>
       </div>
 
@@ -595,7 +640,7 @@ const SearchBar = () => {
         )}
       </div>
 
-      {/* <div className="fixed-bottom d-flex justify-content-center gap-3 mb-3">
+      <div className="fixed-bottom d-flex justify-content-center gap-3">
         <Button
           variant="primary"
           onClick={() => setShowFilterModal(true)}
@@ -653,7 +698,7 @@ const SearchBar = () => {
             )}
           </Dropdown.Menu>
         </Dropdown>
-      </div> */}
+      </div>
 
       <Filter
         showFilterModal={showFilterModal}
@@ -691,15 +736,37 @@ const SearchBar = () => {
             left: 0;
             right: 0;
             padding: 10px;
-            // background: white;
-            // box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            background: white;
             z-index: 1000;
           }
           .dropdown-item.active {
             background-color: rgba(16, 44, 226, 0.9);
           }
-          .Dropdown.Menu{
-          backgroung-color:white;
+          .category-filters-container {
+            position: relative;
+            overflow: hidden;
+          }
+          .scroll-hidden {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+          .scroll-hidden::-webkit-scrollbar {
+            display: none;
+          }
+          .scroll-arrow {
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+          .scroll-arrow:hover {
+            background: #f8f9fa !important;
+          }
+          .scroll-arrow:active {
+            transform: translateY(-50%) scale(0.95);
+          }
+          @media (max-width: 768px) {
+            .category-filters-container {
+              width: 100%;
+            }
           }
         `}
       </style>

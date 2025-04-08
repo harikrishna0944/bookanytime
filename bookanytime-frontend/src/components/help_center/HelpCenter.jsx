@@ -1,109 +1,167 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React from 'react';
 import {
-  Box,
-  Container,
-  Paper,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
   Typography,
-  TextField,
-  Button,
-} from "@mui/material";
+  Paper,
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const HelpCenter = () => {
-  const [description, setDescription] = useState("");
-
-  const handleSubmit = async () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    if (!user || !description.trim()) {
-      alert("User not found or feedback is empty.");
-      return;
-    }
-
-    try {
-      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/feedback`, {
-        username: user.fullName,
-        email: user.email,
-        phone: user.phoneNumber, // phone now included
-        description: description.trim(),
-      });
-
-      alert("Feedback submitted successfully!");
-      setDescription("");
-    } catch (err) {
-      console.error("Error submitting feedback", err);
-      alert("Something went wrong.");
-    }
-  };
-
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        width: "100vw",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundImage: "linear-gradient(to right, #1E3C72, #2A5298)",
-        padding: 2,
+    <div
+      className="py-5 px-3"
+      style={{
+        background: 'linear-gradient(to right, #f8f9fa, #e3f2fd)',
+        minHeight: '100vh',
+        fontFamily: '"Roboto", sans-serif',
       }}
     >
-      {/* <Container maxWidth="sm">
-        <Paper
-          elevation={10}
-          sx={{
-            padding: 4,
-            borderRadius: 3,
-            backgroundColor: "#fff",
-            width: "100%",
-            maxWidth: "500px",
-            boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.1)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Typography variant="h4" color="primary" gutterBottom>
-            Feedback for Property or Website
-          </Typography>
+      <Paper elevation={3} className="container p-4" style={{ borderRadius: '16px' }}>
+        <h2 className="text-center mb-4" style={{ color: '#1976d2', fontWeight: 'bold' }}>
+          HELP CENTER
+        </h2>
 
-          <TextField
-            label="Write your feedback here..."
-            multiline
-            rows={6}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            fullWidth
-            variant="outlined"
-            sx={{
-              mt: 3,
-              mb: 3,
-              "& .MuiOutlinedInput-root": {
-                borderRadius: "8px",
-                backgroundColor: "#f9f9f9",
-              },
-            }}
-          />
+        {/* Account & Profile */}
+        <h4 className="mt-5 mb-3" style={{ color: '#0d6efd' }}>Account & Profile</h4>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography><strong>How Do I Create An Account?</strong></Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              Click On The <strong>"Signup"</strong> Button In The Header And Fill In Your Details. Once Submitted, Your Account Will Be Created And You Can Start Using <strong>BookAnytime</strong>.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
 
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            color="primary"
-            fullWidth
-            sx={{
-              borderRadius: "8px",
-              padding: "12px",
-              fontSize: "16px",
-              fontWeight: 600,
-              backgroundColor: "#0072ff",
-              "&:hover": { backgroundColor: "#005bb5" },
-            }}
-          >
-            Submit
-          </Button>
-        </Paper>
-      </Container> */}
-    </Box>
+
+        {/* Wishlist & Recently Viewed */}
+        <h4 className="mt-5 mb-3" style={{ color: '#0d6efd' }}>Wishlist & Recently Viewed</h4>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography><strong>How Does The Wishlist Work?</strong></Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              Click The <span style={{ color: 'red' }}>❤️ Heart Icon</span> On Any Property To Add It To Your Wishlist. You Can Organize And Revisit Wishlists Anytime.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography><strong>Can I Organize My Wishlist?</strong></Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              Yes! You Can Create Multiple Wishlists And Move Properties Between Them Via The <strong>Wishlist Page</strong>.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography><strong>What Is "Recently Viewed"?</strong></Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              It Keeps Track Of Properties You’ve Browsed, So You Can Easily Return To Them Later.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+
+        {/* Offers & Discounts */}
+        <h4 className="mt-5 mb-3" style={{ color: '#0d6efd' }}>Offers & Discounts</h4>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography><strong>How Can I Apply Offers?</strong></Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              Offers Are Shown On The Homepage. Click An Offer To See Eligible Properties. Share The Offer Image With The Host On <span style={{ color: 'green', fontWeight: 'bold' }}>WhatsApp</span> During Booking.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography><strong>Are Offers Limited To Certain Properties?</strong></Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              Yes, Each Offer Is Valid Only For Selected Properties Or Categories. Full Details Are Listed On The Offer Page.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography><strong>Can I Combine Multiple Offers?</strong></Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              No, Only One Offer Can Be Applied Per Booking Unless Specifically Mentioned Otherwise.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+
+        {/* Cancellation & Refunds */}
+        <h4 className="mt-5 mb-3" style={{ color: '#0d6efd' }}>Cancellation & Refunds</h4>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography><strong>How Can I Cancel A Booking?</strong></Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              Since Bookings Are Handled Via <span style={{ color: 'green', fontWeight: 'bold' }}>WhatsApp</span>, You’ll Need To Contact The Property Owner Directly To Cancel.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography><strong>Do I Get A Refund If I Cancel?</strong></Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              Refund Policies Are Managed Individually By Each Property. Please Confirm With The Owner During Booking.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography><strong>What If The Host Cancels My Booking?</strong></Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              In Case Of Cancellation By The Host, You'll Be Notified Via <span style={{ color: 'green', fontWeight: 'bold' }}>WhatsApp</span>. You Can Then Review Alternative Properties.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+
+
+        {/* Contact & Support */}
+        <h4 className="mt-5 mb-3" style={{ color: '#0d6efd' }}>Contact & Support</h4>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography><strong>I Need Help Urgently — What Do I Do?</strong></Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              For Urgent Help, Contact The Property Owner Via <span style={{ color: 'green', fontWeight: 'bold' }}>WhatsApp</span>. For Platform Issues, Use The “Feedback” Form Below.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography><strong>How Can I Contact The BookAnytime Team?</strong></Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              Email Us At <a href="mailto:support@bookanytime.com" style={{ color: '#1976d2', fontWeight: 'bold' }}>Support@BookAnytime.Com</a> Or Use The Feedback Section. We’ll Respond As Quickly As Possible.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+      </Paper>
+    </div>
   );
 };
+
 export default HelpCenter;

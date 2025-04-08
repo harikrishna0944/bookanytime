@@ -6,13 +6,15 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { getUserRole } from "../utils/auth"
 import { useNavigate } from "react-router-dom";
-
+import { AccountCircle, ExitToApp, Feedback, HelpOutline, AdminPanelSettings } from '@mui/icons-material';
+import Background from "../../assets/background3.png"
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const userRole = getUserRole(); // Get user role
   const navigate = useNavigate();
+
 
   console.log("user roleeeee", userRole.email)
   // Toggle mobile menu
@@ -42,9 +44,12 @@ const Header = () => {
     <AppBar
       position="fixed"
       sx={{
-        background: "linear-gradient(90deg, #6a11cb, #2575fc)",
+        // background: "linear-gradient(90deg, #6a11cb, #2575fc)",
+        backgroundImage: `url(${Background})`,
         width: "100vw",
         zIndex: 1000,
+        boxShadow: "none", // removes default shadow
+
       }}
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -79,52 +84,56 @@ const Header = () => {
 
           {/* Dropdown Menu */}
           <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-            <MenuItem component={Link} to="/signup" onClick={handleClose}>
-               Signup
-            </MenuItem>
-           {/* Show Login ONLY if NOT logged in */}
+  <MenuItem component={Link} to="/signup" onClick={handleClose}>
+    <AccountCircle style={{ marginRight: 8 }} />
+    Signup
+  </MenuItem>
+
+  {/* Show Login ONLY if NOT logged in */}
   {!isLoggedIn && (
     <MenuItem component={Link} to="/login" onClick={handleClose}>
+      <ExitToApp style={{ marginRight: 8 }} />
       Login
     </MenuItem>
   )}
-            <MenuItem
-              component={Link}
-              to="/admin"
-              onClick={handleClose}
-              style={{ display: getUserRole() === "admin" ? "block" : "none" }} // ✅ Hide if not admin
-            >
-              Admin Panel
-            </MenuItem>
 
+  <MenuItem
+    component={Link}
+    to="/admin"
+    onClick={handleClose}
+    style={{ display: getUserRole() === "admin" ? "block" : "none" }} // ✅ Hide if not admin
+  >
+    <AdminPanelSettings style={{ marginRight: 8 }} />
+    Admin Panel
+  </MenuItem>
 
-            <MenuItem
-              component={Link}
-              to="/feedback"
-              onClick={handleClose}
-              style={{ display: localStorage.getItem("token") ? "block" : "none" }}
-            >
-              Feedback
-            </MenuItem>
+  <MenuItem
+    component={Link}
+    to="/feedback"
+    onClick={handleClose}
+    style={{ display: localStorage.getItem("token") ? "block" : "none" }}
+  >
+    <Feedback style={{ marginRight: 8 }} />
+    Feedback
+  </MenuItem>
 
-            <MenuItem
-              component={Link}
-              to="/help-center"
-              onClick={handleClose}
-              style={{ display: localStorage.getItem("token") ? "block" : "none" }}
-            >
-              Help Center
-            </MenuItem>
-            {isLoggedIn && (
+  <MenuItem
+    component={Link}
+    to="/help-center"
+    onClick={handleClose}
+    style={{ display: localStorage.getItem("token") ? "block" : "none" }}
+  >
+    <HelpOutline style={{ marginRight: 8 }} />
+    Help Center
+  </MenuItem>
 
-<MenuItem
-  onClick={handleLogout}
->
-  Logout
-</MenuItem>
-)}
-
-          </Menu>
+  {isLoggedIn && (
+    <MenuItem onClick={handleLogout}>
+      <ExitToApp style={{ marginRight: 8 }} />
+      Logout
+    </MenuItem>
+  )}
+</Menu>
         </Box>
 
         {/* Mobile Menu Button */}

@@ -26,7 +26,7 @@
     align-items: center;
     gap: 24px;
     scroll-behavior: smooth;
-    background: #ffffff;
+    /* background: #ffffff; */
     border-radius: 12px;
     width: 90vw;
     max-width: 100%;

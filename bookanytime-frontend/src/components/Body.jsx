@@ -5,14 +5,14 @@ import Offers from "./offers_section/newOffers";
 import Maps from "./map/map";
 import Footer from "../Footer"; 
 import Background from "../assets/background.png";
-
+import Advertisement from "./advertisement/Advertisement";
 
 function Body() {
   return (
     <div
       className="body-container"
       style={{
-        paddingTop: "80px",
+        paddingTop: "200px",
         marginTop: "20px",
         width: "100vw",
         // backgroundImage: `url(${Background})`,
@@ -25,6 +25,7 @@ function Body() {
       <Categories />
       <RecentlyViewed />
       <Offers />
+      <Advertisement />
       <Maps />
       <Footer />
     </div>

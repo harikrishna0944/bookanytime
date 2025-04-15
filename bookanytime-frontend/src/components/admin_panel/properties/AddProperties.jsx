@@ -29,7 +29,7 @@ const AdminPropertyForm = () => {
   const [loading, setLoading] = useState(false);
   const [newAmenity, setNewAmenity] = useState("");
   const [selectedAmenity, setSelectedAmenity] = useState("");
-  const amenitiesOptions = ["WiFi", "Swimming Pool", "Other"];
+  const amenitiesOptions = ["WiFi", "Swimming Pool","Kitchen","Air conditioning","Heating","Free washing machine","Dryer","HDTV with Netflix","Iron","Hair dryer","Dedicated workspace","Swimming Pool","Hot tub","Free parking on premises","Paid parking","Gym","BBQ grill","Box cricket","Barbeque setup","Projector","Jacuzzi","Camp fire","Smoking allowed","Pets allowed","Breakfast included","Security cameras","Fire extinguisher","First aid kit","Hot water","Private back garden – Fully fenced","Window AC unit","Patio or balcony","Bath tubs","Lawn","Outdoor barbeque","Other"];
   const [imageFiles, setImageFiles] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");

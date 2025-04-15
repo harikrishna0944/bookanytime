@@ -7,7 +7,7 @@ import {
   Paper,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
+import Logo from "../../../public/lg.png"
 const HelpCenter = () => {
   return (
     <div
@@ -19,9 +19,29 @@ const HelpCenter = () => {
       }}
     >
       <Paper elevation={3} className="container p-4" style={{ borderRadius: '16px' }}>
-        <h2 className="text-center mb-4" style={{ color: '#1976d2', fontWeight: 'bold' }}>
-          HELP CENTER
-        </h2>
+      <div
+  className="text-center mb-4"
+  style={{
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: "10px",
+    color: "#1976d2",
+    fontWeight: "bold",
+  }}
+>
+  <img
+    src={Logo}
+    alt="Logo"
+    style={{
+      width: "35px",
+      height: "35px",
+      objectFit: "contain",
+    }}
+  />
+  <h2 style={{ margin: 0 }}>HELP CENTER</h2>
+</div>
+
 
         {/* Account & Profile */}
         <h4 className="mt-5 mb-3" style={{ color: '#0d6efd' }}>Account & Profile</h4>

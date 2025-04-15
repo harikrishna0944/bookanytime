@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { 
   FaHeart, 
   FaFilter, 
@@ -11,9 +10,10 @@ import {
   FaStar, 
   FaSearch
 } from "react-icons/fa";
-import { Button, Badge, Dropdown } from "react-bootstrap";
+import { Button, Badge, Dropdown,InputGroup } from "react-bootstrap";
 import WishlistModal from "./WishlistModal";
 import Filter from "./Filter";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const CategoryPage = () => {
   const { categoryName } = useParams();
@@ -21,8 +21,6 @@ const CategoryPage = () => {
   // State variables
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([categoryName || "All"]);
   const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
@@ -30,9 +28,10 @@ const CategoryPage = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [locationSearch, setLocationSearch] = useState("");
   const [isWishlisted, setIsWishlisted] = useState({});
-  const [showModal, setShowModal] = useState(false);
-  const [selectedPropertyId, setSelectedPropertyId] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [showWishlistModal, setShowWishlistModal] = useState(false);
+  const [selectedPropertyId, setSelectedPropertyId] = useState(null);
+  const [propertyRatings, setPropertyRatings] = useState({});
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [filters, setFilters] = useState({
     priceRange: undefined,
@@ -42,59 +41,37 @@ const CategoryPage = () => {
   });
   const [appliedFiltersCount, setAppliedFiltersCount] = useState(0);
   const [sortOptions, setSortOptions] = useState([]);
-  const [propertyRatings, setPropertyRatings] = useState({});
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
+  const containerRef = useRef(null);
 
   // Fetch categories and user data
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/categories`);
-        const categoryNames = response.data.map((category) => category.name);
+        const categoriesResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/categories`);
+        const categoriesData = await categoriesResponse.json();
+        const categoryNames = categoriesData.map((category) => category.name);
         setCategories(categoryNames);
+
+        const user = JSON.parse(localStorage.getItem("user"));
+        setUserId(user ? user.id : null);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.error("Error initializing data:", error);
       }
     };
 
-    fetchCategories();
-
-    const user = JSON.parse(localStorage.getItem("user"));
-    setUserId(user ? user.id : null);
+    fetchData();
   }, []);
 
-  // Fetch properties based on search criteria
+  // Search properties when location or categories change
   useEffect(() => {
-    const fetchProperties = async () => {
-      setLoading(true);
-      try {
-        const params = {
-          query: locationSearch.trim(),
-          propertyName: searchText.trim(),
-          category: selectedCategories.includes("All") ? "" : selectedCategories.join(",")
-        };
+    const timer = setTimeout(() => {
+      searchProperties();
+    }, 300);
 
-        // If no search criteria and "All" is selected, fetch all properties
-        if (!searchText.trim() && !locationSearch.trim() && selectedCategories.includes("All")) {
-          const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties`);
-          setProperties(response.data);
-        } else {
-          const response = await axios.get(
-            `${import.meta.env.VITE_API_BASE_URL}/api/properties/search-locations`,
-            { params }
-          );
-          setProperties(response.data);
-        }
-      } catch (error) {
-        console.error("Error fetching properties:", error);
-        setError("Failed to load properties.");
-        setProperties([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProperties();
-  }, [categoryName, searchText, locationSearch, selectedCategories]);
+    return () => clearTimeout(timer);
+  }, [locationSearch, selectedCategories]);
 
   // Fetch ratings for properties
   useEffect(() => {
@@ -162,6 +139,45 @@ const CategoryPage = () => {
     filterAndSortProperties();
   }, [filters, sortOptions, properties]);
 
+  // Check scroll position for arrows
+  const checkScroll = useCallback(() => {
+    if (containerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
+      setShowLeftArrow(scrollLeft > 10);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  }, []);
+
+  // Handle scroll left
+  const handleScrollLeft = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollBy({ left: -200, behavior: "smooth" });
+    }
+  };
+
+  // Handle scroll right
+  const handleScrollRight = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollBy({ left: 200, behavior: "smooth" });
+    }
+  };
+
+  // Set up scroll event listeners
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("scroll", checkScroll);
+      window.addEventListener("resize", checkScroll);
+      checkScroll(); // Initial check
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", checkScroll);
+        window.removeEventListener("resize", checkScroll);
+      }
+    };
+  }, [checkScroll]);
+
   // Filter and sort properties based on current criteria
   const filterAndSortProperties = () => {
     let result = [...properties];
@@ -227,13 +243,88 @@ const CategoryPage = () => {
     setAppliedFiltersCount(count);
   };
 
-  // Handle search input changes
-  const handleInputChange = (event) => {
-    setSearchText(event.target.value);
+  // Search properties based on current criteria
+  const searchProperties = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search-locations`, {
+        params: {
+          query: locationSearch.trim(),
+          propertyName: searchText.trim(),
+          category: selectedCategories.includes("All") ? "" : selectedCategories.join(","),
+        },
+      });
+      setProperties(response.data);
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+      setProperties([]);
+      setFilteredProperties([]);
+    }    
   };
+
+
+// Search by Location
+const handleLocationSearch = async (e) => {
+  console.log("insisde location search")
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search-locations`, {
+      params: {
+        query: locationSearch.trim(),
+        propertyName: "", // Not searching by name here
+        category: selectedCategories.includes("All") ? "" : selectedCategories.join(","),
+      },
+    });
+    setProperties(response.data);
+  } catch (error) {
+    console.error("Error searching by location:", error);
+    setProperties([]);
+  }
+};
+
+  // Category cycling effect
+  useEffect(() => {
+    if (categories.length > 0 && !isTyping) {
+      const interval = setInterval(() => {
+        setCurrentCategoryIndex((prevIndex) => (prevIndex + 1) % categories.length);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [categories, isTyping]);
+  
+
+
+// Step 1: New function to actually fetch the data
+const searchByName = async (searchQuery) => {
+  console.log("search queryyy")
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search`, {
+      params: {
+        query: searchQuery.trim(),
+        categories: selectedCategories.includes("All") ? [] : selectedCategories,
+      },
+    });
+    setProperties(response.data);
+  } catch (error) {
+    console.error("Error searching by name:", error);
+    setProperties([]);
+  }
+};
+
+// Step 2: onChange handler — update state + call search
+const handleInputChange = (event) => {
+  const value = event.target.value;
+  setSearchText(value);
+  searchByName(value); 
+};
 
   const handleFocus = () => setIsTyping(true);
   const handleBlur = () => setIsTyping(false);
+
+  // Handle location search input
+  const handleLocationChange = (event) => {
+    const value = event.target.value;
+    setLocationSearch(value);
+    handleLocationSearch(value)
+  };
 
   // Handle category selection
   const handleCategoryChange = (category) => {
@@ -248,11 +339,6 @@ const CategoryPage = () => {
           : [...prev, category]
       );
     }
-  };
-
-  // Handle location search input
-  const handleLocationChange = (event) => {
-    setLocationSearch(event.target.value);
   };
 
   // Handle wishlist actions
@@ -277,7 +363,7 @@ const CategoryPage = () => {
       if (wishlistWithProperty) {
         await removeFromWishlist(propertyId, wishlistWithProperty.name);
       } else {
-        setShowModal(true);
+        setShowWishlistModal(true);
       }
     } catch (error) {
       console.error("Error fetching wishlist:", error);
@@ -348,57 +434,95 @@ const CategoryPage = () => {
     return `${sortOptions.length} sorts`;
   };
 
-  if (loading) return <div className="text-center mt-5">Loading properties...</div>;
-  if (error) return <div className="text-danger text-center mt-5">{error}</div>;
+  const clearAllSorting = () => {
+    setSortOptions([]);
+  };
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4" style={{marginLeft: '30px'}}>
       {/* Search Section */}
-      <div className="search-section mb-4 p-3 bg-white rounded shadow-sm" style={{ margin: '30px', maxWidth: '1200px' }}>
-        {/* Dual Search Inputs */}
-        <div className="row g-3 mb-3">
+      <div className="search-section mb-4 p-3 bg-white rounded shadow-sm" style={{ width: window.innerWidth < 576 ? '88%' : undefined }}>
+        {/* Search Inputs */}
+        <div className="row g-3 mb-3" style={{marginTop: '20px'}}>
           <div className="col-md-6">
-            <div className="input-group">
-              <input
-                type="text"
-                className="form-control"
-                placeholder={
-                  isTyping
-                    ? "Search by property name"
-                    : categories.length > 0
-                    ? `Search for ${categories[currentCategoryIndex]}`
-                    : "Search"
-                }
-                value={searchText}
-                onChange={handleInputChange}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-              />
-              <button className="btn btn-primary" type="button">
-                <FaSearch />
-              </button>
-            </div>
+            <form >
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="form-control"
+                  style={{ background: 'white', zIndex: 10 }}
+
+                  placeholder={`Search for ${categories[currentCategoryIndex] || "properties"}`}
+                  value={searchText}
+                  onChange={handleInputChange}
+                
+                />
+                {/* <button className="btn btn-primary" type="submit">
+                  <FaSearch />
+                </button> */}
+              </div>
+            </form>
           </div>
           <div className="col-md-6">
-            <div className="input-group">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Search by location"
-                value={locationSearch}
-                onChange={handleLocationChange}
-              />
-              <button className="btn btn-primary" type="button">
-                <FaSearch />
-              </button>
-            </div>
+            <form onSubmit={handleLocationSearch}>
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="form-control"
+                  style={{ background: 'white', zIndex: 10 }}
+
+                  placeholder="Search by location"
+                  value={locationSearch}
+                  onChange={handleLocationChange}
+                />
+                {/* <button className="btn btn-primary" type="submit">
+                  <FaSearch />
+                </button> */}
+              </div>
+            </form>
           </div>
         </div>
 
-        {/* Category Filters */}
-        <div className="category-filters-container">
-          <div className="d-flex flex-nowrap gap-2 overflow-auto py-2">
-            {["All", ...categories].map((category) => (
+        {/* Category Filters with Scroll Arrows */}
+        <div className="d-flex position-relative align-items-center" style={{marginTop: '-50px',marginBottom: '30px'}}>
+          <div 
+            className="d-flex flex-nowrap gap-2 category-filters-container position-relative"
+            ref={containerRef}
+            style={{
+              overflowX: 'auto',
+              scrollBehavior: 'smooth',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+              padding: '0 8px',
+              width: '100%',
+            }}
+          >
+            {showLeftArrow && (
+              <button 
+                className="scroll-arrow left" 
+                onClick={handleScrollLeft}
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  zIndex: 1,
+                  background: 'white',
+                  border: '1px solid #dee2e6',
+                  borderRadius: '50%',
+                  width: '28px',
+                  height: '28px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}
+              >
+                <ChevronLeft size={16} />
+              </button>
+            )}
+            
+            {["All", ...categories].map((category, index) => (
               <button
                 key={category}
                 className={`btn ${
@@ -407,26 +531,133 @@ const CategoryPage = () => {
                     : "btn-outline-primary"
                 }`}
                 onClick={() => handleCategoryChange(category)}
-                style={{ minWidth: "80px", whiteSpace: "nowrap" }}
+                onMouseEnter={() => {
+                  if (index > 0) { // Skip "All"
+                    setCurrentCategoryIndex(index - 1);
+                  }
+                }}
+                style={{
+                  minWidth: "90px",
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
+                  transition: 'all 0.3s ease',
+                  padding: '0.375rem 0.75rem',
+                  fontSize: '1rem',
+                  fontWeight: '500'
+                }}
               >
                 {category}
               </button>
             ))}
+            
+            {showRightArrow && (
+              <button 
+                className="scroll-arrow right" 
+                onClick={handleScrollRight}
+                style={{
+                  position: 'absolute',
+                  right: 0,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  zIndex: 1,
+                  background: 'white',
+                  border: '1px solid #dee2e6',
+                  borderRadius: '50%',
+                  width: '28px',
+                  height: '28px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}
+              >
+                <ChevronRight size={16} />
+              </button>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Page Title */}
-      {/* {!searchText && !locationSearch && (
-        <h4 className="text-center mb-4">
-          Properties in {categoryName}
-        </h4>
-      )} */}
+      {/* Properties Grid */}
+      <div className="row">
+        {filteredProperties.length > 0 ? (
+          filteredProperties.map((property) => (
+            <div key={property._id} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4" style={{ width: window.innerWidth < 576 ? '88%' : undefined }}>
+              <div className="property-item shadow-sm p-2 position-relative">
+                {(property.popularity && property.popularity < 5) && (
+                  <div className="position-absolute top-0 start-0 m-2">
+                    <Badge bg="warning" text="dark" className="shadow-sm">
+                      Popular
+                    </Badge>
+                  </div>
+                )}
+                <div
+                  className="position-absolute top-0 end-0 m-2"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleWishlistClick(property._id);
+                  }}
+                  style={{ cursor: "pointer", zIndex: 1 }}
+                >
+                  <FaHeart
+                    size={20}
+                    color={isWishlisted[property._id] ? "red" : "white"}
+                  />
+                </div>
+
+                <img
+                  src={property.images && property.images.length > 0 ? property.images[0] : "https://via.placeholder.com/150"}
+                  alt={property.name}
+                  className="img-fluid"
+                  onClick={() => window.open(`/property/${property._id}`, "_blank")}
+                />
+
+                <div className="property-details text-center p-2">
+                  <div className="d-flex justify-content-between align-items-center mb-1">
+                    <h6 className="fw-bold mb-0 fs-6 text-start">{property.name}</h6>
+                    {propertyRatings[property._id] && (
+                      <div className="d-flex align-items-center">
+                        <FaStar className="text-warning me-1" style={{ fontSize: "0.8rem" }} />
+                        <span className="small text-muted">
+                          {propertyRatings[property._id].toFixed(1)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-muted small mb-1 text-start">
+                    {property.city}, {property.address}
+                  </p>
+                  
+                  <div className="d-flex justify-content-between align-items-center border-top pt-2">
+                    <div className="d-flex align-items-center">
+                      <FaUser className="me-2 text-muted" />
+                      <span className="small">{property.capacity?.adults || 0} Adults</span>
+                    </div>
+                    <div className="d-flex align-items-center">
+                      <span className="text-muted small me-1">Cost</span>
+                      <span className="fw-bold" style={{ fontSize: "0.9rem", color: "#28a745" }}>
+                        <FaRupeeSign className="me-1" style={{ color: "black" }} />
+                        {property.minPrice?.toLocaleString() || "0"} - {property.maxPrice?.toLocaleString() || "0"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="col-12 text-center py-5">
+            <p className="text-muted">No properties match your search criteria.</p>
+            <Button variant="outline-primary" onClick={clearFilters}>
+              Feach All 
+            </Button>
+          </div>
+        )}
+      </div>
 
       {/* Filter and Sort Buttons */}
-      {/* Filter and Sort Buttons - Modified to be fixed at bottom center */}
       <div className="fixed-bottom d-flex justify-content-center mb-3">
-        <div className="d-flex gap-2  p-2 rounded shadow" style={{ zIndex: 1000 }}>
+        <div className="d-flex gap-2 p-2 rounded shadow" style={{ zIndex: 1000 }}>
           <Button
             variant="primary"
             onClick={() => setShowFilterModal(true)}
@@ -477,7 +708,7 @@ const CategoryPage = () => {
               </Dropdown.Item>
               {sortOptions.length > 0 && (
                 <Dropdown.Item 
-                  onClick={() => setSortOptions([])}
+                  onClick={clearAllSorting}
                   className="text-danger"
                 >
                   Clear All Sorting
@@ -486,83 +717,6 @@ const CategoryPage = () => {
             </Dropdown.Menu>
           </Dropdown>
         </div>
-      </div>
-
-      {/* Properties Grid */}
-      <div className="row">
-        {filteredProperties.length > 0 ? (
-          filteredProperties.map((property) => (
-            <div key={property._id} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-                <div className="property-item shadow-sm p-2 position-relative">
-                  {(property.popularity && property.popularity < 5) && (
-                    <div className="position-absolute top-0 start-0 m-2">
-                      <Badge bg="warning" text="dark" className="shadow-sm">
-                        Popular
-                      </Badge>
-                    </div>
-                  )}
-                  <div
-                    className="position-absolute top-0 end-0 m-2"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleWishlistClick(property._id);
-                    }}
-                    style={{ cursor: "pointer", zIndex: 1 }}
-                  >
-                    <FaHeart
-                      size={20}
-                      color={isWishlisted[property._id] ? "red" : "white"}
-                    />
-                  </div>
-
-                  <img
-                    src={property.images && property.images.length > 0 ? property.images[0] : "https://via.placeholder.com/150"}
-                    alt={property.name}
-                    className="img-fluid"
-                    onClick={() => window.open(`/property/${property._id}`, "_blank")}
-                  />
-
-                  <div className="property-details text-center p-2">
-                    <div className="d-flex justify-content-between align-items-center mb-1">
-                      <h6 className="fw-bold mb-0 fs-6 text-start">{property.name}</h6>
-                      {propertyRatings[property._id] && (
-                        <div className="d-flex align-items-center">
-                          <FaStar className="text-warning me-1" style={{ fontSize: "0.8rem" }} />
-                          <span className="small text-muted">
-                            {propertyRatings[property._id].toFixed(1)}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    <p className="text-muted small mb-1 text-start">
-                      {property.city}, {property.address}
-                    </p>
-                    
-                    <div className="d-flex justify-content-between align-items-center border-top pt-2">
-                      <div className="d-flex align-items-center">
-                        <FaUser className="me-2 text-muted" />
-                        <span className="small">{property.capacity?.adults || 0} Adults</span>
-                      </div>
-                      <div className="d-flex align-items-center">
-                        <span className="text-muted small me-1">Cost</span>
-                        <span className="fw-bold" style={{ fontSize: "0.9rem", color: "#28a745" }}>
-                          <FaRupeeSign className="me-1" style={{ color: "black" }} />
-                          {property.minPrice?.toLocaleString() || "0"} - {property.maxPrice?.toLocaleString() || "0"}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-            </div>
-          ))
-        ) : (
-          <div className="col-12 text-center py-5">
-            <p className="text-muted">No properties match your search criteria.</p>
-            <Button variant="outline-primary" onClick={clearFilters}>
-              Clear all filters
-            </Button>
-          </div>
-        )}
       </div>
 
       {/* Modals */}
@@ -577,8 +731,8 @@ const CategoryPage = () => {
       />
 
       <WishlistModal
-        show={showModal}
-        onClose={() => setShowModal(false)}
+        show={showWishlistModal}
+        onClose={() => setShowWishlistModal(false)}
         userId={userId}
         propertyId={selectedPropertyId}
         onWishlistUpdate={handleWishlistUpdate}
@@ -591,62 +745,61 @@ const CategoryPage = () => {
           border-radius: 8px;
         }
         
-        .property-card {
+        .property-item {
           transition: transform 0.2s, box-shadow 0.2s;
           background: white;
-          border: 1px solid #dee2e6;
+          border-radius: 8px;
+          overflow: hidden;
         }
         
-        .property-card:hover {
+        .property-item:hover {
           transform: translateY(-5px);
           box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
         
-        .property-image-container {
-          height: 180px;
-          overflow: hidden;
-        }
-        
-        .property-image {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transition: transform 0.3s;
-        }
-        
-        .property-card:hover .property-image {
-          transform: scale(1.05);
-        }
-        
-        .property-name {
-          font-size: 1rem;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          max-width: 70%;
-        }
-        
-        .category-filters-container {
-          overflow-x: auto;
-          padding-bottom: 8px;
-        }
-        
         .category-filters-container::-webkit-scrollbar {
-          height: 5px;
+          display: none;
         }
         
-        .category-filters-container::-webkit-scrollbar-thumb {
-          background: #888;
-          border-radius: 5px;
-        }
         .fixed-bottom {
           position: fixed;
           bottom: 0;
           left: 0;
           right: 0;
           padding: 10px;
-          // background: transparent;
-          z-index: 1000;
+          zIndex: 1000;
+        }
+        
+        .scroll-arrow {
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        
+        .scroll-arrow:hover {
+          background: #f8f9fa !important;
+        }
+        
+        .scroll-arrow:active {
+          transform: translateY(-50%) scale(0.95);
+        }
+
+        .category-filters-container button {
+          transition: all 0.3s ease;
+        }
+        
+        .category-filters-container button:hover {
+          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+          color: black !important;
+        }
+        
+        .category-filters-container button.btn-outline-primary:hover {
+          background-color: rgba(13, 110, 253, 0.1);
+        }
+
+        @media (min-width: 768px) {
+          .category-filters-container button {
+            font-size: 1.1rem;
+          }
         }
       `}</style>
     </div>
@@ -654,3 +807,24 @@ const CategoryPage = () => {
 };
 
 export default CategoryPage;
+
+
+
+// .category-filters-container button {
+//   transition: all 0.3s ease;
+// }
+
+// .category-filters-container button:hover {
+//   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+//   color: black !important;
+// }
+
+// .category-filters-container button.btn-outline-primary:hover {
+//   background-color: rgba(13, 110, 253, 0.1);
+// }
+
+// @media (min-width: 768px) {
+//   .category-filters-container button {
+//     font-size: 1.1rem;
+//   }
+// }

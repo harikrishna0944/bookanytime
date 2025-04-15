@@ -21,6 +21,8 @@ import FeedbackComponent from "./components/feedback/FeedbackComponent";
 import FeedbackAdmin from "./components/admin_panel/feedback/FeedbackAdmin";
 import HelpCenter from "./components/help_center/HelpCenter"
 // Protect admin routes
+
+
 const AdminRoute = ({ children }) => {
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
@@ -41,6 +43,16 @@ function App() {
 
   return (
     <>
+
+<style>
+        {`
+          * {
+            font-family: 'Times New Roman', Times, serif ;
+                        text-transform: capitalize ;
+
+          }
+        `}
+      </style>
       {!isAdminRoute && <Header />}  {/* Hide main header on admin pages */}
 
       <Routes>

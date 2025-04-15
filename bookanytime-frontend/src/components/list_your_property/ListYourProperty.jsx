@@ -10,6 +10,7 @@ import {
   Button,
   Alert,
 } from "@mui/material";
+import Logo from "../../../public/lg.png"
 
 const ListProperty = () => {
   const [formData, setFormData] = useState({
@@ -21,15 +22,47 @@ const ListProperty = () => {
 
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [formErrors, setFormErrors] = useState({
+    phone: "",
+    email: "",
+  });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const validatePhone = (phone) => {
+    const phoneRegEx = /^\+91\d{10}$/; // Check if the phone starts with +91 and is followed by 10 digits
+    return phoneRegEx.test(phone);
+  };
+
+  const validateEmail = (email) => {
+    const emailRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // Standard email regex
+    return emailRegEx.test(email);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
     setError("");
+    setFormErrors({ phone: "", email: "" }); // Reset errors before validation
+
+    // Validate phone and email before submission
+    let valid = true;
+
+    if (!validatePhone(formData.phone)) {
+      setFormErrors((prev) => ({ ...prev, phone: "Please enter a valid phone number (+91 followed by 10 digits)." }));
+      valid = false;
+    }
+
+    if (!validateEmail(formData.email)) {
+      setFormErrors((prev) => ({ ...prev, email: "Please enter a valid email address." }));
+      valid = false;
+    }
+
+    if (!valid) {
+      return; // Don't submit the form if validation fails
+    }
 
     try {
       const response = await axios.post(
@@ -53,6 +86,7 @@ const ListProperty = () => {
         alignItems: "center",
         backgroundImage: "linear-gradient(to right, #1E3C72, #2A5298)",
         padding: 2,
+        marginTop:"50px"
       }}
     >
       <Container maxWidth="sm">
@@ -70,9 +104,32 @@ const ListProperty = () => {
             alignItems: "center",
           }}
         >
-          <Typography variant="h4" color="primary" gutterBottom>
-            List Your Property
-          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5, // spacing between logo and text
+              mb: 3, // margin bottom
+            }}
+          >
+            <img
+              src={Logo}
+              alt="Logo"
+              style={{
+                width: "40px",
+                height: "40px",
+                objectFit: "contain",
+              }}
+            />
+            <Typography
+              variant="h4"
+              color="primary"
+              gutterBottom
+              sx={{ margin: 0 }}
+            >
+              List Your Property
+            </Typography>
+          </Box>
 
           {/* WhatsApp Button */}
           <Box sx={{ textAlign: "center", mb: 3 }}>
@@ -138,6 +195,8 @@ const ListProperty = () => {
               variant="outlined"
               placeholder="+91 9876543210"
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "8px", backgroundColor: "#f9f9f9" } }}
+              error={!!formErrors.phone} // Show error if validation fails
+              helperText={formErrors.phone} // Show the error message
             />
             <TextField
               label="Email"
@@ -149,6 +208,8 @@ const ListProperty = () => {
               fullWidth
               variant="outlined"
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "8px", backgroundColor: "#f9f9f9" } }}
+              error={!!formErrors.email} // Show error if validation fails
+              helperText={formErrors.email} // Show the error message
             />
             <TextField
               label="Category"

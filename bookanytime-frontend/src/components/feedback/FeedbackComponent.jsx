@@ -11,6 +11,7 @@ import {
 
 const FeedbackComponent = () => {
   const [description, setDescription] = useState("");
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false); // New state to handle feedback submission
 
   const handleSubmit = async () => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -28,8 +29,8 @@ const FeedbackComponent = () => {
         description: description.trim(),
       });
 
-      alert("Feedback submitted successfully!");
-      setDescription("");
+      setFeedbackSubmitted(true); // Set feedbackSubmitted to true on successful submission
+      setDescription(""); // Clear the description input after submission
     } catch (err) {
       console.error("Error submitting feedback", err);
       alert("Something went wrong.");
@@ -66,6 +67,12 @@ const FeedbackComponent = () => {
           <Typography variant="h4" color="primary" gutterBottom>
             Feedback for Property or Website
           </Typography>
+
+          {feedbackSubmitted && ( // Display message only when feedback is submitted
+            <Typography variant="h6" color="green" sx={{ mb: 2 }}>
+              Thanks for sharing feedback!
+            </Typography>
+          )}
 
           <TextField
             label="Write your feedback here..."
@@ -106,4 +113,5 @@ const FeedbackComponent = () => {
     </Box>
   );
 };
+
 export default FeedbackComponent;

@@ -7,7 +7,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { getUserRole } from "../utils/auth"
 import { useNavigate } from "react-router-dom";
 import { AccountCircle, ExitToApp, Feedback, HelpOutline, AdminPanelSettings } from '@mui/icons-material';
-import Background from "../../assets/background3.png"
+import Background from "../../assets/background3_lightened.png"
+// import Logo from "../../../public/lg.png"
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -49,12 +50,18 @@ const Header = () => {
         width: "100vw",
         zIndex: 1000,
         boxShadow: "none", // removes default shadow
+fontSize:"12px",
+fontFamily: `system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif !important`,
 
       }}
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         {/* Logo */}
-        <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+         {/* <Link to="/">
+        <img src={Logo} alt="" style={{height:"50px", width:"50px"}}/>
+        </Link>  */}
+
+        <Link to="/" style={{ textDecoration: 'none', color: 'inherit'}}>
           <h3 className="text-white m-0">BookAnytime</h3>
         </Link>
 
@@ -137,12 +144,17 @@ const Header = () => {
         </Box>
 
         {/* Mobile Menu Button */}
-        <IconButton
-          sx={{ display: { xs: "block", md: "none" }, color: "white" }}
-          onClick={toggleDrawer}
-        >
-          <MenuIcon />
-        </IconButton>
+       {/* Mobile Menu + Avatar (Mobile Only) */}
+<Box sx={{ display: { xs: "flex", md: "none" }, alignItems: "center", gap: 1 }}>
+<IconButton onClick={handleProfileClick}>
+    <Avatar alt="Profile" src="/profile.jpg" sx={{ width: 30, height: 30 }} />
+  </IconButton>
+  <IconButton sx={{ color: "white" }} onClick={toggleDrawer}>
+    <MenuIcon />
+  </IconButton>
+ 
+</Box>
+
 
         {/* Mobile Drawer */}
         <Drawer anchor="right" open={mobileOpen} onClose={toggleDrawer}>
@@ -150,7 +162,7 @@ const Header = () => {
             <ListItem button component={Link} to="/search" onClick={toggleDrawer}>
               Search
             </ListItem>
-            <ListItem button component={Link} to="/list-property" onClick={toggleDrawer}>
+            <ListItem button component={Link} to="/list-your-property" onClick={toggleDrawer}>
               List Your Property
             </ListItem>
             <ListItem button component={Link} to="/wishlist" onClick={toggleDrawer}>
@@ -158,9 +170,9 @@ const Header = () => {
             </ListItem>
 
             {/* Profile Avatar in Mobile Menu */}
-            <ListItem button onClick={handleProfileClick}>
+            {/* <ListItem button onClick={handleProfileClick}>
               <Avatar alt="Profile" src="/profile.jpg" sx={{ width: 40, height: 40 }} />
-            </ListItem>
+            </ListItem> */}
           </List>
         </Drawer>
       </Toolbar>

@@ -5,65 +5,39 @@ import { FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
 
 function Footer() {
   return (
-    <footer className="bg-dark text-white py-4 mt-5" style={{ width: "100%" }}>
-      <Container fluid>
-        <Row className="text-center text-md-start">
-          {/* Company Info - Now takes more space */}
-          <Col xs={12} md={4} className="mb-4 mb-md-0 px-4">
+    <footer style={{ backgroundColor: '#212529', color: '#fff', padding: '40px 0', width: '100%', margin: '0',}}>
+      <div style={{ maxWidth: '100%', margin: '0 auto' }}>
+        <div className="row text-center text-md-start px-3 px-md-5">
+          <div className="col-md-4 mb-4 mb-md-0">
             <h5 className="text-white mb-3">BookAnytime</h5>
-            <p className="text-white-50">
-              Find your perfect stay anywhere in the world
-            </p>
-          </Col>
-
-          {/* Quick Links - Adjusted width */}
-          <Col xs={12} md={3} className="mb-4 mb-md-0 px-4">
+            <p className="text-white-50">Find your perfect stay anywhere in the world</p>
+          </div>
+          <div className="col-md-3 mb-4 mb-md-0">
             <h5 className="text-white mb-3">Quick Links</h5>
             <ul className="list-unstyled">
-              <li className="mb-2">
-                <Link to="/" className="text-white text-decoration-none">Home</Link>
-              </li>
-              <li className="mb-2">
-                <Link to="/search" className="text-white text-decoration-none">Search</Link>
-              </li>
-              <li>
-                <Link to="/list-property" className="text-white text-decoration-none">List Property</Link>
-              </li>
+              <li><a href="/" className="text-white text-decoration-none">Home</a></li>
+              <li><a href="/search" className="text-white text-decoration-none">Search</a></li>
+              <li><a href="/list-property" className="text-white text-decoration-none">List Property</a></li>
             </ul>
-          </Col>
-
-          {/* Contact Info - Expanded to use remaining space */}
-          <Col xs={12} md={5} className="mb-4 mb-md-0 px-4">
+          </div>
+          <div className="col-md-5">
             <h5 className="text-white mb-3">Contact Us</h5>
-            <p className="text-white-50 mb-2">
-              <i className="bi bi-envelope me-2"></i> info@bookanytime.com
-            </p>
-            <p className="text-white-50 mb-3">
-              <i className="bi bi-telephone me-2"></i> +1 (123) 456-7890
-            </p>
-            
-            {/* Social Media Icons */}
-            <div className="social-icons d-flex justify-content-center justify-content-md-start">
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-white me-3">
-                <FaFacebook size={20} />
-              </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-white me-3">
-                <FaTwitter size={20} />
-              </a>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-white">
-                <FaInstagram size={20} />
-              </a>
+            <p className="text-white-50"><i className="bi bi-envelope me-2"></i> info@bookanytime.com</p>
+            <p className="text-white-50"><i className="bi bi-telephone me-2"></i> +1 (123) 456-7890</p>
+            <div className="d-flex justify-content-center justify-content-md-start">
+              <a href="#" className="text-white me-3"><FaFacebook /></a>
+              <a href="#" className="text-white me-3"><FaTwitter /></a>
+              <a href="#" className="text-white"><FaInstagram /></a>
             </div>
-          </Col>
-        </Row>
+          </div>
+        </div>
 
-        {/* Copyright */}
-        <Row className="mt-4">
-          <Col className="text-center text-white-50">
+        <div className="row mt-4 m-0">
+          <div className="col text-center text-white-50">
             <small>&copy; {new Date().getFullYear()} BookAnytime. All rights reserved.</small>
-          </Col>
-        </Row>
-      </Container>
+          </div>
+        </div>
+      </div>
     </footer>
   );
 }

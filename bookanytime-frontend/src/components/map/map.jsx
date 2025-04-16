@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { GoogleMap, LoadScript, Marker, InfoWindow } from "@react-google-maps/api";
 import axios from "axios";
 import { FaMapMarkedAlt } from "react-icons/fa"; // Airbnb-style map icon
-
+import marker from "../../assets/image.png"
 const mapContainerStyle = {
   position: "fixed",
   top: "0",
@@ -69,21 +69,27 @@ function MapComponent() {
           onUnmount={handleMapUnmount}
         >
           {properties.map((property, index) => (
-            <Marker
-              key={index}
-              position={{
-                lat: parseFloat(property.latitude),
-                lng: parseFloat(property.longitude),
-              }}
-              onClick={() => setSelectedProperty(property)}
-              title={property.name}
-              label={{
-                text: property.name, // Property name displayed initially
-                color: "blue",
-                fontSize: "18px",
-                fontWeight: "bold",
-              }}
-            />
+           <Marker
+           key={index}
+           position={{
+             lat: parseFloat(property.latitude),
+             lng: parseFloat(property.longitude),
+           }}
+           onClick={() => setSelectedProperty(property)}
+           title={property.name}
+           icon={{
+             url: marker, // Use a better icon if desired
+             scaledSize: new window.google.maps.Size(40, 40), // Adjust marker size
+           }}
+           label={{
+             text: property.name,
+             color: "#2D3142	", // Bright label text
+             fontSize: "14px",
+             fontWeight: "bold",
+             className: "custom-label", // Optional: you can style it via CSS
+           }}
+         />
+         
           ))}
 
           {selectedProperty && (
@@ -157,12 +163,12 @@ function MapComponent() {
           alignItems: "center",
           gap: "8px",
           cursor: "pointer",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+          boxShadow: "0 2px 6px rgba(206, 59, 59, 0.2)",
           zIndex: "1100",
         }}
       >
         <FaMapMarkedAlt size={20} color="#FF5A5F" />
-        {showMap ? "Hide Map" : "Show Map"}
+        {showMap ? "Hide Map" : "Map"}
       </button>
 
       {showMap && (

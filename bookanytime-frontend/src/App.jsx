@@ -17,11 +17,25 @@ import WishlistDetailsPage from "./components/WishList/WishListDetailsPage";
 import ListYourProperty from "./components/list_your_property/ListYourProperty"
 import ListPropertyLogs from "./components/admin_panel/list-your-property/ListPropertyLogs"
 import OffersDetailsPage from "./components/offers_section/OffersDetailsPage"
+import FeedbackComponent from "./components/feedback/FeedbackComponent";
+import FeedbackAdmin from "./components/admin_panel/feedback/FeedbackAdmin";
+import HelpCenter from "./components/help_center/HelpCenter"
 // Protect admin routes
+
+
 const AdminRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem("token"); // Check if token exists
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const isAdmin = user?.isAdmin === true;
+
+  if (!token || !isAdmin) {
+    return <Navigate to="/login" />;
+  }
+
+  return children;
 };
+
 
 function App() {
   const location = useLocation();
@@ -29,6 +43,16 @@ function App() {
 
   return (
     <>
+
+<style>
+        {`
+          * {
+            font-family: 'Times New Roman', Times, serif ;
+                        text-transform: capitalize ;
+
+          }
+        `}
+      </style>
       {!isAdminRoute && <Header />}  {/* Hide main header on admin pages */}
 
       <Routes>
@@ -36,12 +60,14 @@ function App() {
         <Route path="/:categoryName" element={<CategoryPage />} />
         <Route path="/property/:id" element={<PropertyDetails />} />
         <Route path="/search" element={<Search />} />
-        <Route path="/login" element={<AuthPage isSignup={false} />} />
-        <Route path="/signup" element={<AuthPage isSignup={true} />} />
+        <Route path="/login" element={<AuthPage key="login" isSignup={false} />} />
+        <Route path="/signup" element={<AuthPage key="signup" isSignup={true} />} />
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/wishlist/:wishlistId" element={<WishlistDetailsPage />} />
         <Route path="/list-your-property" element={<ListYourProperty/>} />
         <Route path="/offers/:offerId" element={<OffersDetailsPage />} /> 
+        <Route path="/feedback" element={<FeedbackComponent/>} />
+        <Route path="/help-center" element={<HelpCenter/>} />
 
         {/* Admin Routes - Protected */}
         <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>}>
@@ -51,6 +77,7 @@ function App() {
           <Route path="offers" element={<AdminRoute><Offers /></AdminRoute>} />
           <Route path="trackData" element={<AdminRoute><TrackedData /></AdminRoute>} />
           <Route path="list-property-logs" element={<AdminRoute><ListPropertyLogs /></AdminRoute>} />
+          <Route path="feedback-logs" element={<AdminRoute><FeedbackAdmin /></AdminRoute>} />
 
         </Route>
       </Routes>

@@ -123,6 +123,11 @@ const PropertyDetails = () => {
             name: response.data.name,
             image: response.data.images?.[0], // Store the first image
             city: response.data.city,
+            maxPrice: response.data.maxPrice,
+            minPrice: response.data.minPrice,
+            adults: response.data.capacity.adults,
+            bedroom: response.data.bedrooms,
+            category:response.data.category
           });
 
           // Limit the number of recently viewed properties (e.g., last 5)
@@ -300,7 +305,7 @@ const PropertyDetails = () => {
           top: '65px',
           zIndex: '1000',
           backgroundColor: '#fff',
-          padding: '15px '
+          padding: '5px '
           // boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
         }}
       >
@@ -315,7 +320,12 @@ const PropertyDetails = () => {
             textOverflow: 'ellipsis'
           }}
         >
-          {property.name}
+          <div 
+            className="search-section mb-4 p-1 bg-white rounded "
+            style={{ display: window.innerWidth >= 1024 ? 'block' : 'none' }}
+          >
+            { property.name }
+          </div>
         </h1>
 
         {/* Icons container on the right - with text next to icons */}
@@ -357,27 +367,61 @@ const PropertyDetails = () => {
       </div>
       {/* Image Grid Layout */}
       <div className="row g-2">
-        <div className="col-12 col-lg-8">
-          <img src={property.images?.[0]} className="img-fluid main-image" alt="Property" />
-        </div>
-        <div className="col-12 col-lg-4 d-flex flex-column">
-          <img src={property.images?.[1]} className="img-fluid side-image mb-2" alt="Property" />
-          <div className="d-flex position-relative">
-            <img src={property.images?.[2]} className="img-fluid small-image me-2" alt="Property" />
-            <div className="position-relative">
-              <img src={property.images?.[3]} className="img-fluid small-image" alt="Property" />
-              {property.images?.length > 4 && (
-                <div
-                  className="more-overlay d-flex align-items-center justify-content-center"
-                  onClick={() => setShowAllImages(true)}
-                >
-                  + More
-                </div>
-              )}
-            </div>
+  <div className="col-12 col-lg-8">
+    <img
+      src={property.images?.[0]}
+      alt="Property"
+      className="img-fluid main-image"
+      style={{ height: '418px', objectFit: 'cover', borderRadius: '10px' }}
+    />
+  </div>
+  <div className="col-12 col-lg-4 d-flex flex-column">
+    <img
+      src={property.images?.[1]}
+      alt="Property"
+      className="img-fluid side-image mb-2"
+      style={{ height: '250px', objectFit: 'cover', borderRadius: '10px' }}
+    />
+    <div className="d-flex position-relative">
+      <img
+        src={property.images?.[2]}
+        alt="Property"
+        className="img-fluid small-image me-2"
+        style={{ height: '160px', objectFit: 'cover', borderRadius: '10px' }}
+      />
+      <div className="position-relative">
+        <img
+          src={property.images?.[3]}
+          alt="Property"
+          className="img-fluid small-image"
+          style={{ height: '160px',width:'180px',objectFit: 'cover', borderRadius: '10px' }}
+        />
+        {property.images?.length > 4 && (
+          <div
+            className="more-overlay d-flex align-items-center justify-content-center"
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              height: '160px',
+              width: '180px',
+              backgroundColor: 'rgba(0, 0, 0, 0.4)',
+              color: 'white',
+              fontSize: '1.2rem',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              borderRadius: '10px',
+            }}
+            onClick={() => setShowAllImages(true)}
+          >
+            + More
           </div>
-        </div>
+        )}
       </div>
+    </div>
+  </div>
+</div>
+
 
       {/* Black Line */}
       <hr className="my-4 border-black" />
@@ -385,7 +429,7 @@ const PropertyDetails = () => {
       {/* Property Details */}
       <div className="d-flex flex-column flex-lg-row">
         <div className="p-3 bg-light rounded flex-fill me-lg-0">
-          <button
+          {/* <button
             onClick={() => {
               window.open(
                 `https://www.google.com/maps/dir/?api=1&destination=${mapCenter.lat},${mapCenter.lng}`,
@@ -396,29 +440,52 @@ const PropertyDetails = () => {
             style={{ cursor: "pointer" }}
           >
             Address
-          </button>
+          </button> */}
           <div className="mb-4">
             {/* Details row */}
+            
             <div className="d-flex justify-content-between align-items-start mb-4">
               {/* Left side - Property details */}
               <div>
                 {/* Location - with thinner font */}
+                <div 
+                  className="search-section mb-5 p-9"
+                  style={{ 
+                    display: window.innerWidth < 576 ? 'block' : 'none',
+                    fontWeight: 'bold',
+                    // marginBottom: '1.5rem' ,
+                    padding: window.innerWidth < 576 ? '0.1rem' : 'inherit', // Reduced mobile padding
+                    fontSize: window.innerWidth < 576 ? '19px' : 'inherit' // Larger font on mobile
+
+                  }}
+                >
+                  {property.name}
+                </div>
                 <div className="d-flex align-items-center" style={{ fontWeight: '700', color: '#000000' }}>
                   <i className="bi bi-geo-alt me-2"></i>
-                  <span>{property.city}, {property.address}</span>
+                  <span  onClick={() => {
+              window.open(
+                `https://www.google.com/maps/dir/?api=1&destination=${mapCenter.lat},${mapCenter.lng}`,
+                "_blank"
+              );
+            }}
+            className="text-primary fs-5 fs-md-4 border-0 bg-transparent p-0"
+
+            >{property.city}, {property.address}</span>
                 </div>
 
                 {/* Capacity details - with thinner font */}
                 <div className="d-flex flex-wrap align-items-center gap-4 mb-3" style={{ fontWeight: '700', color: '#000000' }}>
-                  <span>
-                    <i className="bi bi-door-closed me-1"></i>
-                    {property.capacity?.bedrooms} {property.capacity?.bedrooms === 1 ? 'bedroom' : 'bedrooms'}
-                  </span>
-
-                  <span>
+                <span>
                     <i className="bi bi-people me-1"></i>
                     {property.capacity?.adults} {property.capacity?.adults === 1 ? 'adult' : 'adults'}
                   </span>
+                  <span>
+                    <i className="bi bi-door-closed me-1"></i>
+                    {property.capacity?.bedrooms} {property.capacity?.bedrooms === 1 ? 'bedroom' : 'sleeps'}
+                  </span>
+
+                 
                 </div>
               </div>
 
@@ -588,54 +655,53 @@ const PropertyDetails = () => {
 
         {ratings.length > 0 ? (
           <div className="row">
-            <div className="col-12"> {/* Change this to full width column */}
-              {ratings.map((rating, index) => {
-                const firstLetter = rating.username ? rating.username.charAt(0).toUpperCase() : 'U';
-                const colors = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
-                  '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D'];
-                const bgColor = colors[firstLetter.charCodeAt(0) % colors.length];
-
-                return (
-                  <div key={index} className="mb-4"> {/* Remove col-md-6 to make it full width */}
-                    <div className="card h-100">
-                      <div className="card-body">
-                        <div className="d-flex align-items-center mb-3">
-                          <div
-                            className="profile-circle d-flex align-items-center justify-content-center me-3"
-                            style={{ backgroundColor: bgColor }}
-                          >
-                            <span className="text-white fw-bold">{firstLetter}</span>
-                          </div>
-
-                          <div className="flex-grow-1">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <h5 className="card-title mb-0">{rating.username}</h5>
-                              <div className="d-flex align-items-center">
-                                <span className="badge bg-primary me-2">{rating.category}</span>
-                                <span className="text-warning">
-                                  {Array.from({ length: 5 }).map((_, i) => (
-                                    <i
-                                      key={i}
-                                      className={`bi ${i < Math.floor(rating.rating) ? 'bi-star-fill' : 'bi-star'} ${i === Math.floor(rating.rating) && rating.rating % 1 >= 0.5 ? 'bi-star-half' : ''}`}
-                                    ></i>
-                                  ))}
-                                </span>
-                                <span className="ms-2">{rating.rating.toFixed(1)}</span>
-                              </div>
-                            </div>
-                            <div className="text-muted small">
-                              {rating.month} {rating.year}
-                            </div>
+          {ratings.map((rating, index) => {
+            const firstLetter = rating.username ? rating.username.charAt(0).toUpperCase() : 'U';
+            const colors = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
+              '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D'];
+            const bgColor = colors[firstLetter.charCodeAt(0) % colors.length];
+        
+            return (
+              <div key={index} className="col-12 col-sm-12 col-md-6 col-lg-4 mb-4">
+                <div className="card h-100">
+                  <div className="card-body">
+                    <div className="d-flex align-items-center mb-3">
+                      <div
+                        className="profile-circle d-flex align-items-center justify-content-center me-3"
+                        style={{ backgroundColor: bgColor, width: 40, height: 40, borderRadius: '50%' }}
+                      >
+                        <span className="text-white fw-bold">{firstLetter}</span>
+                      </div>
+        
+                      <div className="flex-grow-1">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <h5 className="card-title mb-0">{rating.username}</h5>
+                          <div className="d-flex align-items-center">
+                            <span className="badge bg-primary me-2">{rating.category}</span>
+                            <span className="text-warning">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <i
+                                  key={i}
+                                  className={`bi ${i < Math.floor(rating.rating) ? 'bi-star-fill' : 'bi-star'} ${i === Math.floor(rating.rating) && rating.rating % 1 >= 0.5 ? 'bi-star-half' : ''}`}
+                                ></i>
+                              ))}
+                            </span>
+                            <span className="ms-2">{rating.rating.toFixed(1)}</span>
                           </div>
                         </div>
-                        <p className="card-text">{rating.description}</p>
+                        <div className="text-muted small">
+                          {rating.month} {rating.year}
+                        </div>
                       </div>
                     </div>
+                    <p className="card-text">{rating.description}</p>
                   </div>
-                );
-              })}
-            </div>
-          </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        
         ) : (
           <p className="text-muted">No reviews yet. Be the first to review!</p>
         )}
@@ -684,7 +750,7 @@ const PropertyDetails = () => {
             >
               Contact Host
             </h5>
-            <button
+            {/* <button
               className="close-btn bg-transparent border-0 p-0"
               onClick={() => setShowReservationBox(false)}
               style={{
@@ -693,7 +759,7 @@ const PropertyDetails = () => {
               }}
             >
               ×
-            </button>
+            </button> */}
           </div>
 
           <div className="price-section mb-3">

@@ -2,6 +2,8 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const Wishlist = require("../models/Wishlist");
+
 
 exports.signup = async (req, res) => {
   try {
@@ -20,6 +22,14 @@ exports.signup = async (req, res) => {
     // Create user
     user = new User({ fullName, email,phone, password: hashedPassword, role: "user" });
     await user.save();
+
+    // ✅ Create default "Favourites" wishlist for this user
+    await Wishlist.create({
+      name: "Favourites",
+      userId: user._id,
+      properties: []
+    });
+
 
     res.status(201).json({ message: "Signup successful. Please login." });
   } catch (error) {

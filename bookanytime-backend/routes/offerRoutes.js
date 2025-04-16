@@ -83,7 +83,7 @@ router.delete("/delete/:id", async (req, res) => {
 router.put("/update/:id", upload.array("images"), async (req, res) => {
   try {
     const { id } = req.params;
-    const { category,property, startDate, endDate, removeImages } = req.body;
+    const { category, properties, startDate, endDate, removeImages } = req.body;
 
     console.log("Updating Offer ID:", id);
     console.log("Received Data:", req.body);
@@ -105,7 +105,13 @@ router.put("/update/:id", upload.array("images"), async (req, res) => {
 
     // Update other fields
     if (category) offer.category = category;
-    if (property) offer.property = property;
+    
+    // Update properties (multiple properties can be passed as an array)
+    if (properties) {
+      const propertyList = JSON.parse(properties); // Convert JSON string back to an array if needed
+      offer.properties = propertyList; // Update properties field
+    }
+
     if (startDate) offer.startDate = startDate;
     if (endDate) offer.endDate = endDate;
 
@@ -116,6 +122,7 @@ router.put("/update/:id", upload.array("images"), async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
 });
+
 
 
 // ✅ 6. Get Offer by ID

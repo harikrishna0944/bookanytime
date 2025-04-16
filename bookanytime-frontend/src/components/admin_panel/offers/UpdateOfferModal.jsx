@@ -6,7 +6,7 @@ const UpdateOfferModal = ({ show, handleClose }) => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [properties, setProperties] = useState([]);
-  const [selectedProperty, setSelectedProperty] = useState("");
+  const [selectedProperties, setSelectedProperties] = useState([]);
   const [offers, setOffers] = useState([]);
   const [selectedOffer, setSelectedOffer] = useState("");
   const [image, setImage] = useState(null);
@@ -66,6 +66,15 @@ const UpdateOfferModal = ({ show, handleClose }) => {
     setImage(e.target.files[0]);
   };
 
+  const handlePropertySelection = (e) => {
+    const selectedOptions = Array.from(e.target.selectedOptions);
+    const selectedProps = selectedOptions.map((option) => ({
+      _id: option.value,
+      name: option.text,
+    }));
+    setSelectedProperties(selectedProps);
+  };
+
   const handleUpdate = async (e) => {
     e.preventDefault();
     if (!selectedOffer) {
@@ -74,7 +83,7 @@ const UpdateOfferModal = ({ show, handleClose }) => {
     }
 
     const formData = new FormData();
-    formData.append("property", selectedProperty);
+    formData.append("properties", JSON.stringify(selectedProperties)); // Send selected properties
     formData.append("startDate", startDate);
     formData.append("endDate", endDate);
     // Send selected images for removal
@@ -91,6 +100,7 @@ const UpdateOfferModal = ({ show, handleClose }) => {
       alert("Offer updated successfully!");
       setSelectedCategory("")
       setSelectedOffer("")
+      setSelectedProperties([]); // Clear selected properties
       setNewImages([])
       setExistingImages([])
       setStartDate("")
@@ -130,10 +140,10 @@ const UpdateOfferModal = ({ show, handleClose }) => {
                 </option>
               ))}
             </Form.Control>
-            <Form.Control as="select" value={selectedProperty} onChange={(e) => setSelectedProperty(e.target.value)}>
+            <Form.Control as="select" multiple  onChange={handlePropertySelection}>
               <option value="">Select Property</option>
               {properties.map((cat) => (
-                <option key={cat._id} value={cat.name}>{cat.name}</option>
+                <option key={cat._id} value={cat._id}>{cat.name}</option>
               ))}
             </Form.Control>
           </Form.Group>

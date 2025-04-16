@@ -1,24 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import SearchIcon from "@mui/icons-material/Search";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { FaHeart, FaFilter, FaBed, FaUser, FaSort, FaChevronLeft, FaRupeeSign, FaStar, FaSearch } from "react-icons/fa";
+import { 
+  FaHeart, 
+  FaFilter, 
+  FaUser, 
+  FaSort, 
+  FaRupeeSign, 
+  FaStar, 
+  FaSearch
+} from "react-icons/fa";
+import { Button, Badge, Dropdown,InputGroup } from "react-bootstrap";
 import WishlistModal from "./WishlistModal";
-import { Button, Badge, Dropdown } from "react-bootstrap";
 import Filter from "./Filter";
-import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const CategoryPage = () => {
   const { categoryName } = useParams();
-  const navigate = useNavigate();
   
   // State variables
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([categoryName || "All"]);
   const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
@@ -26,9 +28,10 @@ const CategoryPage = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [locationSearch, setLocationSearch] = useState("");
   const [isWishlisted, setIsWishlisted] = useState({});
-  const [showModal, setShowModal] = useState(false);
-  const [selectedPropertyId, setSelectedPropertyId] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [showWishlistModal, setShowWishlistModal] = useState(false);
+  const [selectedPropertyId, setSelectedPropertyId] = useState(null);
+  const [propertyRatings, setPropertyRatings] = useState({});
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [filters, setFilters] = useState({
     priceRange: undefined,
@@ -37,70 +40,40 @@ const CategoryPage = () => {
     amenities: undefined
   });
   const [appliedFiltersCount, setAppliedFiltersCount] = useState(0);
-  const [sortOptions, setSortOptions] = useState([]); // Changed to array for multi-sort
-  const [propertyRatings, setPropertyRatings] = useState({});
+  const [sortOptions, setSortOptions] = useState([]);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
+  const containerRef = useRef(null);
 
   // Fetch categories and user data
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/categories`)
-      .then((res) => res.json())
-      .then((data) => {
-        const categoryNames = data.map((category) => category.name);
+    const fetchData = async () => {
+      try {
+        const categoriesResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/categories`);
+        const categoriesData = await categoriesResponse.json();
+        const categoryNames = categoriesData.map((category) => category.name);
         setCategories(categoryNames);
-      })
-      .catch((error) => console.error("Error fetching categories:", error));
 
-    const user = JSON.parse(localStorage.getItem("user"));
-    setUserId(user ? user.id : null);
+        const user = JSON.parse(localStorage.getItem("user"));
+        setUserId(user ? user.id : null);
+      } catch (error) {
+        console.error("Error initializing data:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  // Category cycling effect
+  // Search properties when location or categories change
   useEffect(() => {
-    if (categories.length > 0 && !isTyping) {
-      const interval = setInterval(() => {
-        setCurrentCategoryIndex((prevIndex) => (prevIndex + 1) % categories.length);
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [categories, isTyping]);
+    const timer = setTimeout(() => {
+      searchProperties();
+    }, 300);
 
-  // Fetch properties
-  useEffect(() => {
-    setLoading(true);
-    setError("");
-    
-    if (searchText.trim() || locationSearch.trim()) {
-      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search-locations`, {
-        params: {
-          query: locationSearch.trim(),
-          propertyName: searchText.trim(),
-          category: selectedCategories.includes("All") ? "" : selectedCategories.join(","),
-        },
-      })
-      .then((response) => {
-        setProperties(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching search results:", error);
-        setError("Failed to load search results.");
-        setLoading(false);
-      });
-    } else {
-      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties?category=${categoryName}`)
-      .then((response) => {
-        setProperties(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching properties:", error);
-        setError("Failed to load properties.");
-        setLoading(false);
-      });
-    }
-  }, [categoryName, searchText, locationSearch, selectedCategories]);
+    return () => clearTimeout(timer);
+  }, [locationSearch, selectedCategories]);
 
-  // Fetch ratings
+  // Fetch ratings for properties
   useEffect(() => {
     if (properties.length === 0) return;
 
@@ -133,13 +106,15 @@ const CategoryPage = () => {
     fetchAllRatings();
   }, [properties]);
 
-  // Fetch wishlist status
+  // Fetch wishlist status for properties
   useEffect(() => {
     if (!userId || properties.length === 0) return;
 
     const fetchWishlists = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wishlist/${userId}`);
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/api/wishlist/${userId}`
+        );
         const wishlists = response.data;
         const wishlistStatus = {};
 
@@ -159,11 +134,51 @@ const CategoryPage = () => {
     fetchWishlists();
   }, [userId, properties]);
 
-  // Filter and sort properties
+  // Apply filters and sorting when they change
   useEffect(() => {
     filterAndSortProperties();
   }, [filters, sortOptions, properties]);
 
+  // Check scroll position for arrows
+  const checkScroll = useCallback(() => {
+    if (containerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
+      setShowLeftArrow(scrollLeft > 10);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  }, []);
+
+  // Handle scroll left
+  const handleScrollLeft = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollBy({ left: -200, behavior: "smooth" });
+    }
+  };
+
+  // Handle scroll right
+  const handleScrollRight = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollBy({ left: 200, behavior: "smooth" });
+    }
+  };
+
+  // Set up scroll event listeners
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("scroll", checkScroll);
+      window.addEventListener("resize", checkScroll);
+      checkScroll(); // Initial check
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", checkScroll);
+        window.removeEventListener("resize", checkScroll);
+      }
+    };
+  }, [checkScroll]);
+
+  // Filter and sort properties based on current criteria
   const filterAndSortProperties = () => {
     let result = [...properties];
 
@@ -228,13 +243,90 @@ const CategoryPage = () => {
     setAppliedFiltersCount(count);
   };
 
-  const handleInputChange = (event) => {
-    setSearchText(event.target.value);
+  // Search properties based on current criteria
+  const searchProperties = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search-locations`, {
+        params: {
+          query: locationSearch.trim(),
+          propertyName: searchText.trim(),
+          category: selectedCategories.includes("All") ? "" : selectedCategories.join(","),
+        },
+      });
+      setProperties(response.data);
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+      setProperties([]);
+      setFilteredProperties([]);
+    }    
   };
+
+
+// Search by Location
+const handleLocationSearch = async (e) => {
+  console.log("insisde location search")
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search-locations`, {
+      params: {
+        query: locationSearch.trim(),
+        propertyName: "", // Not searching by name here
+        category: selectedCategories.includes("All") ? "" : selectedCategories.join(","),
+      },
+    });
+    setProperties(response.data);
+  } catch (error) {
+    console.error("Error searching by location:", error);
+    setProperties([]);
+  }
+};
+
+  // Category cycling effect
+  useEffect(() => {
+    if (categories.length > 0 && !isTyping) {
+      const interval = setInterval(() => {
+        setCurrentCategoryIndex((prevIndex) => (prevIndex + 1) % categories.length);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [categories, isTyping]);
+  
+
+
+// Step 1: New function to actually fetch the data
+const searchByName = async (searchQuery) => {
+  console.log("search queryyy")
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search`, {
+      params: {
+        query: searchQuery.trim(),
+        categories: selectedCategories.includes("All") ? [] : selectedCategories,
+      },
+    });
+    setProperties(response.data);
+  } catch (error) {
+    console.error("Error searching by name:", error);
+    setProperties([]);
+  }
+};
+
+// Step 2: onChange handler — update state + call search
+const handleInputChange = (event) => {
+  const value = event.target.value;
+  setSearchText(value);
+  searchByName(value); 
+};
 
   const handleFocus = () => setIsTyping(true);
   const handleBlur = () => setIsTyping(false);
 
+  // Handle location search input
+  const handleLocationChange = (event) => {
+    const value = event.target.value;
+    setLocationSearch(value);
+    handleLocationSearch(value)
+  };
+
+  // Handle category selection
   const handleCategoryChange = (category) => {
     if (category === "All") {
       setSelectedCategories(["All"]);
@@ -249,10 +341,7 @@ const CategoryPage = () => {
     }
   };
 
-  const handleLocationChange = (event) => {
-    setLocationSearch(event.target.value);
-  };
-
+  // Handle wishlist actions
   const handleWishlistClick = async (propertyId) => {
     if (!userId) {
       alert("Please log in to manage your wishlist.");
@@ -274,7 +363,7 @@ const CategoryPage = () => {
       if (wishlistWithProperty) {
         await removeFromWishlist(propertyId, wishlistWithProperty.name);
       } else {
-        setShowModal(true);
+        setShowWishlistModal(true);
       }
     } catch (error) {
       console.error("Error fetching wishlist:", error);
@@ -303,6 +392,7 @@ const CategoryPage = () => {
     setIsWishlisted((prev) => ({ ...prev, [propertyId]: true }));
   };
 
+  // Handle filter actions
   const applyFilters = () => {
     filterAndSortProperties();
     setShowFilterModal(false);
@@ -319,6 +409,7 @@ const CategoryPage = () => {
     setAppliedFiltersCount(0);
   };
 
+  // Handle sort actions
   const handleSort = (option) => {
     setSortOptions(prev => {
       if (prev.includes(option)) {
@@ -343,99 +434,163 @@ const CategoryPage = () => {
     return `${sortOptions.length} sorts`;
   };
 
-  if (loading) return <p className="text-center mt-5">Loading properties...</p>;
-  if (error) return <p className="text-danger text-center mt-5">{error}</p>;
+  const clearAllSorting = () => {
+    setSortOptions([]);
+  };
 
   return (
-    <div className="container mt-lg-5 mt-md-4 mt-sm-3 mt-2 px-0">
+    <div className="container mt-4" style={{marginLeft: '30px'}}>
       {/* Search Section */}
-      <div className="search-section mb-4">
-        <div className="search-inputs-container row g-2">
+      <div className="search-section mb-4 p-3 bg-white rounded shadow-sm" style={{ width: window.innerWidth < 576 ? '88%' : undefined }}>
+        {/* Search Inputs */}
+        <div className="row g-3 mb-3" style={{marginTop: '20px'}}>
           <div className="col-md-6">
-            <TextField
-              type="text"
-              className="search-input w-100"
-              placeholder={isTyping ? "Search by property name" : ""}
-              value={searchText}
-              onChange={handleInputChange}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              InputProps={{
-                startAdornment: (
-                  <div onClick={(e) => e.target.parentElement.nextSibling.focus()} style={{ display: "flex", alignItems: "center", cursor: "text" }}>
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                      {!isTyping && categories.length > 0 && (
-                        <span>Search for <strong>{categories[currentCategoryIndex]}</strong></span>
-                      )}
-                    </InputAdornment>
-                  </div>
-                ),
-              }}
-            />
+            <form >
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="form-control"
+                  style={{ background: 'white', zIndex: 10 }}
+
+                  placeholder={`Search for ${categories[currentCategoryIndex] || "properties"}`}
+                  value={searchText}
+                  onChange={handleInputChange}
+                
+                />
+                {/* <button className="btn btn-primary" type="submit">
+                  <FaSearch />
+                </button> */}
+              </div>
+            </form>
           </div>
           <div className="col-md-6">
-            <TextField
-              type="text"
-              className="search-input w-100"
-              placeholder="Search By Location"
-              value={locationSearch}
-              onChange={handleLocationChange}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <FaSearch />
-                  </InputAdornment>
-                ),
-              }}
-            />
+            <form onSubmit={handleLocationSearch}>
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="form-control"
+                  style={{ background: 'white', zIndex: 10 }}
+
+                  placeholder="Search by location"
+                  value={locationSearch}
+                  onChange={handleLocationChange}
+                />
+                {/* <button className="btn btn-primary" type="submit">
+                  <FaSearch />
+                </button> */}
+              </div>
+            </form>
           </div>
         </div>
 
-        <div className="category-filters-container mt-3">
-          <div className="d-flex flex-nowrap gap-2 overflow-auto py-2">
-            {["All", ...categories].map((category) => (
+        {/* Category Filters with Scroll Arrows */}
+        <div className="d-flex position-relative align-items-center" style={{marginTop: '-50px',marginBottom: '30px'}}>
+          <div 
+            className="d-flex flex-nowrap gap-2 category-filters-container position-relative"
+            ref={containerRef}
+            style={{
+              overflowX: 'auto',
+              scrollBehavior: 'smooth',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+              padding: '0 8px',
+              width: '100%',
+            }}
+          >
+            {showLeftArrow && (
+              <button 
+                className="scroll-arrow left" 
+                onClick={handleScrollLeft}
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  zIndex: 1,
+                  background: 'white',
+                  border: '1px solid #dee2e6',
+                  borderRadius: '50%',
+                  width: '28px',
+                  height: '28px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}
+              >
+                <ChevronLeft size={16} />
+              </button>
+            )}
+            
+            {["All", ...categories].map((category, index) => (
               <button
                 key={category}
                 className={`btn ${
                   selectedCategories.includes(category) 
-                    ? "btn-primary rounded-0"
-                    : "btn-outline-primary rounded-pill"
+                    ? "btn-primary"
+                    : "btn-outline-primary"
                 }`}
                 onClick={() => handleCategoryChange(category)}
+                onMouseEnter={() => {
+                  if (index > 0) { // Skip "All"
+                    setCurrentCategoryIndex(index - 1);
+                  }
+                }}
                 style={{
-                  transition: "all 0.3s ease",
-                  minWidth: "80px"
+                  minWidth: "90px",
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
+                  transition: 'all 0.3s ease',
+                  padding: '0.375rem 0.75rem',
+                  fontSize: '1rem',
+                  fontWeight: '500'
                 }}
               >
                 {category}
               </button>
             ))}
+            
+            {showRightArrow && (
+              <button 
+                className="scroll-arrow right" 
+                onClick={handleScrollRight}
+                style={{
+                  position: 'absolute',
+                  right: 0,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  zIndex: 1,
+                  background: 'white',
+                  border: '1px solid #dee2e6',
+                  borderRadius: '50%',
+                  width: '28px',
+                  height: '28px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}
+              >
+                <ChevronRight size={16} />
+              </button>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Page Title */}
-      {!searchText && !locationSearch && (
-        <h4 className="text-center fw-bold mb-3 fs-5 fs-md-4">
-          Properties in {categoryName}
-        </h4>
-      )}
 
       {/* Properties Grid */}
       <div className="row">
         {filteredProperties.length > 0 ? (
           filteredProperties.map((property) => (
-            <div key={property._id} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
-              <div className="property-item shadow-sm p-2 position-relative" style={{ border: "1px solid #dee2e6", borderRadius: "8px" }}>
-
-              {(property.popularity && property.popularity < 5) && (
-                <div className="position-absolute top-0 start-0 m-2">
-                  <Badge bg="warning" text="dark" className="shadow-sm">
-                    Popular
-                  </Badge>
-                </div>
-              )}
+            <div key={property._id} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4" style={{ width: window.innerWidth < 576 ? '88%' : undefined }}>
+              <div className="property-item shadow-sm p-2 position-relative">
+                {(property.popularity && property.popularity < 5) && (
+                  <div className="position-absolute top-0 start-0 m-2">
+                    <Badge bg="warning" text="dark" className="shadow-sm">
+                      Popular
+                    </Badge>
+                  </div>
+                )}
                 <div
                   className="position-absolute top-0 end-0 m-2"
                   onClick={(e) => {
@@ -445,43 +600,34 @@ const CategoryPage = () => {
                   style={{ cursor: "pointer", zIndex: 1 }}
                 >
                   <FaHeart
-                    className={`ms-auto ${isWishlisted[property._id] ? "text-danger" : "text-white"}`}
-                    style={{
-                      fontSize: "1.25rem",
-                      cursor: "pointer",
-                      filter: isWishlisted[property._id] ? "none" : "drop-shadow(0 0 2px rgba(0, 0, 0, 0.5))",
-                    }}
+                    size={20}
+                    color={isWishlisted[property._id] ? "red" : "white"}
                   />
                 </div>
 
                 <img
                   src={property.images && property.images.length > 0 ? property.images[0] : "https://via.placeholder.com/150"}
                   alt={property.name}
-                  className="img-fluid rounded-top"
-                  style={{ height: "180px", width: "100%", objectFit: "cover" }}
+                  className="img-fluid"
                   onClick={() => window.open(`/property/${property._id}`, "_blank")}
                 />
 
-                <div className="property-details p-2">
-                  <div className="d-flex justify-content-between align-items-start mb-2">
-                    <div>
-                      <h6 className="fw-bold mb-1 fs-6 text-start">{property.name}</h6>
-                      <p className="text-muted small mb-1 text-start">
-                        {property.city}, {property.address}
-                      </p>
-                    </div>
-                    {propertyRatings[property._id] ? (
+                <div className="property-details text-center p-2">
+                  <div className="d-flex justify-content-between align-items-center mb-1">
+                    <h6 className="fw-bold mb-0 fs-6 text-start">{property.name}</h6>
+                    {propertyRatings[property._id] && (
                       <div className="d-flex align-items-center">
-                        <FaStar className="text-warning me-1" style={{ fontSize: "1.1rem" }} />
-                        <span className="fw-bold small">
+                        <FaStar className="text-warning me-1" style={{ fontSize: "0.8rem" }} />
+                        <span className="small text-muted">
                           {propertyRatings[property._id].toFixed(1)}
                         </span>
                       </div>
-                    ) : (
-                      <span className="badge bg-success">New</span>
                     )}
                   </div>
-
+                  <p className="text-muted small mb-1 text-start">
+                    {property.city}, {property.address}
+                  </p>
+                  
                   <div className="d-flex justify-content-between align-items-center border-top pt-2">
                     <div className="d-flex align-items-center">
                       <FaUser className="me-2 text-muted" />
@@ -491,7 +637,7 @@ const CategoryPage = () => {
                       <span className="text-muted small me-1">Cost</span>
                       <span className="fw-bold" style={{ fontSize: "0.9rem", color: "#28a745" }}>
                         <FaRupeeSign className="me-1" style={{ color: "black" }} />
-                        {property.minPrice?.toLocaleString() || "0"} - {property.maxPrice?.toLocaleString() || "0"} 
+                        {property.minPrice?.toLocaleString() || "0"} - {property.maxPrice?.toLocaleString() || "0"}
                       </span>
                     </div>
                   </div>
@@ -501,73 +647,76 @@ const CategoryPage = () => {
           ))
         ) : (
           <div className="col-12 text-center py-5">
-            <p className="text-muted">No properties match your filters.</p>
+            <p className="text-muted">No properties match your search criteria.</p>
             <Button variant="outline-primary" onClick={clearFilters}>
-              Clear all filters
+              Feach All 
             </Button>
           </div>
         )}
       </div>
 
       {/* Filter and Sort Buttons */}
-      <div className="fixed-bottom d-flex justify-content-center gap-3 mb-3">
-        <Button
-          variant="primary"
-          onClick={() => setShowFilterModal(true)}
-        >
-          <FaFilter className="me-2" />
-          Filters
-          {appliedFiltersCount > 0 && (
-            <Badge bg="danger" className="ms-2">
-              {appliedFiltersCount}
-            </Badge>
-          )}
-        </Button>
-        
-        <Dropdown>
-          <Dropdown.Toggle variant="primary" id="dropdown-sort">
-            <FaSort className="me-2" />
-            {getSortToggleText()}
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            <Dropdown.Item 
-              active={sortOptions.includes("priceLowToHigh")}
-              onClick={() => handleSort("priceLowToHigh")}
-            >
-              {sortOptions.includes("priceLowToHigh") && <span className="me-2">✓</span>}
-              Price Low to High
-            </Dropdown.Item>
-            <Dropdown.Item 
-              active={sortOptions.includes("priceHighToLow")}
-              onClick={() => handleSort("priceHighToLow")}
-            >
-              {sortOptions.includes("priceHighToLow") && <span className="me-2">✓</span>}
-              Price High to Low
-            </Dropdown.Item>
-            <Dropdown.Item 
-              active={sortOptions.includes("ratingHighToLow")}
-              onClick={() => handleSort("ratingHighToLow")}
-            >
-              {sortOptions.includes("ratingHighToLow") && <span className="me-2">✓</span>}
-              Highest Rated
-            </Dropdown.Item>
-            <Dropdown.Item 
-              active={sortOptions.includes("popularityHighToLow")}
-              onClick={() => handleSort("popularityHighToLow")}
-            >
-              {sortOptions.includes("popularityHighToLow") && <span className="me-2">✓</span>}
-              Most Popular
-            </Dropdown.Item>
-            {sortOptions.length > 0 && (
-              <Dropdown.Item 
-                onClick={() => setSortOptions([])}
-                className="text-danger"
-              >
-                Clear All Sorting
-              </Dropdown.Item>
+      <div className="fixed-bottom d-flex justify-content-center mb-3">
+        <div className="d-flex gap-2 p-2 rounded shadow" style={{ zIndex: 1000 }}>
+          <Button
+            variant="primary"
+            onClick={() => setShowFilterModal(true)}
+            className="d-flex align-items-center"
+          >
+            <FaFilter className="me-2" />
+            Filter
+            {appliedFiltersCount > 0 && (
+              <Badge bg="danger" className="ms-2">
+                {appliedFiltersCount}
+              </Badge>
             )}
-          </Dropdown.Menu>
-        </Dropdown>
+          </Button>
+          
+          <Dropdown>
+            <Dropdown.Toggle variant="primary" id="dropdown-sort">
+              <FaSort className="me-2" />
+              {getSortToggleText()}
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item 
+                active={sortOptions.includes("priceLowToHigh")}
+                onClick={() => handleSort("priceLowToHigh")}
+              >
+                {sortOptions.includes("priceLowToHigh") && <span className="me-2">✓</span>}
+                Price Low to High
+              </Dropdown.Item>
+              <Dropdown.Item 
+                active={sortOptions.includes("priceHighToLow")}
+                onClick={() => handleSort("priceHighToLow")}
+              >
+                {sortOptions.includes("priceHighToLow") && <span className="me-2">✓</span>}
+                Price High to Low
+              </Dropdown.Item>
+              <Dropdown.Item 
+                active={sortOptions.includes("ratingHighToLow")}
+                onClick={() => handleSort("ratingHighToLow")}
+              >
+                {sortOptions.includes("ratingHighToLow") && <span className="me-2">✓</span>}
+                Highest Rated
+              </Dropdown.Item>
+              <Dropdown.Item 
+                active={sortOptions.includes("popularityHighToLow")}
+                onClick={() => handleSort("popularityHighToLow")}
+              >
+                {sortOptions.includes("popularityHighToLow") && <span className="me-2">✓</span>}
+                Most Popular
+              </Dropdown.Item>
+              {sortOptions.length > 0 && (
+                <Dropdown.Item 
+                  onClick={clearAllSorting}
+                  className="text-danger"
+                >
+                  Clear All Sorting
+                </Dropdown.Item>
+              )}
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
       </div>
 
       {/* Modals */}
@@ -582,54 +731,100 @@ const CategoryPage = () => {
       />
 
       <WishlistModal
-        show={showModal}
-        onClose={() => setShowModal(false)}
+        show={showWishlistModal}
+        onClose={() => setShowWishlistModal(false)}
         userId={userId}
         propertyId={selectedPropertyId}
-        onWishlistUpdate={() => handleWishlistUpdate(selectedPropertyId)}
+        onWishlistUpdate={handleWishlistUpdate}
       />
 
-      <style>
-        {`
-          .property-item {
-            transition: transform 0.2s;
-            border-radius: 8px;
-            overflow: hidden;
-            background: white;
+      {/* Styles */}
+      <style jsx>{`
+        .search-section {
+          background: white;
+          border-radius: 8px;
+        }
+        
+        .property-item {
+          transition: transform 0.2s, box-shadow 0.2s;
+          background: white;
+          border-radius: 8px;
+          overflow: hidden;
+        }
+        
+        .property-item:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .category-filters-container::-webkit-scrollbar {
+          display: none;
+        }
+        
+        .fixed-bottom {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          padding: 10px;
+          zIndex: 1000;
+        }
+        
+        .scroll-arrow {
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        
+        .scroll-arrow:hover {
+          background: #f8f9fa !important;
+        }
+        
+        .scroll-arrow:active {
+          transform: translateY(-50%) scale(0.95);
+        }
+
+        .category-filters-container button {
+          transition: all 0.3s ease;
+        }
+        
+        .category-filters-container button:hover {
+          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+          color: black !important;
+        }
+        
+        .category-filters-container button.btn-outline-primary:hover {
+          background-color: rgba(13, 110, 253, 0.1);
+        }
+
+        @media (min-width: 768px) {
+          .category-filters-container button {
+            font-size: 1.1rem;
           }
-          .property-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-          }
-          .fixed-bottom {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 10px;
-            background: white;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-          }
-          .search-section {
-            background: white;
-            padding: 1rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-          }
-          .property-item img {
-            width: 100%;
-            height: 190px;
-            object-fit: cover;
-            border-radius: 8px;
-          }
-          .dropdown-item.active {
-            background-color: rgba(15, 245, 7, 0.5);
-          }
-        `}
-      </style>
+        }
+      `}</style>
     </div>
   );
 };
 
 export default CategoryPage;
+
+
+
+// .category-filters-container button {
+//   transition: all 0.3s ease;
+// }
+
+// .category-filters-container button:hover {
+//   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+//   color: black !important;
+// }
+
+// .category-filters-container button.btn-outline-primary:hover {
+//   background-color: rgba(13, 110, 253, 0.1);
+// }
+
+// @media (min-width: 768px) {
+//   .category-filters-container button {
+//     font-size: 1.1rem;
+//   }
+// }

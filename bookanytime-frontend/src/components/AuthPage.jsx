@@ -13,6 +13,7 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Logo from "../../public/lg.png"
 
 const AuthPage = ({ isSignup }) => {
   const [formData, setFormData] = useState({ fullName: "", email: "", phone: "", password: "" });
@@ -30,32 +31,38 @@ const AuthPage = ({ isSignup }) => {
     setShowPassword((prev) => !prev);
   };
 
+  // Validate phone number
+  const validatePhoneNumber = (phone) => {
+    const phoneRegex = /^[+]?[0-9]{1,4}?[ -]?[0-9]{10}$/;  // Adjust regex if needed
+    return phoneRegex.test(phone);
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(""); // Clear previous errors
+    
+    // Phone number validation for signup
+    if (isSignup && !validatePhoneNumber(formData.phone)) {
+      setError("Please enter a valid phone number.");
+      return;
+    }
 
     const apiUrl = isSignup 
       ? `${import.meta.env.VITE_API_BASE_URL}/api/auth/signup` 
       : `${import.meta.env.VITE_API_BASE_URL}/api/auth/login`;
-
+  
     try {
       const response = await axios.post(apiUrl, formData);
       const data = response.data;
-
-      if (data.token && data.user) {
-        // ✅ Store user data & token in localStorage (only for login)
-        if (!isSignup) {
+  
+      if (!isSignup && data.token && data.user) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        console.log("User data:", data.user);
-  
-          navigate("/"); // Redirect after login
-        window.location.reload(); // Refresh to apply changes
-      } else {
-          // ✅ After successful signup, redirect to login
-          navigate("/login");
-        }
+        navigate("/");
+        window.location.reload();
+      } else if (isSignup && data.message?.toLowerCase().includes("signup successful")) {
+        navigate("/login");
       } else {
         setError(data.message || (isSignup ? "Signup failed" : "Login failed"));
       }
@@ -64,7 +71,7 @@ const AuthPage = ({ isSignup }) => {
       console.error("Request failed:", err);
     }
   };
-
+  
   return (
     <Box
       sx={{
@@ -92,9 +99,33 @@ const AuthPage = ({ isSignup }) => {
             alignItems: "center",
           }}
         >
-          <Typography variant="h4" color="primary" gutterBottom>
-            {isSignup ? "Create an Account" : "Login"}
-          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              mb: 3,
+            }}
+          >
+            <img
+              src={Logo}
+              alt="Logo"
+              style={{
+                width: "35px",
+                height: "35px",
+                objectFit: "contain",
+              }}
+            />
+            <Typography
+              variant="h4"
+              color="primary"
+              gutterBottom
+              sx={{ margin: 0 }}
+            >
+              {isSignup ? "Create an Account" : "Login"}
+            </Typography>
+          </Box>
+
           {error && (
             <Typography color="error" variant="body2" sx={{ mb: 2 }}>
               {error}

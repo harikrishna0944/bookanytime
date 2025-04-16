@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaHeart, FaBed, FaUser } from "react-icons/fa";
-import { Button, Spinner, Alert } from "react-bootstrap";
+import { FaHeart, FaBed, FaUser,FaRupeeSign,   FaStar } from "react-icons/fa";
+import { Button, Spinner, Alert,Badge } from "react-bootstrap";
 // import "./WishlistDetailsPage.css"; 
 import WishlistModal from "../categories/WishlistModal";
 
@@ -18,6 +18,7 @@ const WishlistDetailsPage = () => {
   const [userId, setUserId] = useState(null);
     const [selectedPropertyId, setSelectedPropertyId] = useState(null);
      const [showModal, setShowModal] = useState(false);
+     const [propertyRatings, setPropertyRatings] = useState({});
    
   console.log("Wishlist ID:", wishlistId); // Debugging
   useEffect(() => {
@@ -135,6 +136,39 @@ const WishlistDetailsPage = () => {
     setIsWishlisted((prev) => ({ ...prev, [propertyId]: true }));
   };
 
+  useEffect(() => {
+    if (properties.length === 0) return;
+
+    const fetchAllRatings = async () => {
+      try {
+        const ratingsData = {};
+        
+        await Promise.all(
+          properties.map(async (property) => {
+            try {
+              const response = await axios.get(
+                `${import.meta.env.VITE_API_BASE_URL}/api/ratings/${property._id}`
+              );
+              if (response.data && response.data.length > 0) {
+                const sum = response.data.reduce((acc, curr) => acc + curr.rating, 0);
+                ratingsData[property._id] = sum / response.data.length;
+              }
+            } catch (error) {
+              console.error(`Error fetching ratings for property ${property._id}:`, error);
+            }
+          })
+        );
+        
+        setPropertyRatings(ratingsData);
+      } catch (error) {
+        console.error("Error fetching ratings:", error);
+      }
+    };
+
+    fetchAllRatings();
+  }, [properties]);
+
+  
   if (loading) {
     return (
       <div className="loading-container">
@@ -171,56 +205,71 @@ const WishlistDetailsPage = () => {
         {properties.length > 0 ? (
           properties.map((property) => {
             return (
-<div key={property._id} className="col-12 col-sm-6 col-md-6 col-lg-4 mb-3" style={{ maxWidth: "100%", flex: "1 1 auto" }}>       
-                     <div className="property-item shadow-sm p-2 position-relative">
-                            {/* Wishlist Icon */}
-                            <div
-                              className="position-absolute top-0 end-0 m-2"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleWishlistClick(property._id);
-                              }}
-                              style={{ cursor: "pointer", zIndex: 1 }}
-                            >
-                              <FaHeart
-                                className={`ms-auto ${isWishlisted[property._id] ? "text-danger" : "text-white"}`}
-                                style={{
-                                  fontSize: "1.25rem",
-                                  cursor: "pointer",
-                                  filter: isWishlisted[property._id] ? "none" : "drop-shadow(0 0 2px rgba(0, 0, 0, 0.5))",
-                                }}
-                              />
-                            </div>
-            
-                            {/* Property Image */}
-                            <img
-                              src={property.images && property.images.length > 0 ? property.images[0] : "https://via.placeholder.com/150"}
-                              alt={property.name}
-                              className="img-fluid rounded"
-                              style={{ height: "200px", width: "100%", objectFit: "cover", aspectRatio: "16/9" }}
-                              onClick={() => window.open(`/property/${property._id}`, "_blank")}
-                            />
-            
-                            {/* Property Details */}
-                            <div className="property-details text-center p-2">
-                              <h6 className="fw-bold mb-1 fs-6">{property.name}</h6>
-                              <h6 className="fw-bold mb-1 fs-6">{property.category}</h6>
+              <div key={property._id} className="col-12 col-sm-6 col-md-6 col-lg-4 mb-3" style={{ maxWidth: "100%", flex: "1 1 auto" }}>
+              <div className="property-item shadow-sm p-2 position-relative">
+                {(property.popularity && property.popularity < 5) && (
+                  <div className="position-absolute top-0 start-0 m-2">
+                    <Badge bg="warning" text="dark" className="shadow-sm">
+                      Popular
+                    </Badge>
+                  </div>
+                )}
+                <div
+                  className="position-absolute top-0 end-0 m-2"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleWishlistClick(property._id);
+                  }}
+                  style={{ cursor: "pointer", zIndex: 1 }}
+                >
+                  <FaHeart
+                    size={20}
+                    color={isWishlisted[property._id] ? "red" : "white"}
+                  />
+                </div>
 
-                              <p className="text-muted small mb-1">{property.address}</p>
-                              {/* Bedrooms and Adults */}
-                              {/* <div className="d-flex justify-content-center gap-3">
-                                <div className="d-flex align-items-center">
-                                  <FaBed className="me-2" /> 
-                                  <span>{property.capacity?.bedrooms || 0} Bedrooms</span>
-                                </div>
-                                <div className="d-flex align-items-center">
-                                  <FaUser className="me-2" /> 
-                                  <span>{property.capacity?.adults || 0} Adults</span>
-                                </div>
-                              </div> */}
-                            </div>
-                          </div>
-                        </div>
+                <img
+                  src={property.images && property.images.length > 0 ? property.images[0] : "https://via.placeholder.com/150"}
+                  alt={property.name}
+                  className="img-fluid"
+                  onClick={() => window.open(`/property/${property._id}`, "_blank")}
+                />
+
+                <div className="property-details text-center p-2">
+                  <div className="d-flex justify-content-between align-items-center mb-1">
+                    <h6 className="fw-bold mb-0 fs-6 text-start">{property.name}</h6>
+
+                    {propertyRatings[property._id] && (
+                      <div className="d-flex align-items-center">
+                        <FaStar className="text-warning me-1" style={{ fontSize: "0.8rem" }} />
+                        <span className="fw-bold text-muted">
+                          {propertyRatings[property._id].toFixed(1)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <h6 className="fw-bold mb-0 fs-6 text-start">{property.category}</h6>
+
+                  <p className="text-muted  mb-1 text-start">
+                    {property.city}, {property.address}
+                  </p>
+                  
+                  <div className="d-flex justify-content-between align-items-center border-top pt-2">
+                    <div className="d-flex align-items-center">
+                      <FaUser className="me-2 text-muted" />
+                      <span className="">{property.capacity?.adults || 0} Adults</span>
+                    </div>
+                    <div className="d-flex align-items-center">
+                      <span className="text-muted  me-1">Cost</span>
+                      <span className="fw-bold" style={{ fontSize: "0.9rem", color: "#28a745" }}>
+                        <FaRupeeSign className="me-1" style={{ color: "black" }} />
+                        {property.minPrice?.toLocaleString() || "0"} - {property.maxPrice?.toLocaleString() || "0"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             );
           })
         ) : (

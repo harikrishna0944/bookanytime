@@ -6,7 +6,9 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { getUserRole } from "../utils/auth"
 import { useNavigate } from "react-router-dom";
-
+import { AccountCircle, ExitToApp, Feedback, HelpOutline, AdminPanelSettings } from '@mui/icons-material';
+import Background from "../../assets/background3_lightened.png"
+// import Logo from "../../../public/lg.png"
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -14,7 +16,8 @@ const Header = () => {
   const userRole = getUserRole(); // Get user role
   const navigate = useNavigate();
 
-  console.log("user roleeeee",userRole.email)
+
+  console.log("user roleeeee", userRole.email)
   // Toggle mobile menu
   const toggleDrawer = () => {
     setMobileOpen(!mobileOpen);
@@ -35,18 +38,30 @@ const Header = () => {
     navigate("/"); // Redirect to login page
     window.location.reload(); // Force reload to clear state
   };
+
+  const isLoggedIn = !!localStorage.getItem("token");
+
   return (
     <AppBar
       position="fixed"
       sx={{
-        background: "linear-gradient(90deg, #6a11cb, #2575fc)",
+        // background: "linear-gradient(90deg, #6a11cb, #2575fc)",
+        backgroundImage: `url(${Background})`,
         width: "100vw",
         zIndex: 1000,
+        boxShadow: "none", // removes default shadow
+fontSize:"12px",
+fontFamily: `system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif !important`,
+
       }}
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         {/* Logo */}
-        <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+         {/* <Link to="/">
+        <img src={Logo} alt="" style={{height:"50px", width:"50px"}}/>
+        </Link>  */}
+
+        <Link to="/" style={{ textDecoration: 'none', color: 'inherit'}}>
           <h3 className="text-white m-0">BookAnytime</h3>
         </Link>
 
@@ -76,33 +91,70 @@ const Header = () => {
 
           {/* Dropdown Menu */}
           <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-            <MenuItem component={Link} to="/login" onClick={handleClose}>
-              Login / Signup
-            </MenuItem>
+  <MenuItem component={Link} to="/signup" onClick={handleClose}>
+    <AccountCircle style={{ marginRight: 8 }} />
+    Signup
+  </MenuItem>
 
-            <MenuItem
-              component={Link}
-              to="/admin"
-              onClick={handleClose}
-              style={{ display: getUserRole() === "admin" ? "block" : "none" }} // ✅ Hide if not admin
-            >
-              Admin Panel
-            </MenuItem>
-            <MenuItem
-              onClick={handleLogout}
-            >
-              Logout
-            </MenuItem>
-          </Menu>
+  {/* Show Login ONLY if NOT logged in */}
+  {!isLoggedIn && (
+    <MenuItem component={Link} to="/login" onClick={handleClose}>
+      <ExitToApp style={{ marginRight: 8 }} />
+      Login
+    </MenuItem>
+  )}
+
+  <MenuItem
+    component={Link}
+    to="/admin"
+    onClick={handleClose}
+    style={{ display: getUserRole() === "admin" ? "block" : "none" }} // ✅ Hide if not admin
+  >
+    <AdminPanelSettings style={{ marginRight: 8 }} />
+    Admin Panel
+  </MenuItem>
+
+  <MenuItem
+    component={Link}
+    to="/feedback"
+    onClick={handleClose}
+    style={{ display: localStorage.getItem("token") ? "block" : "none" }}
+  >
+    <Feedback style={{ marginRight: 8 }} />
+    Feedback
+  </MenuItem>
+
+  <MenuItem
+    component={Link}
+    to="/help-center"
+    onClick={handleClose}
+    style={{ display: localStorage.getItem("token") ? "block" : "none" }}
+  >
+    <HelpOutline style={{ marginRight: 8 }} />
+    Help Center
+  </MenuItem>
+
+  {isLoggedIn && (
+    <MenuItem onClick={handleLogout}>
+      <ExitToApp style={{ marginRight: 8 }} />
+      Logout
+    </MenuItem>
+  )}
+</Menu>
         </Box>
 
         {/* Mobile Menu Button */}
-        <IconButton
-          sx={{ display: { xs: "block", md: "none" }, color: "white" }}
-          onClick={toggleDrawer}
-        >
-          <MenuIcon />
-        </IconButton>
+       {/* Mobile Menu + Avatar (Mobile Only) */}
+<Box sx={{ display: { xs: "flex", md: "none" }, alignItems: "center", gap: 1 }}>
+<IconButton onClick={handleProfileClick}>
+    <Avatar alt="Profile" src="/profile.jpg" sx={{ width: 30, height: 30 }} />
+  </IconButton>
+  <IconButton sx={{ color: "white" }} onClick={toggleDrawer}>
+    <MenuIcon />
+  </IconButton>
+ 
+</Box>
+
 
         {/* Mobile Drawer */}
         <Drawer anchor="right" open={mobileOpen} onClose={toggleDrawer}>
@@ -110,7 +162,7 @@ const Header = () => {
             <ListItem button component={Link} to="/search" onClick={toggleDrawer}>
               Search
             </ListItem>
-            <ListItem button component={Link} to="/list-property" onClick={toggleDrawer}>
+            <ListItem button component={Link} to="/list-your-property" onClick={toggleDrawer}>
               List Your Property
             </ListItem>
             <ListItem button component={Link} to="/wishlist" onClick={toggleDrawer}>
@@ -118,9 +170,9 @@ const Header = () => {
             </ListItem>
 
             {/* Profile Avatar in Mobile Menu */}
-            <ListItem button onClick={handleProfileClick}>
+            {/* <ListItem button onClick={handleProfileClick}>
               <Avatar alt="Profile" src="/profile.jpg" sx={{ width: 40, height: 40 }} />
-            </ListItem>
+            </ListItem> */}
           </List>
         </Drawer>
       </Toolbar>

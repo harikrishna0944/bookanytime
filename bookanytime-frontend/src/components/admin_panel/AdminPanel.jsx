@@ -132,7 +132,10 @@ const AdminPanel = () => {
           <li><Link to="/admin/offers" onClick={() => setSidebarOpen(false)}>Offers</Link></li>
           <li><Link to="/admin/trackData" onClick={() => setSidebarOpen(false)}>Tracked Data</Link></li>
           <li><Link to="/admin/list-property-logs" onClick={() => setSidebarOpen(false)}>List Your Property Logs</Link></li>
+          <li><Link to="/admin/feedback-logs" onClick={() => setSidebarOpen(false)}>Feedback</Link></li>
         </ul>
+        
+
         <Button variant="success" className="add-category-btn" onClick={handleShowAdd}>
           + Add Category
         </Button>

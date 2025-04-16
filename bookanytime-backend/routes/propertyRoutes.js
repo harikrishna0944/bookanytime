@@ -176,12 +176,17 @@ router.delete("/:id", async (req, res) => {
 router.get("/search", async (req, res) => {
   try {
     const { query, categories } = req.query;
-    if (!query) return res.status(400).json({ error: "Query is required" });
+    console.log("query:", query);
+    console.log("categories:", categories);
 
-    const filter = {
-      name: { $regex: query, $options: "i" }, // Case-insensitive search
-    };
+    let filter = {};
 
+    // If query is provided, search by property name (case-insensitive)
+    if (query && query.trim() !== "") {
+      filter.name = { $regex: query.trim(), $options: "i" };
+    }
+
+    // If categories are provided and not empty, apply category filter
     if (categories && categories.length > 0) {
       filter.category = { $in: categories };
     }
@@ -194,29 +199,31 @@ router.get("/search", async (req, res) => {
   }
 });
 
+
 // api for search by location
 router.get("/search-locations", async (req, res) => {
   try {
-    const { query, propertyName, category } = req.query;
+    const { query, category } = req.query;
 
     let filters = {};
 
-    // Case-insensitive search using regex
-    if (propertyName) {
-      filters.name = { $regex: propertyName, $options: "i" };
-    }
-    
+    // Case-insensitive search for location (city or address)
     if (query) {
-      filters.address = { $regex: query, $options: "i" }; // Match location
+      filters.$or = [
+        { address: { $regex: query, $options: "i" } },  // Search within address
+        { city: { $regex: query, $options: "i" } },     // Search within city
+      ];
     }
 
-   
+    // Filter by category if provided
     if (category && category !== "") {
       const selectedCategories = category.split(",");
       filters.category = { $in: selectedCategories }; // Supports multiple categories
     }
+
+    // Fetch properties matching the filters
     const properties = await Property.find(filters);
-    res.json(properties);
+    res.json(properties);  // Send the properties found
   } catch (error) {
     console.error("Error fetching locations:", error);
     res.status(500).json({ error: "Server error" });

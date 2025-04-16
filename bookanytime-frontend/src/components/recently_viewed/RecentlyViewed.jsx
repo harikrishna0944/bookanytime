@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Container, Spinner, Alert } from "react-bootstrap";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { FaHeart, FaBed, FaUser } from "react-icons/fa";
+import { FaHeart, FaStar, FaUser, FaRupeeSign } from "react-icons/fa";
 import "./RecentlyViewed.css";
 import WishlistModal from "../categories/WishlistModal";
 
@@ -28,6 +28,7 @@ const RecentlyViewed = () => {
     try {
       let viewed = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
       setRecentlyViewed(viewed);
+      console.log("viewed",viewed)
     } catch (err) {
       setError("Failed to load recently viewed properties.");
     } finally {
@@ -198,10 +199,8 @@ const RecentlyViewed = () => {
                 onClick={() => window.open(`/property/${property.id}`, "_blank")}
               >
                 <div className="recently-viewed-card">
-                  
                   {/* Property Image */}
                   <div className="property-image-container">
-                    
                     <img
                       src={property.image}
                       alt={property.name}
@@ -215,7 +214,6 @@ const RecentlyViewed = () => {
                         e.stopPropagation();
                         handleWishlistClick(property.id);
                       }}
-                      
                     >
                       <FaHeart
                         className={`${isWishlisted[property.id] ? "text-danger" : "text-white"}`}
@@ -228,29 +226,38 @@ const RecentlyViewed = () => {
                     </div>
                   </div>
 
-                  {/* Property Details */}
-                  <div className="property-details">
-                    <h6 className="property-name">{property.name}</h6>
-                    
-                    {/* Rating Display */}
-                    {propertyRatings[property.id] && (
-                      <div className="d-flex justify-content-start align-items-center mb-1">
-                        <div className="text-warning me-1">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <i 
-                              key={i} 
-                              className={`bi ${i < Math.floor(propertyRatings[property.id]) ? 'bi-star-fill' : 'bi-star'} ${i === Math.floor(propertyRatings[property.id]) && propertyRatings[property.id] % 1 >= 0.5 ? 'bi-star-half' : ''}`}
-                              style={{ fontSize: "0.8rem" }}
-                            ></i>
-                          ))}
+                  {/* Property Details - New Structure */}
+                  <div className="property-details text-center p-2">
+                    <div className="d-flex justify-content-between align-items-center mb-1">
+                      <h6 className="fw-bold mb-0 fs-6 text-start">{property.name}</h6>
+                      {propertyRatings[property.id] && (
+                        <div className="d-flex align-items-center">
+                          <FaStar className="text-warning me-1" style={{ fontSize: "0.8rem" }} />
+                          <span className=" text-muted fw-bold">
+                            {propertyRatings[property.id].toFixed(1)}
+                          </span>
                         </div>
-                        <span className="small text-muted">
-                          {propertyRatings[property.id].toFixed(1)}
+                      )}
+                    </div>
+                    <h6 className="fw-bold mb-0 fs-6 text-start">{property.category}</h6>
+
+                    <p className="text-muted  mb-1 text-start">
+                      {property.city}, {property.address}
+                    </p>
+                    
+                    <div className="d-flex justify-content-between align-items-center border-top pt-2">
+                      <div className="d-flex align-items-center">
+                        <FaUser className="me-2 text-muted" />
+                        <span className="">{property.adults || 0} Adults</span>
+                      </div>
+                      <div className="d-flex align-items-center">
+                        <span className="text-muted  me-1">Cost</span>
+                        <span className="fw-bold" style={{ fontSize: "0.9rem", color: "#28a745" }}>
+                          <FaRupeeSign className="me-1" style={{ color: "black" }} />
+                          {property.minPrice?.toLocaleString() || "0"} - {property.maxPrice?.toLocaleString() || "0"}
                         </span>
                       </div>
-                    )}
-                    
-                    <p className="property-address">{property.city}</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -274,18 +281,6 @@ const RecentlyViewed = () => {
         propertyId={selectedPropertyId}
         onWishlistUpdate={() => handleWishlistUpdate(selectedPropertyId)}
       />
-
-      {/* Add this to your RecentlyViewed.css or as a style tag */}
-      <style>
-        {`
-          .bi-star-fill, .bi-star-half {
-            color: #ffc107;
-          }
-          .bi-star {
-            color: #e4e5e9;
-          }
-        `}
-      </style>
     </Container>
   );
 };

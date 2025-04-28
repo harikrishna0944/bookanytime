@@ -12,10 +12,6 @@
     "react-slick": "^0.30.3",
     "slick-carousel": "^1.8.1"
   }
-  "scripts": {
-    "start": "react-scripts start",  // or the appropriate command for your project
-    "build": "react-scripts build",  // or the appropriate build command
-    "dev": "react-scripts start"    // or your development script, if different
-  }
+  
 }
 

@@ -7,7 +7,8 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { FaWhatsapp, FaHeart, FaShareAlt, FaShareSquare, FaInstagram } from "react-icons/fa";
 import WishlistModal from "./WishlistModal";
 import { Typography } from "@mui/material";
-import Footer from "/home/ubuntu/bookanytime/bookanytime-frontend/src/Footer"; // Adjust the path as needed
+//import Footer from "/home/ubuntu/bookanytime/bookanytime-frontend/src/Footer"; // Adjust the path as needed
+import Footer from "../../Footer";
 
 const PropertyDetails = () => {
   const { id } = useParams();

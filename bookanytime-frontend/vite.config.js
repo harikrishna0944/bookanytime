@@ -9,5 +9,8 @@ server: {
     port: 5173, // Change if needed
     strictPort: true, // Ensures the exact port is used
     allowedHosts: ["www.bookanytime.in"], // ✅ Add your domain here
+    hmr: {
+      overlay: false, // Disable HMR overlay to prevent the error from showing
+    }
   },
 })

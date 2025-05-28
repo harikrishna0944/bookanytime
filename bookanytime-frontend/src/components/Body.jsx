@@ -1,18 +1,19 @@
 import React from "react";
-import Categories from "./categories/CategoriesList";
+import Categories from "./new_categories/CategoriesList";
 import RecentlyViewed from "./recently_viewed/RecentlyViewed";
 import Offers from "./offers_section/newOffers";
 import Maps from "./map/map";
 import Footer from "../Footer"; 
 import Background from "../assets/background.png";
 import Advertisement from "./advertisement/Advertisement";
+import HomePage from "./landing_page/HomePage";
 
 function Body() {
   return (
     <div
       className="body-container"
       style={{
-        paddingTop: "200px",
+        paddingTop: "0px",
         marginTop: "20px",
         width: "100vw",
         // backgroundImage: `url(${Background})`,
@@ -22,10 +23,11 @@ function Body() {
         minHeight: "100vh",
       }}
     >
-      <Categories />
+      <HomePage/>
+      <Categories/>
       <RecentlyViewed />
-      <Offers />
-      <Advertisement />
+      {/* <Offers /> */}
+      {/* <Advertisement /> */}
       <Maps />
       <Footer />
     </div>

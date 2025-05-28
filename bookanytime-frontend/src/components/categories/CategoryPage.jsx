@@ -45,6 +45,8 @@ const CategoryPage = () => {
   const [showRightArrow, setShowRightArrow] = useState(true);
   const containerRef = useRef(null);
 
+  
+
   // Fetch categories and user data
   useEffect(() => {
     const fetchData = async () => {
@@ -244,22 +246,39 @@ const CategoryPage = () => {
   };
 
   // Search properties based on current criteria
-  const searchProperties = async () => {
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search-locations`, {
-        params: {
-          query: locationSearch.trim(),
-          propertyName: searchText.trim(),
-          category: selectedCategories.includes("All") ? "" : selectedCategories.join(","),
-        },
-      });
-      setProperties(response.data);
-    } catch (error) {
-      console.error("Error fetching search results:", error);
-      setProperties([]);
-      setFilteredProperties([]);
-    }    
-  };
+  // const searchProperties = async () => {
+  //   try {
+  //     const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search-locations`, {
+  //       params: {
+  //         query: locationSearch.trim(),
+  //         propertyName: searchText.trim(),
+  //         category: selectedCategories.includes("All") ? "" : selectedCategories.join(","),
+  //       },
+  //     });
+  //     setProperties(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching search results:", error);
+  //     setProperties([]);
+  //     setFilteredProperties([]);
+  //   }    
+  // };
+const searchProperties = async () => {
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search-locations`, {
+      params: {
+        query: locationSearch.trim(),
+        propertyName: searchText.trim(),
+        category: selectedCategories.includes("All") ? "" : selectedCategories.join(","),
+      },
+    });
+    setProperties(response.data);
+    setFilteredProperties(response.data); // Also set filtered properties initially
+  } catch (error) {
+    console.error("Error fetching search results:", error);
+    setProperties([]);
+    setFilteredProperties([]);
+  }    
+};
 
 
 // Search by Location

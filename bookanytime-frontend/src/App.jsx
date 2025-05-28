@@ -45,13 +45,13 @@ function App() {
     <>
 
 <style>
-        {`
+        {/* {`
           * {
             font-family: 'Times New Roman', Times, serif ;
                         text-transform: capitalize ;
 
           }
-        `}
+        `} */}
       </style>
       {!isAdminRoute && <Header />}  {/* Hide main header on admin pages */}
 

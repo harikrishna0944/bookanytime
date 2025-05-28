@@ -1,0 +1,15 @@
+.categories-container::-webkit-scrollbar {
+  display: none;
+}
+
+.category-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.scroll-arrow {
+  transition: opacity 0.3s;
+}
+
+.scroll-arrow:hover {
+  opacity: 0.8;
+}

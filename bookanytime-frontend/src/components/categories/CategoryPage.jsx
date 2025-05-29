@@ -1,23 +1,23 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { 
-  FaHeart, 
-  FaFilter, 
-  FaUser, 
-  FaSort, 
-  FaRupeeSign, 
-  FaStar, 
+import {
+  FaHeart,
+  FaFilter,
+  FaUser,
+  FaSort,
+  FaRupeeSign,
+  FaStar,
   FaSearch
 } from "react-icons/fa";
-import { Button, Badge, Dropdown,InputGroup } from "react-bootstrap";
+import { Button, Badge, Dropdown, InputGroup } from "react-bootstrap";
 import WishlistModal from "./WishlistModal";
 import Filter from "./Filter";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const CategoryPage = () => {
   const { categoryName } = useParams();
-  
+
   // State variables
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
@@ -37,7 +37,9 @@ const CategoryPage = () => {
     priceRange: undefined,
     bedrooms: undefined,
     adults: undefined,
-    amenities: undefined
+    amenities: undefined,
+    categories: undefined,
+    offers: undefined
   });
   const [appliedFiltersCount, setAppliedFiltersCount] = useState(0);
   const [sortOptions, setSortOptions] = useState([]);
@@ -45,7 +47,7 @@ const CategoryPage = () => {
   const [showRightArrow, setShowRightArrow] = useState(true);
   const containerRef = useRef(null);
 
-  
+
 
   // Fetch categories and user data
   useEffect(() => {
@@ -82,7 +84,7 @@ const CategoryPage = () => {
     const fetchAllRatings = async () => {
       try {
         const ratingsData = {};
-        
+
         await Promise.all(
           properties.map(async (property) => {
             try {
@@ -98,7 +100,7 @@ const CategoryPage = () => {
             }
           })
         );
-        
+
         setPropertyRatings(ratingsData);
       } catch (error) {
         console.error("Error fetching ratings:", error);
@@ -186,18 +188,26 @@ const CategoryPage = () => {
 
     // Apply filters
     result = result.filter((property) => {
+      console.log("property",property)
       const price = property.minPrice || 0;
       const bedrooms = property.capacity?.bedrooms || 0;
       const adults = property.capacity?.adults || 0;
       const amenities = property.amenities || [];
+      const categories = property.category || [];
+console.log("categories",categories)
+console.log("filters",filters)
+  console.log("categories", filters.categories); 
 
       return (
-        (filters.priceRange === undefined || 
+        (filters.priceRange === undefined ||
           (price >= filters.priceRange[0] && price <= filters.priceRange[1])) &&
         (filters.bedrooms === undefined || bedrooms === filters.bedrooms) &&
         (filters.adults === undefined || adults === filters.adults) &&
-        (filters.amenities === undefined || 
-          filters.amenities.every(amenity => amenities.includes(amenity)))
+        (filters.amenities === undefined ||
+          filters.amenities.every(amenity => amenities.includes(amenity))) &&
+        (filters.categories === undefined || filters.categories.length === 0 ||
+          filters.categories.some(cat => categories.includes(cat)))
+
       );
     });
 
@@ -206,7 +216,7 @@ const CategoryPage = () => {
       result.sort((a, b) => {
         for (const option of sortOptions) {
           let comparison = 0;
-          
+
           switch (option) {
             case "priceLowToHigh":
               comparison = (a.minPrice || 0) - (b.minPrice || 0);
@@ -223,7 +233,7 @@ const CategoryPage = () => {
             default:
               comparison = 0;
           }
-          
+
           if (comparison !== 0) {
             return comparison;
           }
@@ -239,7 +249,9 @@ const CategoryPage = () => {
       filters.priceRange !== undefined,
       filters.bedrooms !== undefined,
       filters.adults !== undefined,
-      filters.amenities !== undefined && filters.amenities.length > 0
+      filters.amenities !== undefined && filters.amenities.length > 0,
+      filters.categories !== undefined && filters.categories.length > 0
+
     ].filter(Boolean).length;
 
     setAppliedFiltersCount(count);
@@ -262,42 +274,42 @@ const CategoryPage = () => {
   //     setFilteredProperties([]);
   //   }    
   // };
-const searchProperties = async () => {
-  try {
-    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search-locations`, {
-      params: {
-        query: locationSearch.trim(),
-        propertyName: searchText.trim(),
-        category: selectedCategories.includes("All") ? "" : selectedCategories.join(","),
-      },
-    });
-    setProperties(response.data);
-    setFilteredProperties(response.data); // Also set filtered properties initially
-  } catch (error) {
-    console.error("Error fetching search results:", error);
-    setProperties([]);
-    setFilteredProperties([]);
-  }    
-};
+  const searchProperties = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search-locations`, {
+        params: {
+          query: locationSearch.trim(),
+          propertyName: searchText.trim(),
+          category: selectedCategories.includes("All") ? "" : selectedCategories.join(","),
+        },
+      });
+      setProperties(response.data);
+      setFilteredProperties(response.data); // Also set filtered properties initially
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+      setProperties([]);
+      setFilteredProperties([]);
+    }
+  };
 
 
-// Search by Location
-const handleLocationSearch = async (e) => {
-  console.log("insisde location search")
-  try {
-    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search-locations`, {
-      params: {
-        query: locationSearch.trim(),
-        propertyName: "", // Not searching by name here
-        category: selectedCategories.includes("All") ? "" : selectedCategories.join(","),
-      },
-    });
-    setProperties(response.data);
-  } catch (error) {
-    console.error("Error searching by location:", error);
-    setProperties([]);
-  }
-};
+  // Search by Location
+  const handleLocationSearch = async (e) => {
+    console.log("insisde location search")
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search-locations`, {
+        params: {
+          query: locationSearch.trim(),
+          propertyName: "", // Not searching by name here
+          category: selectedCategories.includes("All") ? "" : selectedCategories.join(","),
+        },
+      });
+      setProperties(response.data);
+    } catch (error) {
+      console.error("Error searching by location:", error);
+      setProperties([]);
+    }
+  };
 
   // Category cycling effect
   useEffect(() => {
@@ -308,32 +320,32 @@ const handleLocationSearch = async (e) => {
       return () => clearInterval(interval);
     }
   }, [categories, isTyping]);
-  
 
 
-// Step 1: New function to actually fetch the data
-const searchByName = async (searchQuery) => {
-  console.log("search queryyy")
-  try {
-    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search`, {
-      params: {
-        query: searchQuery.trim(),
-        categories: selectedCategories.includes("All") ? [] : selectedCategories,
-      },
-    });
-    setProperties(response.data);
-  } catch (error) {
-    console.error("Error searching by name:", error);
-    setProperties([]);
-  }
-};
 
-// Step 2: onChange handler — update state + call search
-const handleInputChange = (event) => {
-  const value = event.target.value;
-  setSearchText(value);
-  searchByName(value); 
-};
+  // Step 1: New function to actually fetch the data
+  const searchByName = async (searchQuery) => {
+    console.log("search queryyy")
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search`, {
+        params: {
+          query: searchQuery.trim(),
+          categories: selectedCategories.includes("All") ? [] : selectedCategories,
+        },
+      });
+      setProperties(response.data);
+    } catch (error) {
+      console.error("Error searching by name:", error);
+      setProperties([]);
+    }
+  };
+
+  // Step 2: onChange handler — update state + call search
+  const handleInputChange = (event) => {
+    const value = event.target.value;
+    setSearchText(value);
+    searchByName(value);
+  };
 
   const handleFocus = () => setIsTyping(true);
   const handleBlur = () => setIsTyping(false);
@@ -354,8 +366,8 @@ const handleInputChange = (event) => {
         prev.includes("All")
           ? [category]
           : prev.includes(category)
-          ? prev.filter((c) => c !== category)
-          : [...prev, category]
+            ? prev.filter((c) => c !== category)
+            : [...prev, category]
       );
     }
   };
@@ -458,11 +470,11 @@ const handleInputChange = (event) => {
   };
 
   return (
-    <div className="container mt-4" style={{marginLeft: '30px'}}>
+    <div className="container mt-4" style={{ marginLeft: '30px' }}>
       {/* Search Section */}
       <div className="search-section mb-4 p-3 bg-white rounded shadow-sm" style={{ width: window.innerWidth < 576 ? '88%' : undefined }}>
         {/* Search Inputs */}
-        <div className="row g-3 mb-3" style={{marginTop: '20px'}}>
+        <div className="row g-3 mb-3" style={{ marginTop: '20px' }}>
           <div className="col-md-6">
             <form >
               <div className="input-group">
@@ -474,7 +486,7 @@ const handleInputChange = (event) => {
                   placeholder={`Search for ${categories[currentCategoryIndex] || "properties"}`}
                   value={searchText}
                   onChange={handleInputChange}
-                
+
                 />
                 {/* <button className="btn btn-primary" type="submit">
                   <FaSearch />
@@ -503,7 +515,7 @@ const handleInputChange = (event) => {
         </div>
 
         {/* Category Filters with Scroll Arrows */}
-        <div className="d-flex position-relative align-items-center" style={{marginTop: '-50px',marginBottom: '30px'}}>
+        {/* <div className="d-flex position-relative align-items-center" style={{marginTop: '-50px',marginBottom: '30px'}}>
           <div 
             className="d-flex flex-nowrap gap-2 category-filters-container position-relative"
             ref={containerRef}
@@ -551,7 +563,7 @@ const handleInputChange = (event) => {
                 }`}
                 onClick={() => handleCategoryChange(category)}
                 onMouseEnter={() => {
-                  if (index > 0) { // Skip "All"
+                  if (index > 0) {
                     setCurrentCategoryIndex(index - 1);
                   }
                 }}
@@ -594,7 +606,7 @@ const handleInputChange = (event) => {
               </button>
             )}
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Properties Grid */}
@@ -646,7 +658,7 @@ const handleInputChange = (event) => {
                   <p className="text-muted small mb-1 text-start">
                     {property.city}, {property.address}
                   </p>
-                  
+
                   <div className="d-flex justify-content-between align-items-center border-top pt-2">
                     <div className="d-flex align-items-center">
                       <FaUser className="me-2 text-muted" />
@@ -668,7 +680,7 @@ const handleInputChange = (event) => {
           <div className="col-12 text-center py-5">
             <p className="text-muted">No properties match your search criteria.</p>
             <Button variant="outline-primary" onClick={clearFilters}>
-              Feach All 
+              Feach All
             </Button>
           </div>
         )}
@@ -690,35 +702,35 @@ const handleInputChange = (event) => {
               </Badge>
             )}
           </Button>
-          
+
           <Dropdown>
             <Dropdown.Toggle variant="primary" id="dropdown-sort">
               <FaSort className="me-2" />
               {getSortToggleText()}
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item 
+              <Dropdown.Item
                 active={sortOptions.includes("priceLowToHigh")}
                 onClick={() => handleSort("priceLowToHigh")}
               >
                 {sortOptions.includes("priceLowToHigh") && <span className="me-2">✓</span>}
                 Price Low to High
               </Dropdown.Item>
-              <Dropdown.Item 
+              <Dropdown.Item
                 active={sortOptions.includes("priceHighToLow")}
                 onClick={() => handleSort("priceHighToLow")}
               >
                 {sortOptions.includes("priceHighToLow") && <span className="me-2">✓</span>}
                 Price High to Low
               </Dropdown.Item>
-              <Dropdown.Item 
+              <Dropdown.Item
                 active={sortOptions.includes("ratingHighToLow")}
                 onClick={() => handleSort("ratingHighToLow")}
               >
                 {sortOptions.includes("ratingHighToLow") && <span className="me-2">✓</span>}
                 Highest Rated
               </Dropdown.Item>
-              <Dropdown.Item 
+              <Dropdown.Item
                 active={sortOptions.includes("popularityHighToLow")}
                 onClick={() => handleSort("popularityHighToLow")}
               >
@@ -726,7 +738,7 @@ const handleInputChange = (event) => {
                 Most Popular
               </Dropdown.Item>
               {sortOptions.length > 0 && (
-                <Dropdown.Item 
+                <Dropdown.Item
                   onClick={clearAllSorting}
                   className="text-danger"
                 >

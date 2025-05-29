@@ -15,6 +15,8 @@ const CategoriesList = () => {
   const navigate = useNavigate();
   const containerRef = useRef(null);
 
+
+
   useEffect(() => {
     const handleResize = () => {
       setIsLaptopView(window.innerWidth >= 992); // 992px is Bootstrap's lg breakpoint
@@ -86,7 +88,7 @@ const CategoriesList = () => {
     <>
 <Container
   fluid
-  className="p-3 text-center position-fixed"
+  className="p-3 text-center "
   style={{
     top: "64px",
     zIndex: 999,

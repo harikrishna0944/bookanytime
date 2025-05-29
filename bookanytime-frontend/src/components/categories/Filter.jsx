@@ -3,13 +3,18 @@ import { Modal, Button, Form, Badge } from "react-bootstrap";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { FaBed, FaUser } from "react-icons/fa";
+import Select from "react-select";
+
 
 const DEFAULT_FILTERS = {
   bedrooms: undefined,
   adults: undefined,
   priceRange: undefined,
-  amenities: undefined
+  amenities: undefined,
+  categories: undefined,
+  offers: undefined
 };
+
 
 const AMENITIES = [
   { name: "WiFi", icon: "📶" },
@@ -33,6 +38,10 @@ const Filter = ({
     min: filters.priceRange?.[0] || 0,
     max: filters.priceRange?.[1] || 100000
   });
+  const [categories, setCategories] = useState([]);
+  const [offers, setOffers] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedOffers, setSelectedOffers] = useState([]);
 
   useEffect(() => {
     setPriceInputs({
@@ -41,14 +50,47 @@ const Filter = ({
     });
   }, [filters.priceRange]);
 
-  const calculateActiveFilters = () => {
-    let count = 0;
-    if (filters.bedrooms !== undefined) count++;
-    if (filters.adults !== undefined) count++;
-    if (filters.priceRange !== undefined) count++;
-    if (filters.amenities?.length) count += filters.amenities.length;
-    return count;
-  };
+  useEffect(() => {
+    // Example API call – replace with your actual endpoints
+    const fetchFilters = async () => {
+      try {
+        const catRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/categories`);
+        const offerRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/offers`);
+        const catData = await catRes.json();
+        const offerData = await offerRes.json();
+console.log("categoriesData", offerData)
+        setCategories(catData);
+        setOffers(offerData);
+      } catch (error) {
+        console.error("Failed to fetch filters:", error);
+      }
+    };
+
+    fetchFilters();
+  }, []);
+
+// Add to useEffect to sync selectedCategories and selectedOffers to main filters state
+useEffect(() => {
+    console.log("Selected Categories changed:", selectedCategories);
+
+  setFilters(prev => ({
+    ...prev,
+    categories: selectedCategories.length ? selectedCategories : undefined,
+    offers: selectedOffers.length ? selectedOffers : undefined
+  }));
+}, [selectedCategories, selectedOffers]);
+
+const calculateActiveFilters = () => {
+  let count = 0;
+  if (filters.bedrooms !== undefined) count++;
+  if (filters.adults !== undefined) count++;
+  if (filters.priceRange !== undefined) count++;
+  if (filters.amenities?.length) count += filters.amenities.length;
+  if (filters.categories?.length) count += filters.categories.length;
+  if (filters.offers?.length) count += filters.offers.length;
+  return count;
+};
+
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -61,7 +103,7 @@ const Filter = ({
   const handlePriceInputChange = (e) => {
     const { name, value } = e.target;
     const numValue = value === "" ? (name === "min" ? 0 : 100000) : parseInt(value, 10);
-    
+
     setPriceInputs(prev => ({ ...prev, [name]: numValue }));
 
     if (!isNaN(numValue)) {
@@ -69,7 +111,7 @@ const Filter = ({
         name === "min" ? numValue : filters.priceRange?.[0] || 0,
         name === "max" ? numValue : filters.priceRange?.[1] || 100000
       ];
-      
+
       setFilters(prev => ({
         ...prev,
         priceRange: newRange[0] === 0 && newRange[1] === 100000 ? undefined : newRange
@@ -94,11 +136,14 @@ const Filter = ({
     });
   };
 
-  const handleClearFilters = () => {
-    setFilters(DEFAULT_FILTERS);
-    setPriceInputs({ min: 0, max: 100000 });
-    clearFilters();
-  };
+const handleClearFilters = () => {
+  setFilters(DEFAULT_FILTERS);
+  setPriceInputs({ min: 0, max: 100000 });
+  setSelectedCategories([]);
+  setSelectedOffers([]);
+  clearFilters();
+};
+
 
   const handleApplyFilters = () => {
     applyFilters(filters);
@@ -252,8 +297,8 @@ const Filter = ({
                   <Button
                     key={index}
                     variant={
-                      filters.amenities?.includes(amenity.name) 
-                        ? "primary" 
+                      filters.amenities?.includes(amenity.name)
+                        ? "primary"
                         : "outline-secondary"
                     }
                     onClick={() => handleAmenityToggle(amenity.name)}
@@ -266,6 +311,63 @@ const Filter = ({
               </div>
             </div>
           </Form.Group>
+          {/* Category Dropdown */}
+          <Form.Group className="mb-3">
+            <Form.Label>Select Categories</Form.Label>
+            <Select
+              isMulti
+              options={categories.map(cat => ({ value: cat.name, label: cat.name }))}
+              value={selectedCategories.map(c => ({ value: c, label: c }))}
+              onChange={(selectedOptions) =>
+                setSelectedCategories(selectedOptions.map((opt) => opt.value))
+              }
+              placeholder="Select Categories"
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  minHeight: 40,
+                  borderRadius: 6,
+                }),
+                menu: (base) => ({
+                  ...base,
+                  zIndex: 9999,
+                }),
+              }}
+            />
+          </Form.Group>
+
+          {/* Offers Checkboxes */}
+          {/* <Form.Group className="mb-3">
+  <Form.Label>Offers</Form.Label>
+  <div className="d-flex flex-wrap gap-3">
+    {offers.map((offer, idx) => (
+      <Form.Check
+        key={idx}
+        type="checkbox"
+        id={`offer-${idx}`}
+        checked={selectedOffers.includes(offer.name)}
+        onChange={() => {
+          const updated = selectedOffers.includes(offer.name)
+            ? selectedOffers.filter(o => o !== offer.name)
+            : [...selectedOffers, offer.name];
+          setSelectedOffers(updated);
+        }}
+        label={
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <img
+              src={offer.icon}
+              alt={offer.name}
+              style={{ width: 20, height: 20 }}
+            />
+          </div>
+        }
+      />
+    ))}
+  </div>
+</Form.Group> */}
+
+
+
         </Form>
       </Modal.Body>
       <Modal.Footer>

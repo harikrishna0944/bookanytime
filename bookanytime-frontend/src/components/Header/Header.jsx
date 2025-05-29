@@ -7,6 +7,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { getUserRole } from "../utils/auth"
 import { useNavigate } from "react-router-dom";
 import { AccountCircle, ExitToApp, Feedback, HelpOutline, AdminPanelSettings } from '@mui/icons-material';
+import SearchIcon from "@mui/icons-material/Search";
+
 import Background from "../../assets/background3_lightened.png"
 // import Logo from "../../../public/lg.png"
 const Header = () => {
@@ -46,7 +48,8 @@ const Header = () => {
       position="fixed"
       sx={{
         // background: "linear-gradient(90deg, #6a11cb, #2575fc)",
-        backgroundImage: `url(${Background})`,
+        // backgroundImage: `url(${Background})`,
+        backgroundColor:"white",
         width: "100vw",
         zIndex: 1000,
         boxShadow: "none", // removes default shadow
@@ -61,9 +64,42 @@ fontFamily: `system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "
         <img src={Logo} alt="" style={{height:"50px", width:"50px"}}/>
         </Link>  */}
 
-        <Link to="/" style={{ textDecoration: 'none', color: 'inherit'}}>
-          <h3 className="text-white m-0">BookAnytime</h3>
-        </Link>
+       
+<Box sx={{ display: "flex", alignItems: "center", gap: 15 }}>
+  <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+    <h3 className="text m-0" style={{ color: "#6a11cb" }}>BookAnytime</h3>
+  </Link>
+<Box
+  sx={{
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    width: "300px",
+  }}
+>
+  <input
+    type="text"
+    placeholder="Search properties..."
+    style={{
+      padding: "6px 36px 6px 12px",
+      border: "1px solid #ccc",
+      borderRadius: "20px",
+      fontSize: "14px",
+      outline: "none",
+      width: "100%",
+    }}
+  />
+  <SearchIcon
+    sx={{
+      position: "absolute",
+      right: 10,
+      color: "#888",
+      cursor: "pointer",
+    }}
+  />
+</Box>
+  
+</Box>
 
         {/* Desktop Menu */}
         <Box
@@ -74,15 +110,13 @@ fontFamily: `system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "
             flexWrap: "nowrap",
           }}
         >
-          <Button color="inherit" component={Link} to="/search" sx={{ color: "white !important" }}>
-            Search
-          </Button>
-          <Button color="inherit" component={Link} to="/list-your-property" sx={{ color: "white !important" }}>
-            List Your Property
-          </Button>
-          <Button color="inherit" component={Link} to="/wishlist" startIcon={<FavoriteIcon />} sx={{ color: "white !important" }}>
+          <Button color="inherit" component={Link} to="/wishlist" startIcon={<FavoriteIcon />} sx={{ color: "black", borderRadius:"5px",  }}>
             Wishlist
           </Button>
+          <Button color="inherit" component={Link} to="/list-your-property" sx={{ color: "white !important", backgroundColor:"#6a11cb", borderRadius:"25px", }}>
+            List Your Property
+          </Button>
+         
 
           {/* Profile Avatar with Dropdown */}
           <IconButton onClick={handleProfileClick}>
@@ -149,7 +183,7 @@ fontFamily: `system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "
 <IconButton onClick={handleProfileClick}>
     <Avatar alt="Profile" src="/profile.jpg" sx={{ width: 30, height: 30 }} />
   </IconButton>
-  <IconButton sx={{ color: "white" }} onClick={toggleDrawer}>
+  <IconButton sx={{ color: "black" }} onClick={toggleDrawer}>
     <MenuIcon />
   </IconButton>
  

@@ -1,11 +1,9 @@
 import React from "react";
-import Categories from "./new_categories/CategoriesList";
+import Categories from "./categories/CategoriesList";
 import RecentlyViewed from "./recently_viewed/RecentlyViewed";
-import Offers from "./offers_section/newOffers";
+import Offers from "./offers_section/offers2";
 import Maps from "./map/map";
 import Footer from "../Footer"; 
-import Background from "../assets/background.png";
-import Advertisement from "./advertisement/Advertisement";
 import HomePage from "./landing_page/HomePage";
 
 function Body() {
@@ -14,25 +12,28 @@ function Body() {
       className="body-container"
       style={{
         paddingTop: "0px",
-        marginTop: "20px",
+        marginTop: "0px", // Make sure this is 0 to avoid overlap
         width: "100vw",
-        // backgroundImage: `url(${Background})`,
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
         minHeight: "100vh",
       }}
     >
-      <HomePage/>
-      <Categories/>
+      {/* Full-page landing section */}
+      <HomePage />
+
+      {/* Other sections below it */}
+                  <Offers />
+
+      <Categories />
+
       <RecentlyViewed />
-      {/* <Offers /> */}
       {/* <Advertisement /> */}
       <Maps />
       <Footer />
     </div>
   );
 }
-
 
 export default Body;

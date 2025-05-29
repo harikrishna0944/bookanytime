@@ -1,15 +1,69 @@
-.categories-container::-webkit-scrollbar {
-  display: none;
+.property-type-list-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.category-card:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.property-type-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
 }
 
-.scroll-arrow {
-  transition: opacity 0.3s;
+.property-type-header h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
 }
 
-.scroll-arrow:hover {
-  opacity: 0.8;
+.property-type-header p {
+  font-size: 1rem;
+  color: #666;
+  margin: 0;
+}
+
+.property-type-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.property-type-item {
+  padding: 1.2rem;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.property-type-item:hover {
+  background-color: #f9f9f9;
+}
+
+.property-type-item h2 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #333;
+  margin: 0 0 0.25rem 0;
+  text-transform: capitalize;
+}
+
+.property-type-item p {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .property-type-list-container {
+    margin: 1rem auto;
+  }
+  
+  .property-type-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .property-type-item {
+    padding: 1rem;
+  }
 }

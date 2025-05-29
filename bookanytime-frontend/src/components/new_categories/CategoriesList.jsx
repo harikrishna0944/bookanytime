@@ -11,40 +11,41 @@ const CategoriesList = () => {
   const [error, setError] = useState(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
+  const [isLaptopView, setIsLaptopView] = useState(false);
   const navigate = useNavigate();
   const containerRef = useRef(null);
 
   useEffect(() => {
-    axios
-      .get(`${import.meta.env.VITE_API_BASE_URL}/api/categories`)
-      .then((response) => {
-        // Mock data to match the screenshot - remove this in production
-        const mockCategories = [
-          { _id: "1", name: "Farmhouses", count: 84 },
-          { _id: "2", name: "Hotels", count: 156 },
-          { _id: "3", name: "Apartments", count: 213 },
-          { _id: "4", name: "Villas", count: 67 },
-          { _id: "5", name: "Cottages", count: 42 },
-          { _id: "6", name: "Cabins", count: 35 },
-          { _id: "7", name: "Treehouses", count: 12 },
-          { _id: "8", name: "Beachfront", count: 29 }
-        ];
-        setCategories(mockCategories);
-        // In production, use this instead:
-        // setCategories(response.data);
-      })
-      .catch((error) => {
+    const handleResize = () => {
+      setIsLaptopView(window.innerWidth >= 992); // 992px is Bootstrap's lg breakpoint
+    };
+    
+    handleResize(); // Initial check
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/categories`);
+        // If your API doesn't include propertyCount, you would need to fetch it separately
+        // Here we assume the API returns categories with propertyCount
+        setCategories(response.data);
+      } catch (error) {
         console.error("Error fetching categories:", error);
         setError("Failed to fetch categories.");
-      })
-      .finally(() => {
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+    
+    fetchCategories();
   }, []);
 
   const handleNavigation = useCallback(
     (categoryName) => {
-      navigate(`/${categoryName.toLowerCase()}`);
+      navigate(`/${categoryName}`);
     },
     [navigate]
   );
@@ -85,114 +86,88 @@ const CategoriesList = () => {
   }, [checkScroll]);
 
   return (
-    <Container className="my-5">
-      <div className="text-center mb-4">
-        <h2 className="fw-bold">Browse by Property Type</h2>
-        <p className="text-muted">
-          Explore different types of accommodations for your perfect stay
-        </p>
-      </div>
-
-      <div className="position-relative">
-        {showLeftArrow && (
-          <button 
-            className="scroll-arrow left bg-white rounded-circle shadow-sm" 
-            onClick={handleScrollLeft}
-            style={{
-              width: "40px",
-              height: "40px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              position: "absolute",
-              left: "-20px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              zIndex: 1,
-              border: "none"
-            }}
-          >
-            <ChevronLeft size={24} />
-          </button>
-        )}
-
-        <div
-          className="categories-container d-flex overflow-auto py-3"
-          ref={containerRef}
-          style={{
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-            gap: "16px"
-          }}
-        >
-          {loading ? (
-            <div className="w-100 text-center">
-              <Spinner animation="border" variant="primary" />
-            </div>
-          ) : error ? (
-            <Alert variant="danger" className="w-100 text-center">{error}</Alert>
-          ) : categories.length > 0 ? (
-            categories.map((category) => (
-              <div
-                key={category._id}
-                className="category-card flex-shrink-0 rounded-3 p-3"
-                onClick={() => handleNavigation(category.name)}
-                style={{
-                  width: "180px",
-                  cursor: "pointer",
-                  transition: "transform 0.2s",
-                  border: "1px solid #e0e0e0"
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-5px)"}
-                onMouseLeave={(e) => e.currentTarget.style.transform = "none"}
-              >
-                <div className="text-center mb-2">
-                  {/* Placeholder for image - replace with your actual image */}
-                  <div 
-                    className="mx-auto bg-light rounded-circle d-flex align-items-center justify-content-center" 
-                    style={{
-                      width: "80px",
-                      height: "80px",
-                      backgroundColor: "#f8f9fa"
-                    }}
+    <>
+      <Container
+        fluid
+        className="p-3 text-center position-fixed"
+        style={{
+          top: "64px",
+          zIndex: 999,
+          background: "#fff",
+          width: "100%",
+          boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+        }}
+      >
+        <div className={`categories-wrapper ${isLaptopView ? 'laptop-view' : ''}`} style={{marginTop:'20px', height:'120px'}}>
+          <div className="position-relative categories-scroll-container">
+            {showLeftArrow && (
+              <button className="scroll-arrow left" onClick={handleScrollLeft}>
+                <ChevronLeft size={16} />
+              </button>
+            )}
+            <div
+              className="categories-container"
+              ref={containerRef}
+            >
+              {loading ? (
+                <Spinner animation="border" variant="primary" />
+              ) : error ? (
+                <Alert variant="danger">{error}</Alert>
+              ) : categories.length > 0 ? (
+                categories.map((category) => (
+                  <div
+                    key={category._id}
+                    className="category-wrapper"
+                    onClick={() => handleNavigation(category.name)}
                   >
-                    <span className="text-muted">Icon</span>
+                    <div className="category-card">
+                      {category.image ? (
+                        <img
+                          src={`${import.meta.env.VITE_API_BASE_URL}${category.image}`}
+                          alt={category.name}
+                          draggable="false"
+                        />
+                      ) : (
+                        <div className="text-muted text-center">No Image</div>
+                      )}
+                    </div>
+                    <div className="category-text">
+                      <h6 className="category-name fw-bold">{category.name}</h6>
+                      <p className="property-count">
+                        {category.propertyCount || 0} properties
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <h6 className="fw-bold text-center mb-1">{category.name}</h6>
-                <p className="text-muted text-center mb-0">
-                  {category.count} properties
-                </p>
+                ))
+              ) : (
+                <p className="text-muted">No categories available</p>
+              )}
+            </div>
+            {showRightArrow && (
+              <button className="scroll-arrow right" onClick={handleScrollRight}>
+                <ChevronRight size={16} />
+              </button>
+            )}
+          </div>
+
+          {isLaptopView && (
+            <div className="decorative-side-panel">
+              <div className="animated-circle"></div>
+              <div className="animated-line"></div>
+              <div className="floating-dots">
+                {[...Array(8)].map((_, i) => (
+                  <div key={i} className="dot" style={{
+                    animationDelay: `${i * 0.2}s`,
+                    top: `${10 + (i % 4) * 20}%`,
+                    left: `${20 + (Math.floor(i / 4) * 60)}%`
+                  }}></div>
+                ))}
               </div>
-            ))
-          ) : (
-            <p className="text-muted w-100 text-center">No categories available</p>
+            </div>
           )}
         </div>
-
-        {showRightArrow && (
-          <button 
-            className="scroll-arrow right bg-white rounded-circle shadow-sm"
-            onClick={handleScrollRight}
-            style={{
-              width: "40px",
-              height: "40px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              position: "absolute",
-              right: "-20px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              zIndex: 1,
-              border: "none"
-            }}
-          >
-            <ChevronRight size={24} />
-          </button>
-        )}
-      </div>
-    </Container>
+      </Container>
+    </>
   );
 };
 

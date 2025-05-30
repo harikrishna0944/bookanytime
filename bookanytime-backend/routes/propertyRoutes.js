@@ -40,7 +40,7 @@ const parseFormData = (req, res, next) => {
 // @desc    Add a new property with image upload
 router.post("/", upload.array("images", 20), parseFormData, async (req, res) => {
   try {
-    const { name, category, description,house_rules, minPrice, maxPrice, city, address, latitude, longitude, amenities, capacity, popularity,whatsappNumber , instagram} = req.body;
+    const { name, category, description,house_rules, minPrice, maxPrice, city, address, latitude, longitude, amenities, capacity, popularity,whatsappNumber ,phoneNumber, instagram} = req.body;
 
     // Generate image URLs from uploaded files
     const imageUrls = req.files.map((file) => `https://api.bookanytime.in:5000/uploads/${file.filename}`);
@@ -61,6 +61,7 @@ router.post("/", upload.array("images", 20), parseFormData, async (req, res) => 
       popularity,
       images: imageUrls,
       whatsappNumber,
+      phoneNumber,
       instagram
     });
 
@@ -78,7 +79,7 @@ router.put("/:id", upload.array("images", 20), async (req, res) => {
   try {
     const propertyId = req.params.id;
     console.log(propertyId)
-    const { name, category, description,house_rules, minPrice, maxPrice, city, address, latitude, longitude, amenities, adults, bedrooms,popularity, whatsappNumber, instagram } = req.body;
+    const { name, category, description,house_rules, minPrice, maxPrice, city, address, latitude, longitude, amenities, adults, bedrooms,popularity, whatsappNumber,phoneNumber, instagram } = req.body;
     
     // Convert numeric fields
     const updatedData = {
@@ -97,6 +98,7 @@ router.put("/:id", upload.array("images", 20), async (req, res) => {
       bedrooms: Number(bedrooms),
       popularity :Number(popularity),
       whatsappNumber,
+      phoneNumber,
       instagram
     };
 

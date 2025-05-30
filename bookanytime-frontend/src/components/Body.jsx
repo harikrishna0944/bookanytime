@@ -3,9 +3,9 @@ import Categories from "./categories/CategoriesList";
 import RecentlyViewed from "./recently_viewed/RecentlyViewed";
 import Offers from "./offers_section/offers2";
 import Maps from "./map/map";
-import Footer from "../Footer"; 
+import Footer from "../Footer";
 import HomePage from "./landing_page/HomePage";
-
+import Host from "./Host/Host"
 function Body() {
   return (
     <div
@@ -24,11 +24,13 @@ function Body() {
       <HomePage />
 
       {/* Other sections below it */}
-                  <Offers />
+      <Offers />
 
       <Categories />
 
       <RecentlyViewed />
+      <Host />
+
       {/* <Advertisement /> */}
       <Maps />
       <Footer />

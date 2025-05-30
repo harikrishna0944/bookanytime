@@ -20,6 +20,7 @@ const propertySchema = new mongoose.Schema(
     popularity: { type: Number },
     images: { type: [String], default: [] },
     whatsappNumber: { type: String, required: true },
+    phoneNumber: { type: String, required: true },
     instagram: { type: String, required: true }
 
   },

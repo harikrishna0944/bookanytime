@@ -22,6 +22,7 @@ const AdminPropertyForm = () => {
     popularity: "", 
     images: [],
     whatsappNumber: "",
+    phoneNumber:"",
     instagram: "",
   });
 
@@ -134,6 +135,7 @@ const AdminPropertyForm = () => {
       popularity: "", 
       images: [],
       whatsappNumber: "",
+      phoneNumber:"",
       instagram: "",
     });
     setImageFiles([]);
@@ -283,6 +285,10 @@ const AdminPropertyForm = () => {
           {/* WhatsApp Number */}
           <Grid item xs={12}>
             <TextField fullWidth label="WhatsApp Number" name="whatsappNumber" value={formData.whatsappNumber} onChange={handleChange} required />
+          </Grid>
+           {/* phone Number */}
+          <Grid item xs={12}>
+            <TextField fullWidth label="Phone Number" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required />
           </Grid>
           {/* Instagram */}
           <Grid item xs={12}>

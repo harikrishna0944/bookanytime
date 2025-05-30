@@ -27,6 +27,7 @@ const UpdatePropertyPage = () => {
     popularity:"",
     images: [],
     whatsappNumber: "",
+    phoneNumber:"",
     instagram: ""
   });
 
@@ -278,6 +279,10 @@ const UpdatePropertyPage = () => {
             {/* WhatsApp Number */}
             <Grid item xs={12}>
               <TextField fullWidth label="WhatsApp Number" name="whatsappNumber" value={formData.whatsappNumber} onChange={handleChange} required />
+            </Grid>
+            {/* phone Number */}
+            <Grid item xs={12}>
+              <TextField fullWidth label="phone Number" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required />
             </Grid>
 
             {/* Instagram */}

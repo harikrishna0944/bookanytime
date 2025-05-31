@@ -29,7 +29,27 @@ const banners = [
 
 const BannerSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [offers, setOffers] = useState([]);
 
+  useEffect(() => {
+    fetchOffers();
+  }, []);
+    const fetchOffers = async () => {
+      setLoading(true);
+      setError("");
+  
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/offers`);
+        setOffers(response.data);
+        console.log("data", response.data)
+      } catch (error) {
+        console.error("Error fetching offers:", error);
+      }finally {
+          setLoading(false);
+        }
+    };
   // Auto slide every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -71,9 +91,9 @@ const BannerSlider = () => {
     >
 
         <h1 style={{ fontSize: "2.5rem", marginBottom: 10, fontWeight: "bold" }}>
-          {banners[currentIndex].title}
+          {/* {banners[currentIndex].title} */}
         </h1>
-        <p style={{ fontSize: "1.25rem", marginBottom: 20 }}>{banners[currentIndex].subtitle}</p>
+        {/* <p style={{ fontSize: "1.25rem", marginBottom: 20 }}>{banners[currentIndex].subtitle}</p> */}
         <a
           href={banners[currentIndex].ctaLink}
           style={{

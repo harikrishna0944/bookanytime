@@ -438,7 +438,7 @@ const PropertyDetails = () => {
                   }}
                   onClick={() => setShowAllImages(true)}
                 >
-                  + More
+                  + More 
                 </div>
               )}
             </div>

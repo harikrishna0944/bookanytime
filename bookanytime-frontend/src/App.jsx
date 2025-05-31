@@ -16,7 +16,8 @@ import WishlistPage from "./components/WishList/WishlistPage";
 import WishlistDetailsPage from "./components/WishList/WishListDetailsPage";
 import ListYourProperty from "./components/list_your_property/ListYourProperty"
 import HostForm from "./components/Host/HostForm"
-import ListPropertyLogs from "./components/admin_panel/list-your-property/ListPropertyLogs"
+import HostLogs from "./components/admin_panel/host/HostLogs"
+import ListPropertyLogs from "./components/admin_panel/list-your-property/ListPropertyLogs" 
 import OffersDetailsPage from "./components/offers_section/OffersDetailsPage"
 import FeedbackComponent from "./components/feedback/FeedbackComponent";
 import FeedbackAdmin from "./components/admin_panel/feedback/FeedbackAdmin";
@@ -79,6 +80,7 @@ function App() {
           <Route path="offers" element={<AdminRoute><Offers /></AdminRoute>} />
           <Route path="trackData" element={<AdminRoute><TrackedData /></AdminRoute>} />
           <Route path="list-property-logs" element={<AdminRoute><ListPropertyLogs /></AdminRoute>} />
+          <Route path="hostlogs" element={<AdminRoute><HostLogs /></AdminRoute>} />
           <Route path="feedback-logs" element={<AdminRoute><FeedbackAdmin /></AdminRoute>} />
 
         </Route>

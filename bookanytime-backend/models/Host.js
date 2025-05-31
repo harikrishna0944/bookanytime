@@ -7,5 +7,5 @@ const hostSchema = new mongoose.Schema({
   category: { type: String, required: true },
 });
 
-const Host = mongoose.model("ListProperty", hostSchema);
+const Host = mongoose.model("Host", hostSchema);
 module.exports = Host;

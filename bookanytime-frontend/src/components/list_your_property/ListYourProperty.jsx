@@ -10,7 +10,8 @@ import {
   Button,
   Alert,
 } from "@mui/material";
-import Logo from "../../../public/lg.png"
+import Logo from "../../../public/lg.png";
+import Footer from "/home/ubuntu/bookanytime/bookanytime-frontend/src/Footer.jsx";
 
 const ListProperty = () => {
   const [formData, setFormData] = useState({
@@ -32,12 +33,12 @@ const ListProperty = () => {
   };
 
   const validatePhone = (phone) => {
-    const phoneRegEx = /^\+91\d{10}$/; // Check if the phone starts with +91 and is followed by 10 digits
+    const phoneRegEx = /^\+91\d{10}$/;
     return phoneRegEx.test(phone);
   };
 
   const validateEmail = (email) => {
-    const emailRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // Standard email regex
+    const emailRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailRegEx.test(email);
   };
 
@@ -45,9 +46,8 @@ const ListProperty = () => {
     e.preventDefault();
     setMessage("");
     setError("");
-    setFormErrors({ phone: "", email: "" }); // Reset errors before validation
+    setFormErrors({ phone: "", email: "" });
 
-    // Validate phone and email before submission
     let valid = true;
 
     if (!validatePhone(formData.phone)) {
@@ -61,7 +61,7 @@ const ListProperty = () => {
     }
 
     if (!valid) {
-      return; // Don't submit the form if validation fails
+      return;
     }
 
     try {
@@ -82,14 +82,17 @@ const ListProperty = () => {
         minHeight: "100vh",
         width: "100vw",
         display: "flex",
-        justifyContent: "center",
+        flexDirection: "column",
+        justifyContent: "space-between",
         alignItems: "center",
-        backgroundImage: "linear-gradient(to right, #1E3C72, #2A5298)",
+        backgroundImage: "linear-gradient(to right,rgb(227, 231, 238),rgb(240, 243, 247))",
         padding: 2,
-        marginTop:"50px"
+        marginTop: "50px",
       }}
     >
-      <Container maxWidth="sm">
+      <h1>List Your Property</h1>
+      <h6>join thounsands of property owenrs and start earning by listing your sapce on BookAnyTime</h6>
+      <Container maxWidth="sm" sx={{ my: 4 }}>
         <Paper
           elevation={10}
           sx={{
@@ -104,59 +107,7 @@ const ListProperty = () => {
             alignItems: "center",
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1.5, // spacing between logo and text
-              mb: 3, // margin bottom
-            }}
-          >
-            <img
-              src={Logo}
-              alt="Logo"
-              style={{
-                width: "40px",
-                height: "40px",
-                objectFit: "contain",
-              }}
-            />
-            <Typography
-              variant="h4"
-              color="primary"
-              gutterBottom
-              sx={{ margin: 0 }}
-            >
-              List Your Property
-            </Typography>
-          </Box>
 
-          {/* WhatsApp Button */}
-          <Box sx={{ textAlign: "center", mb: 3 }}>
-            <a
-              href="https://wa.me/918088183625"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                textDecoration: "none",
-              }}
-            >
-              <Button
-                variant="contained"
-                color="success"
-                startIcon={<WhatsAppIcon />}
-                sx={{
-                  width: "200px",
-                  textTransform: "none",
-                  fontWeight: 600,
-                }}
-              >
-                Contact via WhatsApp
-              </Button>
-            </a>
-          </Box>
-
-          {/* Success/Error Message */}
           {message && (
             <Alert severity="success" sx={{ width: "100%", mb: 2 }}>
               {message}
@@ -168,7 +119,6 @@ const ListProperty = () => {
             </Alert>
           )}
 
-          {/* Form */}
           <Box
             component="form"
             onSubmit={handleSubmit}
@@ -195,8 +145,8 @@ const ListProperty = () => {
               variant="outlined"
               placeholder="+91 9876543210"
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "8px", backgroundColor: "#f9f9f9" } }}
-              error={!!formErrors.phone} // Show error if validation fails
-              helperText={formErrors.phone} // Show the error message
+              error={!!formErrors.phone}
+              helperText={formErrors.phone}
             />
             <TextField
               label="Email"
@@ -208,8 +158,8 @@ const ListProperty = () => {
               fullWidth
               variant="outlined"
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "8px", backgroundColor: "#f9f9f9" } }}
-              error={!!formErrors.email} // Show error if validation fails
-              helperText={formErrors.email} // Show the error message
+              error={!!formErrors.email}
+              helperText={formErrors.email}
             />
             <TextField
               label="Category"
@@ -241,6 +191,8 @@ const ListProperty = () => {
           </Box>
         </Paper>
       </Container>
+
+      <Footer />
     </Box>
   );
 };

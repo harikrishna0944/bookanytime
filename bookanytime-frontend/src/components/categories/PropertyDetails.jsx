@@ -1,13 +1,16 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { FaWhatsapp, FaHeart, FaShareAlt, FaShareSquare, FaInstagram, FaPhone } from "react-icons/fa";
+import { FaWhatsapp, FaHeart, FaShareSquare, FaInstagram, FaPhone } from "react-icons/fa";
 import WishlistModal from "./WishlistModal";
 import { Typography } from "@mui/material";
+import QRCode from 'react-qr-code';
 import Footer from "/home/ubuntu/bookanytime/bookanytime-frontend/src/Footer"; // Adjust the path as needed
+
+
 
 const PropertyDetails = () => {
   const { id } = useParams();
@@ -31,6 +34,11 @@ const PropertyDetails = () => {
 
   // Default map center (can be dynamically set based on property location)
   const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
+
+  const UPI_ID = '8501888760@ybl'; // Replace with your actual UPI ID
+  const amount = 1; // Replace with actual amount
+  const upiURL = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent('Your Business')}&am=${amount}&cu=INR`;
+  const [showQR, setShowQR] = useState(false);
 
 
   useEffect(() => {
@@ -61,6 +69,7 @@ const PropertyDetails = () => {
     return `${ratingsRect.top - containerRect.top}px`;
   };
 
+  
   const useWindowSize = () => {
     const [windowSize, setWindowSize] = useState({
       width: window.innerWidth,
@@ -821,7 +830,24 @@ const PropertyDetails = () => {
             />
             WhatsApp Host
           </button>
-
+          <button
+            onClick={() => setShowQR(true)}
+            className="whatsapp-reserve-btn w-100 py-2 border-0 rounded fw-bold text-white d-flex flex-column align-items-center justify-content-center"
+            style={{
+              backgroundColor: '#FF3B3F',
+              fontSize: window.innerWidth <= 768 ? '14px' : '16px',
+              cursor: "pointer"
+            }}
+          >
+            {!showQR ? (
+              <h5 className="text-center m-0">Reserve Now</h5>
+            ) : (
+              <>
+                <QRCode value={upiURL} size={180} />
+                <p className="mt-2 mb-0">Pay ₹{amount} via UPI</p>
+              </>
+            )}
+          </button>
           <button
             className="whatsapp-reserve-btn w-100 py-2  rounded fw-bold  d-flex align-items-center justify-content-center"
             style={{
@@ -840,6 +866,7 @@ const PropertyDetails = () => {
             />
             Call Host
           </button>
+
           <div
             className="text-center small mt-2 text-muted"
             style={{ fontSize: window.innerWidth <= 768 ? '11px' : '12px' }}
@@ -847,6 +874,7 @@ const PropertyDetails = () => {
             Contact host directly for booking
           </div>
         </div>
+        
       )}
       <Footer /> {/* Added Footer component */}
       {/* Scrollable Full Image Modal */}

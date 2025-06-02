@@ -6,6 +6,7 @@ import Maps from "./map/map";
 import Footer from "../Footer";
 import HomePage from "./landing_page/HomePage";
 import Host from "./Host/Host"
+import WhyBookWithUs from "./why_book_withUs/WhyBook";
 function Body() {
   return (
     <div
@@ -28,8 +29,9 @@ function Body() {
 
       <Categories />
 
-      <RecentlyViewed />
+      <RecentlyViewed />+
       <Host />
+      <WhyBookWithUs />
 
       {/* <Advertisement /> */}
       <Maps />

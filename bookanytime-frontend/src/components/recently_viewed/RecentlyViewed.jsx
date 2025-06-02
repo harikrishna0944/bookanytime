@@ -227,35 +227,41 @@ const RecentlyViewed = () => {
                   </div>
 
                   {/* Property Details - New Structure */}
-                  <div className="property-details text-center p-2">
+                  <div className="property-details p-2">
+                    {/* Property name and rating in one line */}
                     <div className="d-flex justify-content-between align-items-center mb-1">
-                      <h6 className="fw-bold mb-0 fs-6 text-start">{property.name}</h6>
+                      <h6 className="fw-bold mb-0 text-truncate">{property.name}</h6>
                       {propertyRatings[property.id] && (
                         <div className="d-flex align-items-center">
                           <FaStar className="text-warning me-1" style={{ fontSize: "0.8rem" }} />
-                          <span className=" text-muted fw-bold">
+                          <span className="text-muted fw-bold">
                             {propertyRatings[property.id].toFixed(1)}
                           </span>
                         </div>
                       )}
                     </div>
-                    <h6 className="fw-bold mb-0 fs-6 text-start">{property.category}</h6>
 
-                    <p className="text-muted  mb-1 text-start">
-                      {property.city}, {property.address}
+                    {/* Property type and location */}
+                    <p className="text-muted mb-1 text-truncate">
+                      {property.category} • {property.city}
                     </p>
-                    
-                    <div className="d-flex justify-content-between align-items-center border-top pt-2">
-                      <div className="d-flex align-items-center">
-                        <FaUser className="me-2 text-muted" />
-                        <span className="">{property.adults || 0} Adults</span>
-                      </div>
-                      <div className="d-flex align-items-center">
-                        <span className="text-muted  me-1">Cost</span>
-                        <span className="fw-bold" style={{ fontSize: "0.9rem", color: "#28a745" }}>
-                          <FaRupeeSign className="me-1" style={{ color: "black" }} />
-                          {property.minPrice?.toLocaleString() || "0"} - {property.maxPrice?.toLocaleString() || "0"}
+
+                    {/* Price per night */}
+                    <p className="fw-bold mb-2">
+                      <FaRupeeSign className="me-1" />
+                      {property.minPrice?.toLocaleString() || "0"} / night
+                    </p>
+
+                    {/* Amenities */}
+                    <div className="text-start" style={{ textAlign: 'right' }}>{/* Add this wrapper to left-align content */}
+                      <div className="d-flex flex-wrap gap-2"> {/* Use flex-wrap and gap for better spacing */}
+                        <span className="text-muted small">
+                          <i className="fas fa-wifi me-1"></i> Wi-Fi
                         </span>
+                        <span className="text-muted small">
+                          <i className="fas fa-utensils me-1"></i> Kitchen
+                        </span>
+                        {/* Add more amenities as needed */}
                       </div>
                     </div>
                   </div>

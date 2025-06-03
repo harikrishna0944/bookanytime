@@ -1272,7 +1272,7 @@ const handleInputChange = (event) => {
                 }}
               >
                 <ChevronLeft size={16} />
-              </button>
+              </button> 
             )}
             
             {["All", ...categories].map((category, index) => (
@@ -1331,11 +1331,13 @@ const handleInputChange = (event) => {
         </div>
       </div>
 
+      
+
       {/* Properties Grid */}
       <div className="row">
         {filteredProperties.length > 0 ? (
           filteredProperties.map((property) => (
-            <div key={property._id} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4" style={{ width: window.innerWidth < 576 ? '88%' : undefined }}>
+            <div key={property._id} className="col-12 col-sm-6 col-md-4 col-lg-4 mb-4" style={{ width: window.innerWidth < 576 ? '88%' : undefined }}>
               <div className="property-item shadow-sm p-2 position-relative">
                 {(property.popularity && property.popularity < 5) && (
                   <div className="position-absolute top-0 start-0 m-2">

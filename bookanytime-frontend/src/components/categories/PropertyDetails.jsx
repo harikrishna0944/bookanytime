@@ -680,6 +680,7 @@ const PropertyDetails = () => {
             </div>
           </div>
         </div>
+        
       </div>
 
       {/* // Add this section before the LoadScript/GoogleMap component in your return statement */}
@@ -817,7 +818,7 @@ const PropertyDetails = () => {
 
 
           <button
-            className="whatsapp-reserve-btn w-100 py-2 border-0 rounded fw-bold text-white d-flex align-items-center justify-content-center"
+            className="whatsapp-reserve-btn w-100 py-2 border-0 rounded fw-bold text-white d-flex align-items-center justify-content-center pb-2"
             style={{
               backgroundColor: '#25D366',
               fontSize: window.innerWidth <= 768 ? '14px' : '16px'

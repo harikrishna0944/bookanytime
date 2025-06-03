@@ -33,23 +33,23 @@ const BannerSlider = () => {
   const [error, setError] = useState(null);
   const [offers, setOffers] = useState([]);
 
-  useEffect(() => {
-    fetchOffers();
-  }, []);
-    const fetchOffers = async () => {
-      setLoading(true);
-      setError("");
+  // useEffect(() => {
+  //   fetchOffers();
+  // }, []);
+  //   const fetchOffers = async () => {
+  //     setLoading(true);
+  //     setError("");
   
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/offers`);
-        setOffers(response.data);
-        console.log("data", response.data)
-      } catch (error) {
-        console.error("Error fetching offers:", error);
-      }finally {
-          setLoading(false);
-        }
-    };
+  //     try {
+  //       const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/offers`);
+  //       setOffers(response.data);
+  //       console.log("data", response.data)
+  //     } catch (error) {
+  //       console.error("Error fetching offers:", error);
+  //     }finally {
+  //         setLoading(false);
+  //       }
+  //   };
   // Auto slide every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {

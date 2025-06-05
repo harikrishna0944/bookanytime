@@ -10,8 +10,6 @@ import { Typography } from "@mui/material";
 import QRCode from 'react-qr-code';
 import Footer from "/home/ubuntu/bookanytime/bookanytime-frontend/src/Footer"; // Adjust the path as needed
 
-
-
 const PropertyDetails = () => {
   const { id } = useParams();
   const [property, setProperty] = useState(null);
@@ -30,6 +28,7 @@ const PropertyDetails = () => {
   const ratingsRef = useRef(null);
   const reservationBoxRef = useRef(null);
   const containerRef = useRef(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
 
   // Default map center (can be dynamically set based on property location)
@@ -367,95 +366,132 @@ const PropertyDetails = () => {
           style={{
             flexShrink: 0 // Prevent shrinking on small screens
           }}
-        >
-          {/* Share button with text inline */}
-          <button
-            className="btn btn-link p-0 text-decoration-none d-flex align-items-center"
-            onClick={handleShareClick}
-            style={{ color: '#000' }}
-          >
-            <FaShareSquare className="me-1" style={{ fontSize: '1.5rem' }} />
-            <span className="small">Share</span>
-          </button>
-
-          {/* Saved/Wishlist button with text inline */}
-          <button
-            className="btn btn-link p-0 text-decoration-none d-flex align-items-center"
-            onClick={handleWishlistClick}
-            style={{ color: isWishlisted ? '#ff0000' : '#000' }}
-          >
-            <FaHeart className="me-1" style={{ fontSize: '1.5rem' }} />
-            <span className="small">Saved</span>
-          </button>
-
-          {/* Instagram Button */}
-          <button
-            className="btn btn-link p-0 text-decoration-none d-flex align-items-center"
-            onClick={openInstagram}
-          >
-            <FaInstagram className="me-1" style={{ fontSize: '1.5rem', color: '#E1306C' }} />
-            <span className="small">Instagram</span>
-          </button>
-        </div>
-      </div>
-      {/* Image Grid Layout */}
-      <div className="row g-2">
-        <div className="col-12 col-lg-8">
-          <img
-            src={property.images?.[0]}
-            alt="Property"
-            className="img-fluid main-image"
-            style={{ height: '418px', objectFit: 'cover', borderRadius: '10px' }}
-          />
-        </div>
-        <div className="col-12 col-lg-4 d-flex flex-column">
-          <img
-            src={property.images?.[1]}
-            alt="Property"
-            className="img-fluid side-image mb-2"
-            style={{ height: '250px', objectFit: 'cover', borderRadius: '10px' }}
-          />
-          <div className="d-flex position-relative">
-            <img
-              src={property.images?.[2]}
-              alt="Property"
-              className="img-fluid small-image me-2"
-              style={{ height: '160px', objectFit: 'cover', borderRadius: '10px' }}
-            />
-            <div className="position-relative">
-              <img
-                src={property.images?.[3]}
-                alt="Property"
-                className="img-fluid small-image"
-                style={{ height: '160px', width: '180px', objectFit: 'cover', borderRadius: '10px' }}
+        >    
+          <div className="d-flex align-items-center gap-2">
+            {/* Instagram Button */}
+            <button
+              className="btn btn-link p-0 text-decoration-none d-flex align-items-center justify-content-center rounded-circle"
+              onClick={openInstagram}
+              style={{
+                width: '46px',
+                height: '46px',
+                backgroundColor: 'rgba(0, 0, 0, 0.05)'
+              }}
+            >
+              <FaInstagram 
+                style={{ 
+                  fontSize: '1.25rem', 
+                  color: '#000' 
+                }} 
               />
-              {property.images?.length > 4 && (
+            </button>
+
+            {/* Share Button */}
+            <button
+                className="btn btn-link p-0 text-decoration-none d-flex align-items-center justify-content-center rounded-circle"
+                onClick={handleShareClick}
+                style={{
+                  width: '46px',
+                  height: '46px',
+                  backgroundColor: 'rgba(0, 0, 0, 0.05)'
+                }}
+              >
+                {/* <FaShare style={{ fontSize: '1.25rem', color: '#000' }} /> */}
+          
+              <FaShareSquare 
+                style={{ 
+                  fontSize: '1.25rem', 
+                  color: '#000' 
+                }} 
+              />
+            </button>
+
+            {/* Wishlist Button */}
+            <button
+              className="btn btn-link p-0 text-decoration-none d-flex align-items-center justify-content-center rounded-circle"
+              onClick={handleWishlistClick}
+              style={{
+                width: '46px',
+                height: '46px',
+                backgroundColor: 'rgba(0, 0, 0, 0.05)'
+              }}
+            >
+              <FaHeart 
+                style={{ 
+                  fontSize: '1.25rem', 
+                  color: isWishlisted ? '#ff0000' : '#000',
+                  transition: 'color 0.2s ease'
+                }} 
+              />
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+      {/* New Image Grid Layout */}
+      <div className="d-flex flex-column" style={{ height: "500px" }}>
+        {/* First Row - 80% height with single big image */}
+        <div 
+          className="w-100 mb-2" 
+          style={{ 
+            height: "80%",
+            borderRadius: "10px",
+            overflow: "hidden"
+          }}
+        >
+          <img
+            src={property.images?.[currentImageIndex] || property.images?.[0]}
+            alt="Property"
+            className="img-fluid h-100 w-100"
+            style={{ 
+              objectFit: "cover",
+              cursor: "pointer"
+            }}
+            onClick={() => setShowAllImages(true)}
+          />
+        </div>
+        
+        {/* Second Row - 20% height with 4 thumbnail images */}
+        <div className="w-100 d-flex" style={{ height: "20%", gap: "4px" }}>
+          {property.images?.slice(0, 4).map((img, index) => (
+            <div 
+              key={index}
+              className="flex-grow-1 position-relative"
+              style={{
+                height: "100%",
+                borderRadius: "10px",
+                overflow: "hidden",
+                cursor: "pointer"
+              }}
+              onClick={() => setCurrentImageIndex(index)}
+            >
+              <img
+                src={img}
+                alt={`Property ${index + 1}`}
+                className="img-fluid h-100 w-100"
+                style={{ 
+                  objectFit: "cover",
+                  border: currentImageIndex === index ? "3px solid #0d6efd" : "none"
+                }}
+              />
+              {/* Overlay for the active image */}
+              {currentImageIndex === index && (
                 <div
-                  className="more-overlay d-flex align-items-center justify-content-center"
                   style={{
-                    position: 'absolute',
+                    position: "absolute",
                     top: 0,
                     left: 0,
-                    height: '160px',
-                    width: '180px',
-                    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                    color: 'white',
-                    fontSize: '1.2rem',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    borderRadius: '10px',
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: "rgba(0, 0, 0, 0.3)"
                   }}
-                  onClick={() => setShowAllImages(true)}
-                >
-                  + More 
-                </div>
+                ></div>
               )}
             </div>
-          </div>
+          ))}
         </div>
       </div>
-
-
       {/* Black Line */}
       <hr className="my-4 border-black" />
 
@@ -494,7 +530,18 @@ const PropertyDetails = () => {
                 >
                   {property.name}
                 </div>
-                <div className="d-flex align-items-center" style={{ fontWeight: '700', color: '#000000' }}>
+                <h3 className="text-xl font-heading font-semibold">
+                  {property.name} hosted by Property Owner
+                </h3>
+                {/* Dynamic Content Section */}
+                <div className="row mt-4">
+                  <div className="col-12">
+                    {/* <h4 className="text-primary mb-3 fs-5 fs-md-4">About {property.name}</h4> */}
+                    <Typography sx={{ whiteSpace: 'pre-line' }}>
+                      {property.description}</Typography>
+                  </div>
+                </div>
+                {/* <div className="d-flex align-items-center" style={{ fontWeight: '700', color: '#000000' }}>
                   <i className="bi bi-geo-alt me-2"></i>
                   <span onClick={() => {
                     window.open(
@@ -505,50 +552,18 @@ const PropertyDetails = () => {
                     className="text-primary fs-5 fs-md-4 border-0 bg-transparent p-0"
 
                   >{property.city}, {property.address}</span>
-                </div>
+                </div> */}
+
+              </div>
 
                 {/* Capacity details - with thinner font */}
                 <div className="d-flex flex-wrap align-items-center gap-4 mb-3" style={{ fontWeight: '700', color: '#000000' }}>
                   <span>
                     <i className="bi bi-people me-1"></i>
-                    {property.capacity?.adults} {property.capacity?.adults === 1 ? 'adult' : 'adults'}
+                    {property.capacity?.adults} {property.capacity?.adults === 1 ? 'adult' : 'guests'}
                   </span>
-                  <span>
-                    <i className="bi bi-door-closed me-1"></i>
-                    {property.capacity?.bedrooms} {property.capacity?.bedrooms === 1 ? 'bedroom' : 'sleeps'}
-                  </span>
-
-
                 </div>
-              </div>
-
-              {/* Right side - Average rating */}
-              {ratings.length > 0 && (
-                <div className="text-end">
-                  <div className="d-flex align-items-center justify-content-end mb-1">
-                    {/* Calculate average rating */}
-                    <span className="fw-bold me-2" style={{ fontSize: '1.2rem' }}>
-                      {(
-                        ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length
-                      ).toFixed(1)}
-                    </span>
-                    <div className="text-warning">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <i
-                          key={i}
-                          className={`bi ${i < Math.floor(
-                            ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length
-                          ) ? 'bi-star-fill' : 'bi-star'
-                            }`}
-                        ></i>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="text-muted small">
-                    ({ratings.length} {ratings.length === 1 ? 'review' : 'reviews'})
-                  </div>
-                </div>
-              )}
+              
             </div>
           </div>
 
@@ -559,56 +574,12 @@ const PropertyDetails = () => {
             propertyId={id}
             onWishlistUpdate={handleWishlistUpdate}
           />
-
-          <h5 className="mt-3 fs-5 fs-md-4"><i className="bi bi-list-check"></i> What this place offers</h5>
           <hr className="my-4 border-black" />
+          <h5 className="mt-3 fs-5 fs-md-4"><i cla  ssName="bi bi-list-check"></i> Amenities</h5>
+
           <div className="row">
             {property.amenities?.map((amenity, index) => {
               const amenityIcons = {
-                // Basic amenities
-                "Kitchen": "bi bi-house-door",
-                "WiFi": "bi bi-wifi",
-                "Air conditioning": "bi bi-snow",
-                "Heating": "bi bi-thermometer-sun",
-                "Free washing machine": "bi bi-arrow-repeat",
-                "Dryer": "bi bi-moisture",
-                "HDTV with Netflix": "bi bi-tv",
-                "Iron": "bi bi-iron",
-                "Hair dryer": "bi bi-wind",
-                "Dedicated workspace": "bi bi-laptop",
-                // Outdoor amenities
-                "Swimming Pool": "bi bi-water",
-                "Hot tub": "bi bi-hot-tub",
-                "Free parking on premises": "bi bi-p-circle",
-                "Paid parking": "bi bi-p-circle-fill",
-                "Gym": "bi bi-activity",
-                "BBQ grill": "bi bi-fire",
-
-                // Special amenities
-                "box cricket": "bi bi-trophy",
-                "barbeque setup": "bi bi-fire",
-                "projector": "bi bi-projector",
-                "jacuzzi": "bi bi-water",
-                "camp fire": "bi bi-fire",
-
-                // Rules
-                "Smoking allowed": "bi bi-smoke",
-                "Pets allowed": "bi bi-paw",
-
-                // Services
-                "Breakfast included": "bi bi-cup-hot",
-                "Security cameras": "bi bi-camera-video",
-                "Fire extinguisher": "bi bi-fire-extinguisher",
-                "First aid kit": "bi bi-heart-pulse",
-                "Hot water": "bi bi-droplet-fill",
-
-                // Outdoor spaces
-                "Private back garden – Fully fenced": "bi bi-tree",
-                "Window AC unit": "bi bi-snow",
-                "Patio or balcony": "bi bi-door-open",
-
-                "bath tubs": "bi bi-water",          // Bath tub icon
-                "lawn": "bi bi-tree",               // Lawn/garden icon
                 "outdoor barbeque": "bi bi-fire"
               };
 
@@ -627,15 +598,6 @@ const PropertyDetails = () => {
 
           {/* Black Line */}
           <hr className="my-4 border-black" />
-
-          {/* Dynamic Content Section */}
-          <div className="row mt-4">
-            <div className="col-12">
-              <h4 className="text-primary mb-3 fs-5 fs-md-4">About {property.name}</h4>
-              <Typography sx={{ whiteSpace: 'pre-line' }}>
-                {property.description}</Typography>
-            </div>
-          </div>
           <div className="row mt-5">
             <div className="col-12">
               <div className="p-4 rounded" style={{
@@ -652,24 +614,6 @@ const PropertyDetails = () => {
                   House Rules
                 </h4>
 
-                {/* <ul className="list-unstyled" style={{
-                  fontFamily: "'Roboto', sans-serif",
-                  fontSize: '1.05rem'
-                }}>
-                  <li className="mb-3 d-flex align-items-start">
-                    <i className="bi bi-clock-history me-3 mt-1" style={{ color: '#0d6efd' }}></i>
-                    <span>Check-in after <strong>12:00 pm</strong></span>
-                  </li>
-                  <li className="mb-3 d-flex align-items-start">
-                    <i className="bi bi-clock me-3 mt-1" style={{ color: '#0d6efd' }}></i>
-                    <span>Checkout before <strong>10:00 am</strong></span>
-                  </li>
-                  <li className="d-flex align-items-start">
-                    <i className="bi bi-people me-3 mt-1" style={{ color: '#0d6efd' }}></i>
-                    <span><strong>6 guests</strong> maximum</span>
-                  </li>
-                </ul> */}
-
                 <div className="col-12">
                   {/* <h4 className="text-primary mb-3 fs-5 fs-md-4">About {property.name}</h4> */}
                   <Typography sx={{ whiteSpace: 'pre-line' }}>
@@ -679,63 +623,134 @@ const PropertyDetails = () => {
               </div>
             </div>
           </div>
-        </div>
-        
+        </div>  
       </div>
 
       {/* // Add this section before the LoadScript/GoogleMap component in your return statement */}
       <div className="ratings-section mt-5" ref={ratingsRef}>
-        <h3 className="mb-4">Guest Reviews</h3>
+        {/* Right side - Average rating */}
+        {ratings.length > 0 && (
+          <div className="text-end">
+            <div 
+              className="d-flex align-items-center justify-content-start p-2" 
+              style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                borderRadius: '8px',
+                display: 'inline-flex'
+              }}
+            >
+              {/* Black star icon - larger size */}
+              <span className="me-1">
+                <i 
+                  className="bi bi-star-fill" 
+                  style={{
+                    color: '#000',
+                    fontSize: '1.5rem'
+                  }}
+                ></i>
+              </span>
+              
+              {/* Average rating - larger font */}
+              <span 
+                className="fw-bold me-1" 
+                style={{ 
+                  fontSize: '1.4rem',
+                  color: '#000'
+                }}
+              >
+                {(
+                  ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length
+                ).toFixed(2)}
+              </span>
+              
+              {/* Review count - slightly larger */}
+              <span 
+                className="text-muted" 
+                style={{
+                  fontSize: '1.1rem'
+                }}
+              >
+                · {ratings.length} {ratings.length === 1 ? 'review' : 'reviews'}
+              </span>
+            </div>
+          </div>
+        )}
 
         {ratings.length > 0 ? (
           <div className="row">
             {ratings.map((rating, index) => {
               const firstLetter = rating.username ? rating.username.charAt(0).toUpperCase() : 'U';
-              const colors = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
-                '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D'];
-              const bgColor = colors[firstLetter.charCodeAt(0) % colors.length];
+              const formattedDate = rating.month && rating.year ? `${rating.month} ${rating.year}` : '';
 
               return (
-                <div key={index} className="col-12 col-sm-12 col-md-6 col-lg-4 mb-4">
-                  <div className="card h-100">
-                    <div className="card-body">
-                      <div className="d-flex align-items-center mb-3">
-                        <div
-                          className="profile-circle d-flex align-items-center justify-content-center me-3"
-                          style={{ backgroundColor: bgColor, width: 40, height: 40, borderRadius: '50%' }}
+                <div key={index} className="col-12 col-md-6 mb-4">
+                  <div className="review-card h-100 p-3">
+                    <div className="d-flex">
+                      {/* Profile circle with black background */}
+                      <div className="d-flex align-items-center me-3">
+                        <div 
+                          className="profile-circle d-flex align-items-center justify-content-center"
+                          style={{
+                            backgroundColor: '#000',
+                            width: '48px',
+                            height: '48px',
+                            borderRadius: '50%'
+                          }}
                         >
-                          <span className="text-white fw-bold">{firstLetter}</span>
-                        </div>
-
-                        <div className="flex-grow-1">
-                          <div className="d-flex justify-content-between align-items-center">
-                            <h5 className="card-title mb-0">{rating.username}</h5>
-                            <div className="d-flex align-items-center">
-                              <span className="badge bg-primary me-2">{rating.category}</span>
-                              <span className="text-warning">
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                  <i
-                                    key={i}
-                                    className={`bi ${i < Math.floor(rating.rating) ? 'bi-star-fill' : 'bi-star'} ${i === Math.floor(rating.rating) && rating.rating % 1 >= 0.5 ? 'bi-star-half' : ''}`}
-                                  ></i>
-                                ))}
-                              </span>
-                              <span className="ms-2">{rating.rating.toFixed(1)}</span>
-                            </div>
-                          </div>
-                          <div className="text-muted small">
-                            {rating.month} {rating.year}
-                          </div>
+                          <span className="text-white fw-bold fs-5">{firstLetter}</span>
                         </div>
                       </div>
-                      <p className="card-text">{rating.description}</p>
+
+                      <div className="flex-grow-1">
+                        {/* User info and rating */}
+                        <div className="d-flex justify-content-between align-items-start mb-1">
+                          <div>
+                            <h6 className="fw-bold mb-0">{rating.username}</h6>
+                            <small className="text-muted">
+                              {rating.durationOnPlatform || 'New member'}
+                            </small>
+                          </div>
+                          <div className="text-warning">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <i
+                                key={i}
+                                className={`bi bi-star-fill`}
+                                style={{
+                                  color: i < Math.floor(rating.rating) ? '#FFD700' : '#D3D3D3'
+                                }}
+                              ></i>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Review date */}
+                        {formattedDate && (
+                          <div className="text-muted small mb-2">
+                            {formattedDate}
+                          </div>
+                        )}
+
+                        {/* Review text */}
+                        <p className="mb-2">
+                          {rating.description.length > 150 
+                            ? `${rating.description.substring(0, 150)}...` 
+                            : rating.description}
+                          {rating.description.length > 150 && (
+                            <button 
+                              className="btn btn-link p-0 text-decoration-none"
+                              onClick={() => {/* Expand logic here */}}
+                            >
+                              Show more
+                            </button>
+                          )}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               );
             })}
           </div>
-
         ) : (
           <p className="text-muted">No reviews yet. Be the first to review!</p>
         )}
@@ -831,7 +846,7 @@ const PropertyDetails = () => {
             />
             WhatsApp Host
           </button>
-          <button
+          {/* <button
             onClick={() => setShowQR(true)}
             className="whatsapp-reserve-btn w-100 py-2 border-0 rounded fw-bold text-white d-flex flex-column align-items-center justify-content-center"
             style={{
@@ -848,7 +863,7 @@ const PropertyDetails = () => {
                 <p className="mt-2 mb-0">Pay ₹{amount} via UPI</p>
               </>
             )}
-          </button>
+          </button> */}
           <button
             className="whatsapp-reserve-btn w-100 py-2  rounded fw-bold  d-flex align-items-center justify-content-center"
             style={{
@@ -1184,3 +1199,4 @@ const PropertyDetails = () => {
 };
 
 export default PropertyDetails;
+

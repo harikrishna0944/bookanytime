@@ -191,8 +191,8 @@ router.get("/search", async (req, res) => {
     // If categories are provided and not empty, apply category filter
     if (categories && categories.length > 0) {
       filter.category = { $in: categories };
-    }
-
+      }
+    
     const properties = await Property.find(filter);
     res.json(properties);
   } catch (error) {

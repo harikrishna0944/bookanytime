@@ -850,6 +850,7 @@ const SearchBar = () => {
   // Search properties when search criteria change
   useEffect(() => {
     searchProperties();
+    console.log("changinggg")
   }, [searchText, locationSearch, selectedCategories]);
 
   // Fetch ratings for properties
@@ -1035,7 +1036,8 @@ const SearchBar = () => {
         return;
       }
     }
-    
+    console.log("Selected Categories:", selectedCategories);
+
     // Otherwise, perform the filtered search
     try {
       const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search-locations`, {
@@ -1046,6 +1048,7 @@ const SearchBar = () => {
         },
       });
       setProperties(response.data);
+      console.log("responseee",response.data)
     } catch (error) {
       console.error("Error fetching search results:", error);
     }    
@@ -1197,293 +1200,247 @@ const handleInputChange = (event) => {
 };
 
   return (
-    <div className="container mt-4" style={{marginLeft: '30px'}}>
-      {/* Search Section */}
-      <div className="search-section mb-4 p-3 bg-white rounded shadow-sm" style={{ width: window.innerWidth < 576 ? '88%' : undefined }}>
-        {/* Search Inputs */}
-        <div className="row g-3 mb-3" style={{marginTop: '20px'}}>
-          <div className="col-md-6">
-            <div className="input-group">
-              <input
-                type="text"
-                className="form-control"
-                style={{ background: 'white', zIndex: 10 }}
-                placeholder={`Search for ${categories[currentCategoryIndex] || "properties"}`}
-                value={searchText}
-                onChange={handleInputChange}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-              />
-              <span className="input-group-text">
-                <FaSearch />
-              </span>
-            </div>
-          </div>
-          <div className="col-md-6">
-            <div className="input-group">
-              <input
-                type="text"
-                className="form-control"
-                style={{ background: 'white', zIndex: 10 }}
-                placeholder="Search by location"
-                value={locationSearch}
-                onChange={handleLocationChange}
-              />
-              <span className="input-group-text">
-                <FaSearch />
-              </span>
-            </div>
+  <div className="container-fluid mt-4" style={{ marginLeft: '30px' }}>
+    
+    {/* Search Section */}
+    <div className="search-section mb-4 p-3 bg-white rounded shadow-sm">
+      <div className="row g-3 mb-3" style={{ marginTop: '20px' }}>
+        <div className="col-md-6">
+          <div className="input-group">
+            <input
+              type="text"
+              className="form-control"
+              style={{ background: 'white', zIndex: 10 }}
+              placeholder={`Search for ${categories[currentCategoryIndex] || "properties"}`}
+              value={searchText}
+              onChange={handleInputChange}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+            />
+            <span className="input-group-text"><FaSearch /></span>
           </div>
         </div>
-
-        {/* Category Filters with Scroll Arrows */}
-        <div className="d-flex position-relative align-items-center" style={{marginTop: '-50px',marginBottom: '30px'}}>
-          <div 
-            className="d-flex flex-nowrap gap-2 category-filters-container position-relative"
-            ref={containerRef}
-            style={{
-              overflowX: 'auto',
-              scrollBehavior: 'smooth',
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
-              padding: '0 8px',
-              width: '100%',
-            }}
-          >
-            {showLeftArrow && (
-              <button 
-                className="scroll-arrow left" 
-                onClick={handleScrollLeft}
-                style={{
-                  position: 'absolute',
-                  left: 0,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  zIndex: 1,
-                  background: 'white',
-                  border: '1px solid #dee2e6',
-                  borderRadius: '50%',
-                  width: '28px',
-                  height: '28px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                }}
-              >
-                <ChevronLeft size={16} />
-              </button> 
-            )}
-            
-            {["All", ...categories].map((category, index) => (
-              <button
-                key={category}
-                className={`btn ${
-                  selectedCategories.includes(category) 
-                    ? "btn-primary"
-                    : "btn-outline-primary"
-                }`}
-                onClick={() => handleCategoryChange(category)}
-                onMouseEnter={() => {
-                  if (index > 0) { // Skip "All"
-                    setCurrentCategoryIndex(index - 1);
-                  }
-                }}
-                style={{
-                  minWidth: "90px",
-                  whiteSpace: "nowrap",
-                  flexShrink: 0,
-                  transition: 'all 0.3s ease',
-                  padding: '0.375rem 0.75rem',
-                  fontSize: '1rem',
-                  fontWeight: '500'
-                }}
-              >
-                {category}
-              </button>
-            ))}
-            
-            {showRightArrow && (
-              <button 
-                className="scroll-arrow right" 
-                onClick={handleScrollRight}
-                style={{
-                  position: 'absolute',
-                  right: 0,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  zIndex: 1,
-                  background: 'white',
-                  border: '1px solid #dee2e6',
-                  borderRadius: '50%',
-                  width: '28px',
-                  height: '28px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                }}
-              >
-                <ChevronRight size={16} />
-              </button>
-            )}
+        <div className="col-md-6">
+          <div className="input-group">
+            <input
+              type="text"
+              className="form-control"
+              style={{ background: 'white', zIndex: 10 }}
+              placeholder="Search by location"
+              value={locationSearch}
+              onChange={handleLocationChange}
+            />
+            <span className="input-group-text"><FaSearch /></span>
           </div>
         </div>
       </div>
+    </div>
 
+    {/* Filters and Property Grid Section */}
+    <div className="d-flex">
       
+      {/* Filter Sidebar with light gray background */}
+      <div style={{ backgroundColor: "#f8f9fa", padding: "10px", minHeight: "100vh", width: "270px" }}>
+        <div className="bg-white p-3 rounded shadow-sm">
+          <h6 className="mb-3 fw-bold">Filters</h6>
+
+          {/* Property Type */}
+          <div className="mb-3">
+            <label className="form-label fw-semibold">Property Type</label>
+            <select
+              className="form-select"
+              multiple
+              value={selectedCategories}
+              onChange={(e) => {
+                const selectedOptions = Array.from(e.target.selectedOptions).map(opt => opt.value);
+                setSelectedCategories(selectedOptions);
+              }}
+              style={{ height: "100px" }}
+            >
+              {["All", ...categories].map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Price Range */}
+          <div className="mb-3">
+            <label className="form-label fw-semibold">Price Range</label>
+            <input
+              type="range"
+              className="form-range"
+              min="0"
+              max="1000"
+              // value={priceRange}
+              onChange={(e) => setPriceRange(Number(e.target.value))}
+            />
+            <div></div>
+          </div>
+
+          {/* Guests */}
+          <div className="mb-3">
+            <label className="form-label fw-semibold">Guests</label>
+            <div className="input-group">
+              <button className="btn btn-outline-secondary" onClick={() => setGuests(Math.max(1, guests - 1))}>-</button>
+              <input type="text" className="form-control text-center"  readOnly />
+              <button className="btn btn-outline-secondary" onClick={() => setGuests(guests + 1)}>+</button>
+            </div>
+          </div>
+
+          {/* Amenities */}
+          <div className="mb-3">
+            <label className="form-label fw-semibold">Amenities</label>
+            {["Wi-Fi", "Pool", "Parking", "Kitchen", "Air Conditioning", "Pet Friendly"].map((amenity) => (
+              <div className="form-check" key={amenity}>
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  // checked={selectedAmenities.includes(amenity)}
+                  // onChange={() => handleAmenityChange(amenity)}
+                  // id={`amenity-${amenity}`}
+                />
+                <label className="form-check-label" htmlFor={`amenity-${amenity}`}>
+                  {/* {amenity} */}
+                </label>
+              </div>
+            ))}
+          </div>
+
+          {/* Apply Filters */}
+          <button className="btn btn-primary w-100 mt-2" onClick={applyFilters}>
+            Apply Filters
+          </button>
+        </div>
+      </div>
 
       {/* Properties Grid */}
-      <div className="row">
-        {filteredProperties.length > 0 ? (
-          filteredProperties.map((property) => (
-            <div key={property._id} className="col-12 col-sm-6 col-md-4 col-lg-4 mb-4" style={{ width: window.innerWidth < 576 ? '88%' : undefined }}>
-              <div className="property-item shadow-sm p-2 position-relative">
-                {(property.popularity && property.popularity < 5) && (
-                  <div className="position-absolute top-0 start-0 m-2">
-                    <Badge bg="warning" text="dark" className="shadow-sm">
-                      Popular
-                    </Badge>
+      <div className="flex-grow-1 ms-4">
+        <div className="row">
+          {filteredProperties.length > 0 ? (
+            filteredProperties.map((property) => (
+              <div key={property._id} className="col-12 col-sm-6 col-md-4 col-lg-4 mb-4">
+                <div className="property-item shadow-sm p-2 position-relative">
+                  {(property.popularity && property.popularity < 5) && (
+                    <div className="position-absolute top-0 start-0 m-2">
+                      <Badge bg="warning" text="dark" className="shadow-sm">Popular</Badge>
+                    </div>
+                  )}
+                  <div
+                    className="position-absolute top-0 end-0 m-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleWishlistClick(property._id);
+                    }}
+                    style={{ cursor: "pointer", zIndex: 1 }}
+                  >
+                    <FaHeart
+                      size={20}
+                      color={isWishlisted[property._id] ? "red" : "white"}
+                    />
                   </div>
-                )}
-                <div
-                  className="position-absolute top-0 end-0 m-2"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleWishlistClick(property._id);
-                  }}
-                  style={{ cursor: "pointer", zIndex: 1 }}
-                >
-                  <FaHeart
-                    size={20}
-                    color={isWishlisted[property._id] ? "red" : "white"}
+                  <img
+                    src={property.images && property.images.length > 0 ? property.images[0] : "https://via.placeholder.com/150"}
+                    alt={property.name}
+                    className="img-fluid"
+                    onClick={() => window.open(`/property/${property._id}`, "_blank")}
                   />
-                </div>
-
-                <img
-                  src={property.images && property.images.length > 0 ? property.images[0] : "https://via.placeholder.com/150"}
-                  alt={property.name}
-                  className="img-fluid"
-                  onClick={() => window.open(`/property/${property._id}`, "_blank")}
-                />
-
-                <div className="property-details text-center p-2">
-                  <div className="d-flex justify-content-between align-items-center mb-1">
-                    <h6 className="fw-bold mb-0 fs-6 text-start">{property.name}</h6>
-                    {propertyRatings[property._id] && (
+                  <div className="property-details text-center p-2">
+                    <div className="d-flex justify-content-between align-items-center mb-1">
+                      <h6 className="fw-bold mb-0 fs-6 text-start">{property.name}</h6>
+                      {propertyRatings[property._id] && (
+                        <div className="d-flex align-items-center">
+                          <FaStar className="text-warning me-1" style={{ fontSize: "0.8rem" }} />
+                          <span className="small text-muted">
+                            {propertyRatings[property._id].toFixed(1)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-muted small mb-1 text-start">
+                      {property.city}, {property.address}
+                    </p>
+                    <div className="d-flex justify-content-between align-items-center border-top pt-2">
                       <div className="d-flex align-items-center">
-                        <FaStar className="text-warning me-1" style={{ fontSize: "0.8rem" }} />
-                        <span className="small text-muted">
-                          {propertyRatings[property._id].toFixed(1)}
+                        <FaUser className="me-2 text-muted" />
+                        <span className="small">{property.capacity?.adults || 0} Adults</span>
+                      </div>
+                      <div className="d-flex align-items-center">
+                        <span className="text-muted small me-1">Cost</span>
+                        <span className="fw-bold" style={{ fontSize: "0.9rem", color: "#28a745" }}>
+                          <FaRupeeSign className="me-1" style={{ color: "black" }} />
+                          {property.minPrice?.toLocaleString() || "0"} - {property.maxPrice?.toLocaleString() || "0"}
                         </span>
                       </div>
-                    )}
-                  </div>
-                  <p className="text-muted small mb-1 text-start">
-                    {property.city}, {property.address}
-                  </p>
-                  
-                  <div className="d-flex justify-content-between align-items-center border-top pt-2">
-                    <div className="d-flex align-items-center">
-                      <FaUser className="me-2 text-muted" />
-                      <span className="small">{property.capacity?.adults || 0} Adults</span>
-                    </div>
-                    <div className="d-flex align-items-center">
-                      <span className="text-muted small me-1">Cost</span>
-                      <span className="fw-bold" style={{ fontSize: "0.9rem", color: "#28a745" }}>
-                        <FaRupeeSign className="me-1" style={{ color: "black" }} />
-                        {property.minPrice?.toLocaleString() || "0"} - {property.maxPrice?.toLocaleString() || "0"}
-                      </span>
                     </div>
                   </div>
                 </div>
               </div>
+            ))
+          ) : (
+            <div className="col-12 text-center py-5">
+              <p className="text-muted">No properties match your search criteria.</p>
+              <Button variant="outline-primary" onClick={clearFilters}>
+                Clear Filters
+              </Button>
             </div>
-          ))
-        ) : (
-          <div className="col-12 text-center py-5">
-            <p className="text-muted">No properties match your search criteria.</p>
-            <Button variant="outline-primary" onClick={clearFilters}>
-              Clear Filters
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {/* Filter and Sort Buttons */}
-      <div className="fixed-bottom d-flex justify-content-center mb-3">
-        <div className="d-flex gap-2 p-2 rounded shadow" style={{ zIndex: 1000 }}>
-          <Button
-            variant="primary"
-            onClick={() => setShowFilterModal(true)}
-            className="d-flex align-items-center"
-          >
-            <FaFilter className="me-2" />
-            Filter
-            {appliedFiltersCount > 0 && (
-              <Badge bg="danger" className="ms-2">
-                {appliedFiltersCount}
-              </Badge>
-            )}
-          </Button>
-          
-          <Dropdown>
-            <Dropdown.Toggle variant="primary" id="dropdown-sort">
-              <FaSort className="me-2" />
-              {getSortToggleText()}
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item 
-                active={sortOptions.includes("priceLowToHigh")}
-                onClick={() => handleSort("priceLowToHigh")}
-              >
-                {sortOptions.includes("priceLowToHigh") && <span className="me-2">✓</span>}
-                Price Low to High
-              </Dropdown.Item>
-              <Dropdown.Item 
-                active={sortOptions.includes("priceHighToLow")}
-                onClick={() => handleSort("priceHighToLow")}
-              >
-                {sortOptions.includes("priceHighToLow") && <span className="me-2">✓</span>}
-                Price High to Low
-              </Dropdown.Item>
-              <Dropdown.Item 
-                active={sortOptions.includes("ratingHighToLow")}
-                onClick={() => handleSort("ratingHighToLow")}
-              >
-                {sortOptions.includes("ratingHighToLow") && <span className="me-2">✓</span>}
-                Highest Rated
-              </Dropdown.Item>
-              <Dropdown.Item 
-                active={sortOptions.includes("popularityHighToLow")}
-                onClick={() => handleSort("popularityHighToLow")}
-              >
-                {sortOptions.includes("popularityHighToLow") && <span className="me-2">✓</span>}
-                Most Popular
-              </Dropdown.Item>
-              {sortOptions.length > 0 && (
-                <Dropdown.Item 
-                  onClick={clearAllSorting}
-                  className="text-danger"
-                >
-                  Clear All Sorting
-                </Dropdown.Item>
-              )}
-            </Dropdown.Menu>
-          </Dropdown>
+          )}
         </div>
       </div>
+    </div>
 
-      {/* Modals */}
-      <Filter
-        showFilterModal={showFilterModal}
-        setShowFilterModal={setShowFilterModal}
-        filters={filters}
-        setFilters={setFilters}
-        appliedFiltersCount={appliedFiltersCount}
-        applyFilters={applyFilters}
-        clearFilters={clearFilters}
-      />
+    {/* Bottom Filter & Sort Buttons */}
+    <div className="fixed-bottom d-flex justify-content-center mb-3">
+      <div className="d-flex gap-2 p-2 rounded shadow" style={{ zIndex: 1000 }}>
+        <Button variant="primary" onClick={() => setShowFilterModal(true)} className="d-flex align-items-center">
+          <FaFilter className="me-2" />
+          Filter
+          {appliedFiltersCount > 0 && (
+            <Badge bg="danger" className="ms-2">{appliedFiltersCount}</Badge>
+          )}
+        </Button>
+
+        <Dropdown>
+          <Dropdown.Toggle variant="primary" id="dropdown-sort">
+            <FaSort className="me-2" />
+            {getSortToggleText()}
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item active={sortOptions.includes("priceLowToHigh")} onClick={() => handleSort("priceLowToHigh")}>
+              {sortOptions.includes("priceLowToHigh") && <span className="me-2">✓</span>}
+              Price Low to High
+            </Dropdown.Item>
+            <Dropdown.Item active={sortOptions.includes("priceHighToLow")} onClick={() => handleSort("priceHighToLow")}>
+              {sortOptions.includes("priceHighToLow") && <span className="me-2">✓</span>}
+              Price High to Low
+            </Dropdown.Item>
+            <Dropdown.Item active={sortOptions.includes("ratingHighToLow")} onClick={() => handleSort("ratingHighToLow")}>
+              {sortOptions.includes("ratingHighToLow") && <span className="me-2">✓</span>}
+              Highest Rated
+            </Dropdown.Item>
+            <Dropdown.Item active={sortOptions.includes("popularityHighToLow")} onClick={() => handleSort("popularityHighToLow")}>
+              {sortOptions.includes("popularityHighToLow") && <span className="me-2">✓</span>}
+              Most Popular
+            </Dropdown.Item>
+            {sortOptions.length > 0 && (
+              <Dropdown.Item onClick={clearAllSorting} className="text-danger">
+                Clear All Sorting
+              </Dropdown.Item>
+            )}
+          </Dropdown.Menu>
+        </Dropdown>
+      </div>
+    </div>
+
+    {/* Modal Component */}
+    <Filter
+      showFilterModal={showFilterModal}
+      setShowFilterModal={setShowFilterModal}
+      filters={filters}
+      setFilters={setFilters}
+      appliedFiltersCount={appliedFiltersCount}
+      applyFilters={applyFilters}
+      clearFilters={clearFilters}
+    />
 
       <WishlistModal
         show={showWishlistModal}
@@ -1495,6 +1452,23 @@ const handleInputChange = (event) => {
 
       {/* Styles */}
       <style jsx>{`
+      /* Sidebar sticky */
+.sidebar {
+  position: sticky;
+  top: 100px;
+}
+
+/* Card spacing */
+.property-item {
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+  transition: box-shadow 0.3s;
+}
+.property-item:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
         .search-section {
           background: white;
           border-radius: 8px;
@@ -1557,8 +1531,9 @@ const handleInputChange = (event) => {
           }
         }
       `}</style>
-    </div>
-  );
+  </div>
+);
+
 };
 
 export default SearchBar;

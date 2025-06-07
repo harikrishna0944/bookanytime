@@ -266,7 +266,7 @@ const PropertyDetails = () => {
         className="d-flex justify-content-between align-items-center mb-4 mt-4"
         style={{
           position: 'sticky',
-          top: '65px',
+          top: '55px',
           zIndex: '1000',
           backgroundColor: '#fff',
           padding: '5px'
@@ -283,10 +283,16 @@ const PropertyDetails = () => {
           }}
         >
           <div
-            className="search-section mb-4 p-1 bg-white rounded "
+            className="search-section mb-1 p-1 bg-white rounded "
             style={{ display: window.innerWidth >= 1024 ? 'block' : 'none' }}
           >
             {property.name}
+          </div>
+          <div
+
+            style={{ display: window.innerWidth >= 1024 ? 'block' : 'none' }}
+          >
+            <h6><i className="bi bi-geo-alt me-2"></i>{property.city}, {property.address}</h6>
           </div>
         </h1>
 
@@ -374,16 +380,27 @@ const PropertyDetails = () => {
           />
         </div>
         
-        <div className="w-100 d-flex" style={{ height: "20%", gap: "4px" }}>
-          {property.images?.slice(0, 4).map((img, index) => (
+        <div 
+          className="w-100 d-flex" 
+          style={{ 
+            height: "20%", 
+            gap: "4px",
+            overflowX: "auto",
+            overflowY: "hidden",
+            scrollbarWidth: "none" /* For Firefox */
+          }}
+        >
+          {property.images?.map((img, index) => (
             <div 
               key={index}
-              className="flex-grow-1 position-relative"
+              className="flex-shrink-0 position-relative"
               style={{
+                width: "calc(25% - 3px)", /* Adjust width accounting for gap */
                 height: "100%",
                 borderRadius: "10px",
                 overflow: "hidden",
-                cursor: "pointer"
+                cursor: "pointer",
+                minWidth: "calc(25% - 3px)" /* Prevent shrinking below 25% */
               }}
               onClick={() => setCurrentImageIndex(index)}
             >
@@ -411,8 +428,8 @@ const PropertyDetails = () => {
             </div>
           ))}
         </div>
-      </div>
-      <hr className="my-4 border-black" />
+      </div> 
+     <hr className="my-4 border-black" />
 
       {/* Main Content Layout */}
       <div className="row">
@@ -661,7 +678,7 @@ const PropertyDetails = () => {
             <div
               className="reservation-box sticky-top"
               style={{
-                top: '100px',
+                top: '150px',
                 width: '100%',
                 backgroundColor: 'white',
                 borderRadius: '12px',
@@ -702,7 +719,7 @@ const PropertyDetails = () => {
               <button
                 className="whatsapp-reserve-btn w-100 py-2 border-0 rounded fw-bold text-white d-flex align-items-center justify-content-center pb-2"
                 style={{
-                  backgroundColor: '#25D366',
+                  backgroundColor: '#6a11cb',
                   fontSize: '16px'
                 }}
                 onClick={openWhatsAppChat}
@@ -775,7 +792,7 @@ const PropertyDetails = () => {
           <button
             className="whatsapp-reserve-btn w-100 py-2 border-0 rounded fw-bold text-white d-flex align-items-center justify-content-center pb-2"
             style={{
-              backgroundColor: '#25D366',
+              backgroundColor: '#6a11cb',
               fontSize: '16px'
             }}
             onClick={openWhatsAppChat}

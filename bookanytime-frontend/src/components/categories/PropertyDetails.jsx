@@ -364,6 +364,7 @@ const PropertyDetails = () => {
           className="w-100 mb-2" 
           style={{ 
             height: "80%",
+            // marginTop: "-10px",
             borderRadius: "10px",
             overflow: "hidden"
           }}

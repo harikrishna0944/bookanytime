@@ -113,7 +113,7 @@ const Header = () => {
           >
             <input
               type="text"
-              placeholder="Search properties..."
+              placeholder="Search by location..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{

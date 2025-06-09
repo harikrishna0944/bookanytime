@@ -1220,7 +1220,7 @@ const handleInputChange = (event) => {
             <span className="input-group-text"><FaSearch /></span>
           </div>
         </div>
-        <div className="col-md-6">
+        {/* <div className="col-md-6">
           <div className="input-group">
             <input
               type="text"
@@ -1232,7 +1232,7 @@ const handleInputChange = (event) => {
             />
             <span className="input-group-text"><FaSearch /></span>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
 

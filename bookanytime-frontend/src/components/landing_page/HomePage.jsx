@@ -9,11 +9,11 @@ const HomePage = () => {
   };
 
   return (
-    <div className="d-flex flex-column "  style={{  height: '45vh' }}
+    <div className="d-flex flex-column "  style={{ height: '70vh' }}
 >
       <main className="flex-grow-1">
         {/* Hero Section - full viewport height */}
-<section className="position-relative  bg-dark text-white" style={{ zIndex: 1,height: '45vh' }}>
+<section className="position-relative  bg-dark text-white" style={{ zIndex: 1,height: '70vh' }}>
           {/* Background image with proper centering */}
           <div className="position-absolute top-0 start-0 w-100 h-100 z-0 overflow-hidden">
             <img 
@@ -32,7 +32,7 @@ const HomePage = () => {
                 <h2 className="fs-1 fs-md-1 fs-lg-2 fw-bold mb-3 mb-md-4 text-nowrap" >
                   Find Your Perfect Stay
                 </h2>
-                <p className="lead mb-4 mb-md-5">
+                <p className="lead mb-1 mb-md-1">
                   <span className="d-block d-md-inline">Discover and book accommodations and venues for any occasion.</span>
                   <span className="d-none d-md-inline"> </span>
                   <span className="d-block d-md-inline">From hotels to farmhouses, we've got you covered.</span>

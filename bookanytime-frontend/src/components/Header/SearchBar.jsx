@@ -76,7 +76,7 @@
 //     const fetchAllRatings = async () => {
 //       try {
 //         const ratingsData = {};
-        
+
 //         await Promise.all(
 //           properties.map(async (property) => {
 //             try {
@@ -92,7 +92,7 @@
 //             }
 //           })
 //         );
-        
+
 //         setPropertyRatings(ratingsData);
 //       } catch (error) {
 //         console.error("Error fetching ratings:", error);
@@ -200,7 +200,7 @@
 //       result.sort((a, b) => {
 //         for (const option of sortOptions) {
 //           let comparison = 0;
-          
+
 //           switch (option) {
 //             case "priceLowToHigh":
 //               comparison = (a.minPrice || 0) - (b.minPrice || 0);
@@ -217,7 +217,7 @@
 //             default:
 //               comparison = 0;
 //           }
-          
+
 //           if (comparison !== 0) {
 //             return comparison;
 //           }
@@ -254,7 +254,7 @@
 //         return;
 //       }
 //     }
-    
+
 //     // Otherwise, perform the filtered search
 //     try {
 //       const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search-locations`, {
@@ -479,7 +479,7 @@
 //                 <ChevronLeft size={16} />
 //               </button>
 //             )}
-            
+
 //             {["All", ...categories].map((category) => (
 //               <button
 //                 key={category}
@@ -507,7 +507,7 @@
 //                 {category}
 //               </button>
 //             ))}
-            
+
 //             {showRightArrow && (
 //               <button 
 //                 className="scroll-arrow right" 
@@ -585,7 +585,7 @@
 //                   <p className="text-muted small mb-1 text-start">
 //                     {property.city}, {property.address}
 //                   </p>
-                  
+
 //                   <div className="d-flex justify-content-between align-items-center border-top pt-2">
 //                     <div className="d-flex align-items-center">
 //                       <FaUser className="me-2 text-muted" />
@@ -626,7 +626,7 @@
 //             </Badge>
 //           )}
 //         </Button>
-        
+
 //         <Dropdown>
 //           <Dropdown.Toggle variant="primary" id="dropdown-sort">
 //             <FaSort className="me-2" />
@@ -744,12 +744,12 @@
 //         .category-filters-container button {
 //           transition: all 0.3s ease;
 //         }
-        
+
 //         .category-filters-container button:hover {
 //           box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 //           color: black !important;
 //         }
-        
+
 //         .category-filters-container button.btn-outline-primary:hover {
 //           background-color: rgba(13, 110, 253, 0.1);
 //         }
@@ -769,16 +769,19 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
-import { 
-  FaHeart, 
-  FaFilter, 
-  FaUser, 
-  FaSort, 
-  FaRupeeSign, 
-  FaStar, 
+import {
+  FaHeart,
+  FaFilter,
+  FaUser,
+  FaBed,
+  FaSort,
+  FaRupeeSign,
+  FaStar,
   FaSearch
 } from "react-icons/fa";
-import { Button, Badge, Dropdown, InputGroup } from "react-bootstrap";
+import { Button, Badge, Dropdown, Form } from "react-bootstrap";
+import Slider from "rc-slider";
+
 import WishlistModal from "../categories/WishlistModal";
 import Filter from "../categories/Filter";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -787,6 +790,7 @@ import "./Searchbar.css";
 const SearchBar = () => {
   // State variables
   const [properties, setProperties] = useState([]);
+  const [propertyCycling, setpropertyCycling] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState(["All"]);
@@ -799,18 +803,26 @@ const SearchBar = () => {
   const [showWishlistModal, setShowWishlistModal] = useState(false);
   const [selectedPropertyId, setSelectedPropertyId] = useState(null);
   const [propertyRatings, setPropertyRatings] = useState({});
-  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [sortOptions, setSortOptions] = useState([]);
+  
+  // Filter states
   const [filters, setFilters] = useState({
-    priceRange: undefined,
     bedrooms: undefined,
     adults: undefined,
-    amenities: undefined
+    priceRange: undefined,
+    amenities: []
   });
+  const [priceInputs, setPriceInputs] = useState({ min: 0, max: 1000 });
   const [appliedFiltersCount, setAppliedFiltersCount] = useState(0);
-  const [sortOptions, setSortOptions] = useState([]);
-  const [showLeftArrow, setShowLeftArrow] = useState(false);
-  const [showRightArrow, setShowRightArrow] = useState(true);
-  const containerRef = useRef(null);
+
+  const AMENITIES = [
+    { name: "WiFi", icon: "📶" },
+    { name: "Swimming Pool", icon: "🏊‍♂️" },
+    { name: "Parking", icon: "🅿️" },
+    { name: "Air Conditioning", icon: "❄️" },
+    { name: "Gym", icon: "💪" },
+    { name: "Pet Friendly", icon: "🐾" }
+  ];
 
   // Fetch categories and user data
   useEffect(() => {
@@ -825,6 +837,11 @@ const SearchBar = () => {
         // Fetch all properties initially
         const propertiesResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties`);
         setProperties(propertiesResponse.data);
+
+        const allProperties = propertiesResponse.data;
+        const PropertyCyclingNames = allProperties.map(property=>property.name);
+        setpropertyCycling(PropertyCyclingNames);
+
         setFilteredProperties(propertiesResponse.data);
   
         const user = JSON.parse(localStorage.getItem("user"));
@@ -839,13 +856,13 @@ const SearchBar = () => {
 
   // Category cycling effect
   useEffect(() => {
-    if (categories.length > 0 && !isTyping) {
+    if (propertyCycling.length > 0 && !isTyping) {
       const interval = setInterval(() => {
-        setCurrentCategoryIndex((prevIndex) => (prevIndex + 1) % categories.length);
+        setCurrentCategoryIndex((prevIndex) => (prevIndex + 1) % propertyCycling.length);
       }, 1000);
       return () => clearInterval(interval);
     }
-  }, [categories, isTyping]);
+  }, [propertyCycling, isTyping]);
 
   // Search properties when search criteria change
   useEffect(() => {
@@ -860,7 +877,7 @@ const SearchBar = () => {
     const fetchAllRatings = async () => {
       try {
         const ratingsData = {};
-        
+
         await Promise.all(
           properties.map(async (property) => {
             try {
@@ -876,7 +893,7 @@ const SearchBar = () => {
             }
           })
         );
-        
+
         setPropertyRatings(ratingsData);
       } catch (error) {
         console.error("Error fetching ratings:", error);
@@ -943,20 +960,20 @@ const SearchBar = () => {
   };
 
   // Set up scroll event listeners
-  useEffect(() => {
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener("scroll", checkScroll);
-      window.addEventListener("resize", checkScroll);
-      checkScroll(); // Initial check
-    }
-    return () => {
-      if (container) {
-        container.removeEventListener("scroll", checkScroll);
-        window.removeEventListener("resize", checkScroll);
-      }
-    };
-  }, [checkScroll]);
+  // useEffect(() => {
+  //   const container = containerRef.current;
+  //   if (container) {
+  //     container.addEventListener("scroll", checkScroll);
+  //     window.addEventListener("resize", checkScroll);
+  //     checkScroll(); // Initial check
+  //   }
+  //   return () => {
+  //     if (container) {
+  //       container.removeEventListener("scroll", checkScroll);
+  //       window.removeEventListener("resize", checkScroll);
+  //     }
+  //   };
+  // }, [checkScroll]);
 
   // Filter and sort properties based on current criteria
   const filterAndSortProperties = () => {
@@ -973,13 +990,13 @@ const SearchBar = () => {
         (filters.priceRange === undefined || 
           (price >= filters.priceRange[0] && price <= filters.priceRange[1])) &&
         (filters.bedrooms === undefined || bedrooms === filters.bedrooms) &&
-        (filters.adults === undefined || adults === filters.adults) &&
-        (filters.amenities === undefined || 
+        (filters.adults === undefined || adults >= filters.adults) &&
+        (filters.amenities.length === 0 || 
           filters.amenities.every(amenity => amenities.includes(amenity)))
       );
     });
 
-    // Apply multiple sorting criteria
+    // Apply sorting (keep your existing sorting logic)
     if (sortOptions.length > 0) {
       result.sort((a, b) => {
         for (const option of sortOptions) {
@@ -1017,7 +1034,7 @@ const SearchBar = () => {
       filters.priceRange !== undefined,
       filters.bedrooms !== undefined,
       filters.adults !== undefined,
-      filters.amenities !== undefined && filters.amenities.length > 0
+      filters.amenities.length > 0
     ].filter(Boolean).length;
 
     setAppliedFiltersCount(count);
@@ -1048,10 +1065,10 @@ const SearchBar = () => {
         },
       });
       setProperties(response.data);
-      console.log("responseee",response.data)
+      console.log("responseee", response.data)
     } catch (error) {
       console.error("Error fetching search results:", error);
-    }    
+    }
   };
 
 
@@ -1072,8 +1089,8 @@ const SearchBar = () => {
         prev.includes("All")
           ? [category]
           : prev.includes(category)
-          ? prev.filter((c) => c !== category)
-          : [...prev, category]
+            ? prev.filter((c) => c !== category)
+            : [...prev, category]
       );
     }
   };
@@ -1175,272 +1192,425 @@ const SearchBar = () => {
     setSortOptions([]);
   };
 
-// Step 1: New function to actually fetch the data
-const searchByName = async (searchQuery) => {
-  console.log("search queryyy")
-  try {
-    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search`, {
-      params: {
-        query: searchQuery.trim(),
-        categories: selectedCategories.includes("All") ? [] : selectedCategories,
-      },
-    });
-    setProperties(response.data);
-  } catch (error) {
-    console.error("Error searching by name:", error);
-    setProperties([]);
-  }
-};
+  // Step 1: New function to actually fetch the data
+  const searchByName = async (searchQuery) => {
+    console.log("search queryyy")
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search`, {
+        params: {
+          query: searchQuery.trim(),
+          categories: selectedCategories.includes("All") ? [] : selectedCategories,
+        },
+      });
+      setProperties(response.data);
+    } catch (error) {
+      console.error("Error searching by name:", error);
+      setProperties([]);
+    }
+  };
 
-// Step 2: onChange handler — update state + call search
-const handleInputChange = (event) => {
-  const value = event.target.value;
-  setSearchText(value);
-  searchByName(value); 
-};
+  // Step 2: onChange handler — update state + call search
+  const handleInputChange = (event) => {
+    const value = event.target.value;
+    setSearchText(value);
+    searchByName(value);
+  };
+
+  useEffect(() => {
+    setPriceInputs({
+      min: filters.priceRange?.[0] || 0,
+      max: filters.priceRange?.[1] || 100000
+    });
+  }, [filters.priceRange]);
+
+  const calculateActiveFilters = () => {
+    let count = 0;
+    if (filters.bedrooms !== undefined) count++;
+    if (filters.adults !== undefined) count++;
+    if (filters.priceRange !== undefined) count++;
+    if (filters.amenities?.length) count += filters.amenities.length;
+    return count;
+  };
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({
+      ...prev,
+      [name]: value === "" ? undefined : parseInt(value, 10)
+    }));
+  };
+
+  const handlePriceInputChange = (e) => {
+    const { name, value } = e.target;
+    const numValue = value === "" ? (name === "min" ? 0 : 1000) : parseInt(value, 10);
+    
+    setPriceInputs(prev => ({ ...prev, [name]: numValue }));
+
+    if (!isNaN(numValue)) {
+      const newRange = [
+        name === "min" ? numValue : filters.priceRange?.[0] || 0,
+        name === "max" ? numValue : filters.priceRange?.[1] || 1000
+      ];
+      
+      setFilters(prev => ({
+        ...prev,
+        priceRange: newRange[0] === 0 && newRange[1] === 1000 ? undefined : newRange
+      }));
+    }
+  };
+
+  const handlePriceRangeChange = (value) => {
+    setFilters(prev => ({
+      ...prev,
+      priceRange: value[0] === 0 && value[1] === 1000 ? undefined : value
+    }));
+    setPriceInputs({ min: value[0], max: value[1] });
+  };
+
+  const handleAmenityToggle = (amenityName) => {
+    setFilters(prev => {
+      const current = prev.amenities || [];
+      const updated = current.includes(amenityName)
+        ? current.filter(a => a !== amenityName)
+        : [...current, amenityName];
+      return { ...prev, amenities: updated };
+    });
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      bedrooms: undefined,
+      adults: undefined,
+      priceRange: undefined,
+      amenities: []
+    });
+    setPriceInputs({ min: 0, max: 1000 });
+    setSortOptions([]);
+  };
+
+  // Other existing functions remain the same...
 
   return (
-  <div className="container-fluid mt-4" style={{ marginLeft: '30px' }}>
-    
-    {/* Search Section */}
-    <div className="search-section mb-4 p-3 bg-white rounded shadow-sm">
-      <div className="row g-3 mb-3" style={{ marginTop: '20px' }}>
-        <div className="col-md-6">
-          <div className="input-group">
-            <input
-              type="text"
-              className="form-control"
-              style={{ background: 'white', zIndex: 10 }}
-              placeholder={`Search for ${categories[currentCategoryIndex] || "properties"}`}
-              value={searchText}
-              onChange={handleInputChange}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-            />
-            <span className="input-group-text"><FaSearch /></span>
-          </div>
-        </div>
-        {/* <div className="col-md-6">
-          <div className="input-group">
-            <input
-              type="text"
-              className="form-control"
-              style={{ background: 'white', zIndex: 10 }}
-              placeholder="Search by location"
-              value={locationSearch}
-              onChange={handleLocationChange}
-            />
-            <span className="input-group-text"><FaSearch /></span>
-          </div>
-        </div> */}
-      </div>
-    </div>
-
-    {/* Filters and Property Grid Section */}
-    <div className="d-flex">
-      
-      {/* Filter Sidebar with light gray background */}
-      <div style={{ backgroundColor: "#f8f9fa", padding: "10px", minHeight: "100vh", width: "270px" }}>
-        <div className="bg-white p-3 rounded shadow-sm">
-          <h6 className="mb-3 fw-bold">Filters</h6>
-
-          {/* Property Type */}
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Property Type</label>
-            <select
-              className="form-select"
-              multiple
-              value={selectedCategories}
-              onChange={(e) => {
-                const selectedOptions = Array.from(e.target.selectedOptions).map(opt => opt.value);
-                setSelectedCategories(selectedOptions);
-              }}
-              style={{ height: "100px" }}
-            >
-              {["All", ...categories].map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Price Range */}
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Price Range</label>
-            <input
-              type="range"
-              className="form-range"
-              min="0"
-              max="1000"
-              // value={priceRange}
-              onChange={(e) => setPriceRange(Number(e.target.value))}
-            />
-            <div></div>
-          </div>
-
-          {/* Guests */}
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Guests</label>
+    <div className="container-fluid mt-4" style={{ marginLeft: '30px' }}>
+      {/* Search Section */}
+      <div className="search-section mb-4 p-3 bg-white rounded shadow-sm">
+        <div className="row g-3 mb-3" style={{ marginTop: '20px' }}>
+          <div className="col-md-6">
             <div className="input-group">
-              <button className="btn btn-outline-secondary" onClick={() => setGuests(Math.max(1, guests - 1))}>-</button>
-              <input type="text" className="form-control text-center"  readOnly />
-              <button className="btn btn-outline-secondary" onClick={() => setGuests(guests + 1)}>+</button>
+              <input
+                type="text"
+                className="form-control"
+                style={{ background: 'white', zIndex: 10 }}
+                placeholder={`Search for ${propertyCycling[currentCategoryIndex] || "properties"}`}
+                value={searchText}
+                onChange={handleInputChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+              />
+              <span className="input-group-text"><FaSearch /></span>
             </div>
           </div>
-
-          {/* Amenities */}
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Amenities</label>
-            {["Wi-Fi", "Pool", "Parking", "Kitchen", "Air Conditioning", "Pet Friendly"].map((amenity) => (
-              <div className="form-check" key={amenity}>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  // checked={selectedAmenities.includes(amenity)}
-                  // onChange={() => handleAmenityChange(amenity)}
-                  // id={`amenity-${amenity}`}
-                />
-                <label className="form-check-label" htmlFor={`amenity-${amenity}`}>
-                  {/* {amenity} */}
-                </label>
-              </div>
-            ))}
-          </div>
-
-          {/* Apply Filters */}
-          <button className="btn btn-primary w-100 mt-2" onClick={applyFilters}>
-            Apply Filters
-          </button>
         </div>
       </div>
 
-      {/* Properties Grid */}
-      <div className="flex-grow-1 ms-4">
-        <div className="row">
-          {filteredProperties.length > 0 ? (
-            filteredProperties.map((property) => (
-              <div key={property._id} className="col-12 col-sm-6 col-md-4 col-lg-4 mb-4">
-                <div className="property-item shadow-sm p-2 position-relative">
-                  {(property.popularity && property.popularity < 5) && (
-                    <div className="position-absolute top-0 start-0 m-2">
-                      <Badge bg="warning" text="dark" className="shadow-sm">Popular</Badge>
-                    </div>
-                  )}
-                  <div
-                    className="position-absolute top-0 end-0 m-2"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleWishlistClick(property._id);
-                    }}
-                    style={{ cursor: "pointer", zIndex: 1 }}
+      {/* Filters and Property Grid Section */}
+      <div className="d-flex">
+        {/* Filter Sidebar */}
+        <div style={{ backgroundColor: "#f8f9fa", padding: "10px", minHeight: "100vh", width: "300px" }}>
+          <div className="bg-white p-5 rounded shadow-sm">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h6 className="fw-bold mb-0">Filters</h6>
+              {appliedFiltersCount > 0 && (
+                <button 
+                  className="btn btn-link p-0 text-decoration-none" 
+                  onClick={handleClearFilters}
+                  style={{ fontSize: '0.8rem' }}
+                >
+                  Clear all
+                </button>
+              )}
+            </div>
+
+            {/* Price Range */}
+            <div className="mb-4">
+              <Form.Label className="fw-semibold">Price Range</Form.Label>
+              <div className="d-flex justify-content-between mb-2 gap-2">
+                <Form.Control
+                  type="number"
+                  placeholder="Min"
+                  name="min"
+                  value={priceInputs.min}
+                  onChange={handlePriceInputChange}
+                  min={0}
+                  max={1000}
+                />
+                <span className="align-self-center">to</span>
+                <Form.Control
+                  type="number"
+                  placeholder="Max"
+                  name="max"
+                  value={priceInputs.max}
+                  onChange={handlePriceInputChange}
+                  min={0}
+                  max={1000}
+                />
+              </div>
+              <Slider
+                range
+                min={0}
+                max={1000}
+                value={filters.priceRange || [0, 1000]}
+                onChange={handlePriceRangeChange}
+                trackStyle={{
+                  backgroundColor: "#0d6efd",
+                  height: "8px"
+                }}
+                handleStyle={{
+                  borderColor: "#0d6efd",
+                  backgroundColor: "#fff",
+                  width: "20px",
+                  height: "20px"
+                }}
+                railStyle={{ backgroundColor: "#e9ecef", height: "8px" }}
+              />
+            </div>
+
+            {/* Bedrooms */}
+          {/*  <div className="mb-4">
+              <Form.Label className="fw-semibold d-flex align-items-center">
+                <FaBed className="me-2" />
+                Bedrooms
+              </Form.Label>
+              <div className="d-flex align-items-center">
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => setFilters(prev => ({
+                    ...prev,
+                    bedrooms: Math.max(0, (prev.bedrooms || 0) - 1)
+                  }))}
+                >
+                  -
+                </Button>
+                <Form.Control
+                  type="number"
+                  placeholder="Any"
+                  name="bedrooms"
+                  value={filters.bedrooms || ""}
+                  onChange={handleFilterChange}
+                  className="mx-2 text-center"
+                  style={{ width: "80px" }}
+                />
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => setFilters(prev => ({
+                    ...prev,
+                    bedrooms: (prev.bedrooms || 0) + 1
+                  }))}
+                >
+                  +
+                </Button>
+              </div>
+            </div> */}
+
+            {/* Adults */}
+            <div className="mb-4">
+              <Form.Label className="fw-semibold d-flex align-items-center">
+                <FaUser className="me-2" />
+                Adults
+              </Form.Label>
+              <div className="d-flex align-items-center">
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => setFilters(prev => ({
+                    ...prev,
+                    adults: Math.max(0, (prev.adults || 0) - 1)
+                  }))}
+                >
+                  -
+                </Button>
+                <Form.Control
+                  type="number"
+                  placeholder="Any"
+                  name="adults"
+                  value={filters.adults || ""}
+                  onChange={handleFilterChange}
+                  className="mx-2 text-center"
+                  style={{ width: "80px" }}
+                />
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => setFilters(prev => ({
+                    ...prev,
+                    adults: (prev.adults || 0) + 1
+                  }))}
+                >
+                  +
+                </Button>
+              </div>
+            </div>
+
+            {/* Amenities */}
+            <div className="mb-3">
+              <h6 className="fw-bold mb-3">Amenities</h6>
+              <div className="d-flex flex-wrap gap-2">
+                {AMENITIES.map((amenity, index) => (
+                  <Button
+                    key={index}
+                    variant={
+                      filters.amenities.includes(amenity.name) 
+                        ? "primary" 
+                        : "outline-secondary"
+                    }
+                    onClick={() => handleAmenityToggle(amenity.name)}
+                    className="d-flex align-items-center gap-2"
+                    size="sm"
                   >
-                    <FaHeart
-                      size={20}
-                      color={isWishlisted[property._id] ? "red" : "white"}
+                    {/* <span>{amenity.icon}</span> */}
+                    <span>{amenity.name}</span>
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Apply Filters Button */}
+            <Button 
+              variant="primary" 
+              className="w-100 mt-3"
+              onClick={filterAndSortProperties}
+            >
+              Apply Filters
+            </Button>
+          </div>
+        </div>
+
+        {/* Properties Grid (keep your existing properties grid code) */}
+        <div className="flex-grow-1 ms-4">
+          <div className="row">
+            {filteredProperties.length > 0 ? (
+              filteredProperties.map((property) => (
+                <div key={property._id} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+                  <div className="property-item shadow-sm p-2 position-relative">
+                    {(property.popularity && property.popularity < 5) && (
+                      <div className="position-absolute top-0 start-0 m-2">
+                        <Badge bg="warning" text="dark" className="shadow-sm">Popular</Badge>
+                      </div>
+                    )}
+                    <div
+                      className="position-absolute top-0 end-0 m-2"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleWishlistClick(property._id);
+                      }}
+                      style={{ cursor: "pointer", zIndex: 1 }}
+                    >
+                      <FaHeart
+                        size={20}
+                        color={isWishlisted[property._id] ? "red" : "white"}
+                      />
+                    </div>
+                    <img
+                      src={property.images && property.images.length > 0 ? property.images[0] : "https://via.placeholder.com/150"}
+                      alt={property.name}
+                      className="img-fluid"
+                      onClick={() => window.open(`/property/${property._id}`, "_blank")}
                     />
-                  </div>
-                  <img
-                    src={property.images && property.images.length > 0 ? property.images[0] : "https://via.placeholder.com/150"}
-                    alt={property.name}
-                    className="img-fluid"
-                    onClick={() => window.open(`/property/${property._id}`, "_blank")}
-                  />
-                  <div className="property-details text-center p-2">
-                    <div className="d-flex justify-content-between align-items-center mb-1">
-                      <h6 className="fw-bold mb-0 fs-6 text-start">{property.name}</h6>
-                      {propertyRatings[property._id] && (
+                    <div className="property-details text-center p-2">
+                      <div className="d-flex justify-content-between align-items-center mb-1">
+                        <h6 className="fw-bold mb-0 fs-6 text-start">{property.name}</h6>
+                        {propertyRatings[property._id] && (
+                          <div className="d-flex align-items-center">
+                            <FaStar className="text-warning me-1" style={{ fontSize: "0.8rem" }} />
+                            <span className="small text-muted">
+                              {propertyRatings[property._id].toFixed(1)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-muted small mb-1 text-start">
+                        {property.city}, {property.address}
+                      </p>
+                      <div className="d-flex justify-content-between align-items-center border-top pt-2">
                         <div className="d-flex align-items-center">
-                          <FaStar className="text-warning me-1" style={{ fontSize: "0.8rem" }} />
-                          <span className="small text-muted">
-                            {propertyRatings[property._id].toFixed(1)}
+                          <FaUser className="me-2 text-muted" />
+                          <span className="small">{property.capacity?.adults || 0} Adults</span>
+                        </div>
+                        <div className="d-flex align-items-center">
+                          <span className="text-muted small me-1">Cost</span>
+                          <span className="fw-bold" style={{ fontSize: "0.9rem", color: "#28a745" }}>
+                            <FaRupeeSign className="me-1" style={{ color: "black" }} />
+                            {property.minPrice?.toLocaleString() || "0"} - {property.maxPrice?.toLocaleString() || "0"}
                           </span>
                         </div>
-                      )}
-                    </div>
-                    <p className="text-muted small mb-1 text-start">
-                      {property.city}, {property.address}
-                    </p>
-                    <div className="d-flex justify-content-between align-items-center border-top pt-2">
-                      <div className="d-flex align-items-center">
-                        <FaUser className="me-2 text-muted" />
-                        <span className="small">{property.capacity?.adults || 0} Adults</span>
-                      </div>
-                      <div className="d-flex align-items-center">
-                        <span className="text-muted small me-1">Cost</span>
-                        <span className="fw-bold" style={{ fontSize: "0.9rem", color: "#28a745" }}>
-                          <FaRupeeSign className="me-1" style={{ color: "black" }} />
-                          {property.minPrice?.toLocaleString() || "0"} - {property.maxPrice?.toLocaleString() || "0"}
-                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
+              ))
+            ) : (
+              <div className="col-12 text-center py-5">
+                <p className="text-muted">No properties match your search criteria.</p>
+                <Button variant="outline-primary" onClick={clearFilters}>
+                  Clear Filters
+                </Button>
               </div>
-            ))
-          ) : (
-            <div className="col-12 text-center py-5">
-              <p className="text-muted">No properties match your search criteria.</p>
-              <Button variant="outline-primary" onClick={clearFilters}>
-                Clear Filters
-              </Button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
-    </div>
 
-    {/* Bottom Filter & Sort Buttons */}
-    <div className="fixed-bottom d-flex justify-content-center mb-3">
-      <div className="d-flex gap-2 p-2 rounded shadow" style={{ zIndex: 1000 }}>
-        <Button variant="primary" onClick={() => setShowFilterModal(true)} className="d-flex align-items-center">
-          <FaFilter className="me-2" />
-          Filter
-          {appliedFiltersCount > 0 && (
-            <Badge bg="danger" className="ms-2">{appliedFiltersCount}</Badge>
-          )}
-        </Button>
-
-        <Dropdown>
-          <Dropdown.Toggle variant="primary" id="dropdown-sort">
-            <FaSort className="me-2" />
-            {getSortToggleText()}
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            <Dropdown.Item active={sortOptions.includes("priceLowToHigh")} onClick={() => handleSort("priceLowToHigh")}>
-              {sortOptions.includes("priceLowToHigh") && <span className="me-2">✓</span>}
-              Price Low to High
-            </Dropdown.Item>
-            <Dropdown.Item active={sortOptions.includes("priceHighToLow")} onClick={() => handleSort("priceHighToLow")}>
-              {sortOptions.includes("priceHighToLow") && <span className="me-2">✓</span>}
-              Price High to Low
-            </Dropdown.Item>
-            <Dropdown.Item active={sortOptions.includes("ratingHighToLow")} onClick={() => handleSort("ratingHighToLow")}>
-              {sortOptions.includes("ratingHighToLow") && <span className="me-2">✓</span>}
-              Highest Rated
-            </Dropdown.Item>
-            <Dropdown.Item active={sortOptions.includes("popularityHighToLow")} onClick={() => handleSort("popularityHighToLow")}>
-              {sortOptions.includes("popularityHighToLow") && <span className="me-2">✓</span>}
-              Most Popular
-            </Dropdown.Item>
-            {sortOptions.length > 0 && (
-              <Dropdown.Item onClick={clearAllSorting} className="text-danger">
-                Clear All Sorting
-              </Dropdown.Item>
+      {/* Bottom Sort Button (keep your existing sort dropdown code) */}
+      <div className="fixed-bottom d-flex justify-content-center mb-3">
+        <div className="d-flex gap-2 p-2 rounded shadow" style={{ zIndex: 1000 }}>
+       {/*   <Button variant="primary" onClick={() => setShowFilterModal(true)} className="d-flex align-items-center">
+            <FaFilter className="me-2" />
+            Filter
+            {appliedFiltersCount > 0 && (
+              <Badge bg="danger" className="ms-2">{appliedFiltersCount}</Badge>
             )}
-          </Dropdown.Menu>
-        </Dropdown>
-      </div>
-    </div>
+          </Button> */}
 
-    {/* Modal Component */}
-    <Filter
-      showFilterModal={showFilterModal}
-      setShowFilterModal={setShowFilterModal}
-      filters={filters}
-      setFilters={setFilters}
-      appliedFiltersCount={appliedFiltersCount}
-      applyFilters={applyFilters}
-      clearFilters={clearFilters}
-    />
+          <Dropdown>
+            <Dropdown.Toggle variant="primary" id="dropdown-sort">
+              <FaSort className="me-2" />
+              {getSortToggleText()}
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item active={sortOptions.includes("priceLowToHigh")} onClick={() => handleSort("priceLowToHigh")}>
+                {sortOptions.includes("priceLowToHigh") && <span className="me-2">✓</span>}
+                Price Low to High
+              </Dropdown.Item>
+              <Dropdown.Item active={sortOptions.includes("priceHighToLow")} onClick={() => handleSort("priceHighToLow")}>
+                {sortOptions.includes("priceHighToLow") && <span className="me-2">✓</span>}
+                Price High to Low
+              </Dropdown.Item>
+              <Dropdown.Item active={sortOptions.includes("ratingHighToLow")} onClick={() => handleSort("ratingHighToLow")}>
+                {sortOptions.includes("ratingHighToLow") && <span className="me-2">✓</span>}
+                Highest Rated
+              </Dropdown.Item>
+              <Dropdown.Item active={sortOptions.includes("popularityHighToLow")} onClick={() => handleSort("popularityHighToLow")}>
+                {sortOptions.includes("popularityHighToLow") && <span className="me-2">✓</span>}
+                Most Popular
+              </Dropdown.Item>
+              {sortOptions.length > 0 && (
+                <Dropdown.Item onClick={clearAllSorting} className="text-danger">
+                  Clear All Sorting
+                </Dropdown.Item>
+              )}
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
+      </div>
+
+      {/* Modal Component */}
+      {/* <Filter
+        showFilterModal={showFilterModal}
+        setShowFilterModal={setShowFilterModal}
+        filters={filters}
+        setFilters={setFilters}
+        appliedFiltersCount={appliedFiltersCount}
+        applyFilters={applyFilters}
+        clearFilters={clearFilters}
+      /> */}
 
       <WishlistModal
         show={showWishlistModal}
@@ -1450,8 +1620,8 @@ const handleInputChange = (event) => {
         onWishlistUpdate={handleWishlistUpdate}
       />
 
-      {/* Styles */}
-      <style jsx>{`
+      {/* Your existing styles */}
+       <style jsx>{`
       /* Sidebar sticky */
 .sidebar {
   position: sticky;
@@ -1531,9 +1701,8 @@ const handleInputChange = (event) => {
           }
         }
       `}</style>
-  </div>
-);
-
+    </div>
+  );
 };
 
 export default SearchBar;

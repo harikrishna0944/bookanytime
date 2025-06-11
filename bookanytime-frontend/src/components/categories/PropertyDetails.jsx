@@ -691,11 +691,16 @@ const PropertyDetails = () => {
               <div className="reservation-header d-flex justify-content-between align-items-center mb-3">
 
               </div>
-                <span className="price fw-bold" style={{ fontSize: '22px' }}>
-                  {property.minPrice && property.maxPrice
-                    ? `₹${property.minPrice} - ₹${property.maxPrice}`
-                    : 'Price Range Not Available'}
-                </span>
+              <span className="price fw-bold" style={{ fontSize: '22px' }}>
+                {property.minPrice && property.maxPrice
+                  ? (() => {
+                      const today = new Date();
+                      const dayOfWeek =  today.getDay(); // 0 is Sunday, 6 is Saturday
+                      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                      return `₹${isWeekend ? property.maxPrice : property.minPrice}`;
+                    })()
+                  : 'Price Range Not Available'}
+              </span>
                 <span
                   className="duration text-muted"
                   style={{
@@ -768,9 +773,15 @@ const PropertyDetails = () => {
           }}
         >
           <div className="reservation-header d-flex justify-content-between align-items-center mb-3">
+            {/* <span className="price fw-bold" style={{ fontSize: '22px' }}> */}
             <span className="price fw-bold" style={{ fontSize: '22px' }}>
               {property.minPrice && property.maxPrice
-                ? `₹${property.minPrice} - ₹${property.maxPrice}`
+                ? (() => {
+                    const today = new Date();
+                    const dayOfWeek =  today.getDay(); // 0 is Sunday, 6 is Saturday
+                    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                    return `₹${isWeekend ? property.maxPrice : property.minPrice}`;
+                  })()
                 : 'Price Range Not Available'}
             </span>
             <span

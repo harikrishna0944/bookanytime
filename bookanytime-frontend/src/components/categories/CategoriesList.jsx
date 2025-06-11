@@ -26,12 +26,10 @@ const CategoriesGrid = () => {
       });
   }, []);
 
-    const handleNavigation = useCallback(
-    (categoryName) => {
-      navigate(`/${categoryName}`);
-    },
-    [navigate]
-  );
+   const handleNavigation = useCallback((categoryName) => {
+  navigate(`/search?category=${encodeURIComponent(categoryName)}`);
+}, [navigate]);
+
 
   if (loading) return <div>Loading categories...</div>;
   if (error) return <div>{error}</div>;

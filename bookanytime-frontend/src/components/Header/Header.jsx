@@ -58,13 +58,19 @@ const Header = () => {
 
   const isLoggedIn = !!localStorage.getItem("token");
 
-  // Handle search submit
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (searchTerm.trim()) {
-      navigate(`/search?query=${encodeURIComponent(searchTerm.trim())}`);
-    }
+const handleLocationSearch = (value) => {
+    setSearchTerm(value);
+    navigate(`/search?location=${encodeURIComponent(value)}`);
   };
+
+
+  // // Handle search submit
+  // const handleSearchSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (searchTerm.trim()) {
+  //     navigate(`/search?query=${encodeURIComponent(searchTerm.trim())}`);
+  //   }
+  // };
 
   return (
     <AppBar
@@ -103,7 +109,7 @@ const Header = () => {
           {/* Search box form */}
           <Box
             component="form"
-            onSubmit={handleSearchSubmit}
+            // onSubmit={handleSearchSubmit}
             sx={{
               position: "relative",
               display: "flex",
@@ -115,7 +121,9 @@ const Header = () => {
               type="text"
               placeholder="Search by location..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+                   onChange={(e) => handleLocationSearch(e.target.value)}
+
+
               style={{
                 padding: "6px 36px 6px 12px",
                 border: "1px solid #ccc",
@@ -126,7 +134,7 @@ const Header = () => {
               }}
             />
             <SearchIcon
-              onClick={handleSearchSubmit}
+              // onClick={handleSearchSubmit}
               sx={{
                 position: "absolute",
                 right: 10,

@@ -777,11 +777,14 @@ import {
   FaSort,
   FaRupeeSign,
   FaStar,
-  FaSearch
+  FaSearch,
+  FaTag
 } from "react-icons/fa";
 import { Button, Badge, Dropdown, Form } from "react-bootstrap";
 import Slider from "rc-slider";
-
+import { useLocation } from 'react-router-dom';
+import Select from "react-select";
+import queryString from "query-string";
 import WishlistModal from "../categories/WishlistModal";
 import Filter from "../categories/Filter";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -797,14 +800,17 @@ const SearchBar = () => {
   const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
   const [searchText, setSearchText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [locationSearch, setLocationSearch] = useState("");
   const [isWishlisted, setIsWishlisted] = useState({});
   const [userId, setUserId] = useState(null);
   const [showWishlistModal, setShowWishlistModal] = useState(false);
   const [selectedPropertyId, setSelectedPropertyId] = useState(null);
   const [propertyRatings, setPropertyRatings] = useState({});
   const [sortOptions, setSortOptions] = useState([]);
-  
+  const location = useLocation();
+  const [locationSearch, setLocationSearch] = useState('');
+  const [offers, setOffers] = useState([]); // fetched offer list
+  const [selectedOffers, setSelectedOffers] = useState([]); // selected checkboxes
+
   // Filter states
   const [filters, setFilters] = useState({
     bedrooms: undefined,
@@ -824,6 +830,12 @@ const SearchBar = () => {
     { name: "Pet Friendly", icon: "🐾" }
   ];
 
+  const categoryOptions = categories.map((cat) => ({
+    value: cat,
+    label: cat,
+  }));
+
+
   // Fetch categories and user data
   useEffect(() => {
     const fetchData = async () => {
@@ -833,24 +845,24 @@ const SearchBar = () => {
         const categoriesData = await categoriesResponse.json();
         const categoryNames = categoriesData.map((category) => category.name);
         setCategories(categoryNames);
-  
+
         // Fetch all properties initially
         const propertiesResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties`);
         setProperties(propertiesResponse.data);
 
         const allProperties = propertiesResponse.data;
-        const PropertyCyclingNames = allProperties.map(property=>property.name);
+        const PropertyCyclingNames = allProperties.map(property => property.name);
         setpropertyCycling(PropertyCyclingNames);
 
         setFilteredProperties(propertiesResponse.data);
-  
+
         const user = JSON.parse(localStorage.getItem("user"));
         setUserId(user ? user.id : null);
       } catch (error) {
         console.error("Error initializing data:", error);
       }
     };
-  
+
     fetchData();
   }, []);
 
@@ -864,11 +876,52 @@ const SearchBar = () => {
     }
   }, [propertyCycling, isTyping]);
 
+  // Add this useEffect to listen for location changes
+  // useEffect(() => {
+  //   const handleLocationSearch = (event) => {
+  //     setLocationSearch(event.detail);
+  //   };
+
+  //   // Listen for custom events from header
+  //   window.addEventListener('locationSearch', handleLocationSearch);
+
+  //   return () => {
+  //     window.removeEventListener('locationSearch', handleLocationSearch);
+  //   };
+  // }, []);
+  useEffect(() => {
+    const fetchOffers = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/offers`);
+        setOffers(response.data); // assuming response.data is an array of offer names
+      } catch (error) {
+        console.error("Error fetching offers:", error);
+      }
+    };
+
+    fetchOffers();
+  }, []);
+
+  useEffect(() => {
+    const parsed = queryString.parse(location.search);
+    const defaultCategory = parsed.category;
+
+    if (defaultCategory) {
+      setSelectedCategories([defaultCategory]); // sets default for filter
+    }
+  }, [location.search]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const locationParam = params.get('location') || '';
+    setLocationSearch(locationParam);
+  }, [location.search]);
+
   // Search properties when search criteria change
   useEffect(() => {
     searchProperties();
     console.log("changinggg")
-  }, [searchText, locationSearch, selectedCategories]);
+  }, [locationSearch, selectedCategories]);
 
   // Fetch ratings for properties
   useEffect(() => {
@@ -987,11 +1040,11 @@ const SearchBar = () => {
       const amenities = property.amenities || [];
 
       return (
-        (filters.priceRange === undefined || 
+        (filters.priceRange === undefined ||
           (price >= filters.priceRange[0] && price <= filters.priceRange[1])) &&
         (filters.bedrooms === undefined || bedrooms === filters.bedrooms) &&
         (filters.adults === undefined || adults >= filters.adults) &&
-        (filters.amenities.length === 0 || 
+        (filters.amenities.length === 0 ||
           filters.amenities.every(amenity => amenities.includes(amenity)))
       );
     });
@@ -1001,7 +1054,7 @@ const SearchBar = () => {
       result.sort((a, b) => {
         for (const option of sortOptions) {
           let comparison = 0;
-          
+
           switch (option) {
             case "priceLowToHigh":
               comparison = (a.minPrice || 0) - (b.minPrice || 0);
@@ -1018,7 +1071,7 @@ const SearchBar = () => {
             default:
               comparison = 0;
           }
-          
+
           if (comparison !== 0) {
             return comparison;
           }
@@ -1060,8 +1113,8 @@ const SearchBar = () => {
       const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search-locations`, {
         params: {
           query: locationSearch.trim(),
-          propertyName: searchText.trim(),
           category: selectedCategories.includes("All") ? "" : selectedCategories.join(","),
+          offers: selectedOffers.join(","),
         },
       });
       setProperties(response.data);
@@ -1076,9 +1129,9 @@ const SearchBar = () => {
   const handleBlur = () => setIsTyping(false);
 
   // Handle location search input
-  const handleLocationChange = (event) => {
-    setLocationSearch(event.target.value);
-  };
+  // const handleLocationChange = (event) => {
+  //   setLocationSearch(event.target.value);
+  // };
 
   // Handle category selection
   const handleCategoryChange = (category) => {
@@ -1194,12 +1247,12 @@ const SearchBar = () => {
 
   // Step 1: New function to actually fetch the data
   const searchByName = async (searchQuery) => {
-    console.log("search queryyy")
+    console.log("search queryyy", searchQuery)
     try {
       const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/properties/search`, {
         params: {
           query: searchQuery.trim(),
-          categories: selectedCategories.includes("All") ? [] : selectedCategories,
+          // categories: selectedCategories.includes("All") ? [] : selectedCategories,
         },
       });
       setProperties(response.data);
@@ -1243,7 +1296,7 @@ const SearchBar = () => {
   const handlePriceInputChange = (e) => {
     const { name, value } = e.target;
     const numValue = value === "" ? (name === "min" ? 0 : 1000) : parseInt(value, 10);
-    
+
     setPriceInputs(prev => ({ ...prev, [name]: numValue }));
 
     if (!isNaN(numValue)) {
@@ -1251,7 +1304,7 @@ const SearchBar = () => {
         name === "min" ? numValue : filters.priceRange?.[0] || 0,
         name === "max" ? numValue : filters.priceRange?.[1] || 1000
       ];
-      
+
       setFilters(prev => ({
         ...prev,
         priceRange: newRange[0] === 0 && newRange[1] === 1000 ? undefined : newRange
@@ -1321,8 +1374,8 @@ const SearchBar = () => {
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h6 className="fw-bold mb-0">Filters</h6>
               {appliedFiltersCount > 0 && (
-                <button 
-                  className="btn btn-link p-0 text-decoration-none" 
+                <button
+                  className="btn btn-link p-0 text-decoration-none"
                   onClick={handleClearFilters}
                   style={{ fontSize: '0.8rem' }}
                 >
@@ -1330,6 +1383,35 @@ const SearchBar = () => {
                 </button>
               )}
             </div>
+            {/* Category Filter */}
+            {/* Category Filter */}
+            <div className="mb-4">
+              <Form.Label className="fw-semibold d-flex align-items-center mb-2">
+                <FaFilter className="me-2" />
+                Categories
+              </Form.Label>
+              <Select
+                isMulti
+                options={categoryOptions}
+                value={selectedCategories.map((c) => ({ value: c, label: c }))}
+                onChange={(selectedOptions) =>
+                  setSelectedCategories(selectedOptions.map((opt) => opt.value))
+                }
+                placeholder="Select Categories"
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    minHeight: 40,
+                    borderRadius: 6,
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    zIndex: 9999,
+                  }),
+                }}
+              />
+            </div>
+
 
             {/* Price Range */}
             <div className="mb-4">
@@ -1376,7 +1458,7 @@ const SearchBar = () => {
             </div>
 
             {/* Bedrooms */}
-          {/*  <div className="mb-4">
+            {/*  <div className="mb-4">
               <Form.Label className="fw-semibold d-flex align-items-center">
                 <FaBed className="me-2" />
                 Bedrooms
@@ -1457,8 +1539,8 @@ const SearchBar = () => {
                   <Button
                     key={index}
                     variant={
-                      filters.amenities.includes(amenity.name) 
-                        ? "primary" 
+                      filters.amenities.includes(amenity.name)
+                        ? "primary"
                         : "outline-secondary"
                     }
                     onClick={() => handleAmenityToggle(amenity.name)}
@@ -1472,9 +1554,36 @@ const SearchBar = () => {
               </div>
             </div>
 
+            {/* Offers Filter */}
+            {/* <div className="mb-4">
+              <Form.Label className="fw-semibold d-flex align-items-center">
+                <FaTag className="me-2" />
+                Offers
+              </Form.Label>
+              <div className="d-flex flex-column">
+                {offers.map((offer, index) => (
+                  <Form.Check
+                    key={index}
+                    type="checkbox"
+                    label={offer}
+                    value={offer}
+                    checked={selectedOffers.includes(offer)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setSelectedOffers(prev =>
+                        e.target.checked
+                          ? [...prev, value]
+                          : prev.filter((item) => item !== value)
+                      );
+                    }}
+                  />
+                ))}
+              </div>
+            </div> */}
+
             {/* Apply Filters Button */}
-            <Button 
-              variant="primary" 
+            <Button
+              variant="primary"
               className="w-100 mt-3"
               onClick={filterAndSortProperties}
             >
@@ -1561,7 +1670,7 @@ const SearchBar = () => {
       {/* Bottom Sort Button (keep your existing sort dropdown code) */}
       <div className="fixed-bottom d-flex justify-content-center mb-3">
         <div className="d-flex gap-2 p-2 rounded shadow" style={{ zIndex: 1000 }}>
-       {/*   <Button variant="primary" onClick={() => setShowFilterModal(true)} className="d-flex align-items-center">
+          {/*   <Button variant="primary" onClick={() => setShowFilterModal(true)} className="d-flex align-items-center">
             <FaFilter className="me-2" />
             Filter
             {appliedFiltersCount > 0 && (
@@ -1621,7 +1730,7 @@ const SearchBar = () => {
       />
 
       {/* Your existing styles */}
-       <style jsx>{`
+      <style jsx>{`
       /* Sidebar sticky */
 .sidebar {
   position: sticky;
